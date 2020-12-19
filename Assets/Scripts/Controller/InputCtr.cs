@@ -8,7 +8,7 @@ public class InputCtr : MonoBehaviour
 
     public void Init()
     {
-        mainCam = CameraCtr.Instance.MainCamera;
+        mainCam = CameraFollow.Instance.MainCamera;
     }
 
     void Update()

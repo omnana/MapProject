@@ -6,7 +6,7 @@ public class GameCtr : MonoBehaviour
 {
     public MapGenerator MapGenerator;
 
-    public CameraCtr CameraCtr;
+    public CameraFollow CameraFollow;
 
     public InputCtr InputCtr;
 
@@ -14,7 +14,7 @@ public class GameCtr : MonoBehaviour
 
     private void Awake()
     {
-        CameraCtr.Init();
+        CameraFollow.Init();
 
         InputCtr.Init();
 
@@ -42,7 +42,7 @@ public class GameCtr : MonoBehaviour
 
         PlayerCtr.CreatePlayer(coord);
 
-        CameraCtr.SetFollow(PlayerCtr.Player.gameObject);
+        CameraFollow.SetFollow(PlayerCtr.Player.gameObject);
     }
 
     void Update()

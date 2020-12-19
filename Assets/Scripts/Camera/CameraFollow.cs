@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraCtr : MonoBehaviour
+public class CameraFollow : MonoBehaviour
 {
-    public static CameraCtr Instance;
+    public static CameraFollow Instance;
 
     public Camera MainCamera;
 
@@ -24,7 +24,7 @@ public class CameraCtr : MonoBehaviour
         FollowGo = obj;
     }
 
-    void Update()
+    private void UpdateFollow()
     {
         if (FollowGo == null) return;
 
@@ -36,6 +36,22 @@ public class CameraCtr : MonoBehaviour
 
         followPos.z = DeepZ;
 
+        var disSub = Vector2.Distance(pos, followPos);
+
+        if (disSub < 0.1f) return;
+
         transform.position = Vector3.Lerp(pos, FollowGo.transform.position, FollowDelt * Time.deltaTime);
+    }
+
+    private void UpdateCameraArea()
+    {
+
+    }
+
+    void Update()
+    {
+        UpdateFollow();
+
+        UpdateCameraArea();
     }
 }
