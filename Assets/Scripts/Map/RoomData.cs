@@ -27,7 +27,7 @@ public class RoomData
     [SerializeField]
     public Coordinate Coordinate;
 
-    //private Grid[,] grids;
+    public GridData[,] gridDatas;
 
     public Coordinate LeftDown
     {
@@ -48,6 +48,50 @@ public class RoomData
     public RoomData()
     {
 
+    }
+
+    public void Build()
+    {
+        gridDatas = new GridData[Width, Height];
+
+        for (var i = 0; i < Width; i++)
+        {
+            for (var j = 0; j < Height; j++)
+            {
+                var roomCoord = new Coordinate(i, j);
+
+                var worldCoord = Coordinate + roomCoord;
+
+                if (RoomType == RoomType.Corridor)
+                {
+                    if (MapAreaMgr.Instance.HasGridInWorldCoord(worldCoord.X, worldCoord.Y)) continue;
+
+                    var corridorGrid = new GridData()
+                    {
+                        GridType = GridType.Corridor,
+                        RoomCoord = roomCoord,
+                        WorldCoord = worldCoord,
+                    };
+
+                    MapAreaMgr.Instance.SetGrid(corridorGrid);
+
+                    gridDatas[i, j] = corridorGrid;
+                }
+                else if (RoomType == RoomType.Room)
+                {
+                    var roomGrid = new GridData()
+                    {
+                        GridType = GridType.Normal,
+                        RoomCoord = roomCoord,
+                        WorldCoord = worldCoord,
+                    };
+
+                    MapAreaMgr.Instance.SetGrid(roomGrid);
+
+                    gridDatas[i, j] = roomGrid;
+                }
+            }
+        }
     }
 
     /// <summary>

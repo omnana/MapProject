@@ -24,7 +24,15 @@ public class MapAreaMgr : MonoBehaviour
 
     private int corridorWidth;
 
-    private bool[,] gridOccupy;
+    private GridData[,] gridMap;
+
+    public GridData[,] AllGrids
+    {
+        get
+        {
+            return gridMap;
+        }
+    }
 
 
     private void Awake()
@@ -49,7 +57,7 @@ public class MapAreaMgr : MonoBehaviour
 
         DoorDatas = new List<RoomData>();
 
-        gridOccupy = new bool[Config.MapAreaWidth, Config.MapAreaHeight];
+        gridMap = new GridData[Config.MapAreaWidth, Config.MapAreaHeight];
 
         root = new MapArea(Coordinate.Zero, Config.MapAreaWidth, Config.MapAreaHeight);
 
@@ -71,9 +79,9 @@ public class MapAreaMgr : MonoBehaviour
     /// 
     /// </summary>
     /// <param name="coord"></param>
-    public void OccupyGrid(Coordinate coord)
+    public void SetGrid(GridData data)
     {
-        gridOccupy[coord.X, coord.Y] = true;
+        gridMap[data.WorldCoord.X, data.WorldCoord.Y] = data;
     }
 
     /// <summary>
@@ -81,9 +89,9 @@ public class MapAreaMgr : MonoBehaviour
     /// </summary>
     /// <param name="coord"></param>
     /// <returns></returns>
-    public bool CoordIsOccupy(Coordinate coord)
+    public bool HasGrid(GridData data)
     {
-        return gridOccupy[coord.X, coord.Y];
+        return gridMap[data.WorldCoord.X, data.WorldCoord.Y] != null;
     }
 
     /// <summary>
@@ -92,9 +100,9 @@ public class MapAreaMgr : MonoBehaviour
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <returns></returns>
-    public bool CoordIsOccupy(int x, int y)
+    public bool HasGridInWorldCoord(int x, int y)
     {
-        return gridOccupy[x, y];
+        return gridMap[x, y] != null;
     }
 
     /// <summary>
@@ -177,6 +185,8 @@ public class MapAreaMgr : MonoBehaviour
         var yMax = area.Height - roomData.Height;
 
         roomData.Coordinate = new Coordinate(Const.Random.Next(0, xMax), Const.Random.Next(0, yMax)) + area.Coordinate;
+
+        roomData.Build();
 
         RoomDatas.Add(roomData);
 
@@ -306,7 +316,7 @@ public class MapAreaMgr : MonoBehaviour
 
                 var endX = doors[0].X < doors[1].X ? doors[1].X - corridorWidth + 1 : doors[1].X;
 
-                CorridorDatas.Add(new RoomData()
+                var roomData = new RoomData()
                 {
                     RoomType = RoomType.Corridor,
 
@@ -321,11 +331,15 @@ public class MapAreaMgr : MonoBehaviour
                     Start = room1.Id,
 
                     End = room2.Id,
-                });
+                };
+
+                roomData.Build();
+
+                CorridorDatas.Add(roomData);
 
                 if (h > corridorWidth)
                 {
-                    CorridorDatas.Add(new RoomData()
+                    roomData = new RoomData()
                     {
                         RoomType = RoomType.Corridor,
 
@@ -340,14 +354,18 @@ public class MapAreaMgr : MonoBehaviour
                         Start = room1.Id,
 
                         End = room2.Id,
-                    });
+                    };
+
+                    roomData.Build();
+
+                    CorridorDatas.Add(roomData);
                 }
             }
             else
             {
                 if (h > 0)
                 {
-                    CorridorDatas.Add(new RoomData()
+                    var roomData = new RoomData()
                     {
                         RoomType = RoomType.Corridor,
 
@@ -362,7 +380,11 @@ public class MapAreaMgr : MonoBehaviour
                         Start = room1.Id,
 
                         End = room2.Id,
-                    });
+                    };
+
+                    roomData.Build();
+
+                    CorridorDatas.Add(roomData);
                 }
             }
         }
@@ -374,7 +396,7 @@ public class MapAreaMgr : MonoBehaviour
 
                 var endY = doors[0].Y < doors[1].Y ? doors[1].Y - corridorWidth + 1 : doors[1].Y;
 
-                CorridorDatas.Add(new RoomData()
+                var roomData = new RoomData()
                 {
                     RoomType = RoomType.Corridor,
 
@@ -389,11 +411,15 @@ public class MapAreaMgr : MonoBehaviour
                     Start = room1.Id,
 
                     End = room2.Id,
-                });
+                };
+
+                roomData.Build();
+
+                CorridorDatas.Add(roomData);
 
                 if (h > corridorWidth)
                 {
-                    CorridorDatas.Add(new RoomData()
+                    roomData = new RoomData()
                     {
                         RoomType = RoomType.Corridor,
 
@@ -408,14 +434,18 @@ public class MapAreaMgr : MonoBehaviour
                         Start = room1.Id,
 
                         End = room2.Id,
-                    });
+                    };
+
+                    roomData.Build();
+
+                    CorridorDatas.Add(roomData);
                 }
             }
             else
             {
                 if (w > 0)
                 {
-                    CorridorDatas.Add(new RoomData()
+                    var roomData = new RoomData()
                     {
                         RoomType = RoomType.Corridor,
 
@@ -430,7 +460,11 @@ public class MapAreaMgr : MonoBehaviour
                         Start = room1.Id,
 
                         End = room2.Id,
-                    });
+                    };
+
+                    roomData.Build();
+
+                    CorridorDatas.Add(roomData);
                 }
             }
         }

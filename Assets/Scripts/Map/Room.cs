@@ -23,37 +23,17 @@ public class Room : MonoBehaviour
         {
             for (var j = 0; j < data.Height; j++)
             {
-                var coord = new Coordinate(i, j);
+                var gridData = data.gridDatas[i, j];
 
-                var worldCoord = coord + data.Coordinate;
-
-                if (MapAreaMgr.Instance.CoordIsOccupy(worldCoord)) continue;
+                if (gridData == null) continue;
 
                 var obj = Instantiate(gridPrefab);
 
                 obj.transform.SetParent(transform, false);
 
-                obj.transform.localPosition = new Vector3(i * Config.GridSize, j * Config.GridSize);
-
                 var grid = obj.GetComponent<GridMono>();
 
-                grid.Id = MapAreaMgr.Instance.GetGridId();
-
-                if (data.RoomType == RoomType.Room)
-                {
-                    grid.SetType(GridType.Normal);
-                }
-                else if (data.RoomType == RoomType.Corridor)
-                {
-                    grid.SetType(GridType.Corridor);
-                }
-
-                grid.Coordinate = coord;
-
-                MapAreaMgr.Instance.OccupyGrid(worldCoord);
-
-                obj.SetActive(true);
-
+                grid.SetData(gridData);
             }
         }
 

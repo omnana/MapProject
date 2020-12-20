@@ -7,41 +7,84 @@ public class MapGenerator : MonoBehaviour
 {
     public Room roomPrefab;
 
-    public void LoadMap(Action callback)
+    public GridMono gridPrefab;
+
+    public List<GridMono> GridList;
+
+    private void Awake()
     {
-        StartCoroutine(OnLoadMap(callback));
+
     }
 
-    private IEnumerator OnLoadMap(Action callback)
+    public void LoadMap(int gridNum, Action callback)
     {
-        var roomDatas = MapAreaMgr.Instance.RoomDatas;
+        StartCoroutine(OnLoadMap(gridNum, callback));
+    }
 
-        for (var i = 0; i < roomDatas.Count; i++)
+    private IEnumerator OnLoadMap(int gridNum, Action callback)
+    {
+        var gridDatas = MapAreaMgr.Instance.AllGrids;
+
+        for (var i = 0; i < Config.MapAreaWidth * Config.MapAreaHeight; i++)
         {
-            var roomObj = Instantiate(roomPrefab);
+            var w = i % Config.MapAreaWidth;
+            var h = i / Config.MapAreaWidth;
 
-            roomObj.transform.SetParent(transform, false);
+            if (gridDatas[w, h] != null)
+            {
+                var gridObj = Instantiate(gridPrefab);
 
-            var room = roomObj.GetComponent<Room>();
+                gridObj.transform.SetParent(transform, false);
 
-            room.SetData(roomDatas[i]);
+                gridObj.SetData(gridDatas[w, h]);
+            }
         }
+        //var roomDatas = MapAreaMgr.Instance.RoomDatas;
 
-        var corridorDatas = MapAreaMgr.Instance.CorridorDatas;
+        //for (var i = 0; i < roomDatas.Count; i++)
+        //{
+        //    var roomObj = Instantiate(roomPrefab);
 
-        for (var i = 0; i < corridorDatas.Count; i++)
-        {
-            var roomObj = Instantiate(roomPrefab);
+        //    roomObj.transform.SetParent(transform, false);
 
-            roomObj.transform.SetParent(transform, false);
+        //    var room = roomObj.GetComponent<Room>();
 
-            var room = roomObj.GetComponent<Room>();
+        //    room.SetData(roomDatas[i]);
+        //}
 
-            room.SetData(corridorDatas[i]);
-        }
+        //var corridorDatas = MapAreaMgr.Instance.CorridorDatas;
+
+        //for (var i = 0; i < corridorDatas.Count; i++)
+        //{
+        //    var roomObj = Instantiate(roomPrefab);
+
+        //    roomObj.transform.SetParent(transform, false);
+
+        //    var room = roomObj.GetComponent<Room>();
+
+        //    room.SetData(corridorDatas[i]);
+        //}
+
+        //for (var i = 0; i < gridNum; i++)
+        //{
+        //    var gridObj = Instantiate(gridPrefab);
+
+        //    gridObj.transform.SetParent(transform, false);
+
+        //    gridObj.gameObject.SetActive(false);
+
+        //    GridList.Add(gridObj.GetComponent<GridMono>());
+        //}
 
         yield return new WaitForEndOfFrame();
 
         callback?.Invoke();
+    }
+
+
+    private void UpdateView()
+    {
+
+
     }
 }

@@ -21,7 +21,10 @@ public static class Util
     {
         return new Coordinate(Mathf.CeilToInt(pos.x / Config.GridSize), Mathf.CeilToInt(pos.y / Config.GridSize));
     }
-
+    public static Coordinate Vector3ToCoord(this Vector3 pos)
+    {
+        return new Coordinate(Mathf.CeilToInt(pos.x / Config.GridSize), Mathf.CeilToInt(pos.y / Config.GridSize));
+    }
 
     public static Coordinate GetNeightbour(this Coordinate coord, int dir)
     {

@@ -14,12 +14,25 @@ public class GridMono : MonoBehaviour
 
     public GameObject Corridor;
 
-    public void SetType(GridType type)
+    public Coordinate WorldCoord;
+
+    private float gridSize;
+
+    private void Awake()
     {
-        GridType = type;
+        gridSize = Config.GridSize;
+    }
 
-        Normal.SetActive(type == GridType.Normal);
+    public void SetData(GridData data)
+    {
+        GridType = data.GridType;
 
-        Corridor.SetActive(type == GridType.Corridor);
+        Normal.SetActive(GridType == GridType.Normal);
+
+        Corridor.SetActive(GridType == GridType.Corridor);
+
+        transform.localPosition = data.WorldCoord.CoordinateToVector2();
+
+        gameObject.SetActive(true);
     }
 }
