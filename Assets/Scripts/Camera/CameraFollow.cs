@@ -26,11 +26,21 @@ public class CameraFollow : MonoBehaviour
     public void SetFollow(GameObject obj)
     {
         FollowGo = obj;
+
+        var followPos = FollowGo.transform.position;
+
+        var pos = transform.position;
+
+        pos.x = followPos.x;
+
+        pos.y = followPos.y;
+
+        transform.position = pos;
     }
 
     private void UpdateFollow()
     {
-        if (FollowGo == null) return;
+        if (!FollowGo) return;
 
         var pos = transform.position;
 
@@ -42,7 +52,7 @@ public class CameraFollow : MonoBehaviour
 
         var disSub = Vector2.Distance(pos, followPos);
 
-        if (disSub < 0.1f) return;
+        if (disSub < 0.01f) return;
 
         transform.position = Vector3.Lerp(pos, FollowGo.transform.position, FollowDelt * Time.deltaTime);
     }

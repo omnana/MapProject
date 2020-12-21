@@ -12,11 +12,11 @@
 
     public static int RoomHeightMax = 20;
 
-    public static int MapAreaWidth = 400;
+    public static int MapAreaWidth = 200;
 
     public static int MapAreaHeight = 200;
 
-    public static int MapAreaDepth = 5;
+    public static int MapAreaDepth = 4;
 
     public static int CorridorWidth = 3;
 

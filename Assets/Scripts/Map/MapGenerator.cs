@@ -39,6 +39,7 @@ public class MapGenerator : MonoBehaviour
                 gridObj.SetData(gridDatas[w, h]);
             }
         }
+
         //var roomDatas = MapAreaMgr.Instance.RoomDatas;
 
         //for (var i = 0; i < roomDatas.Count; i++)

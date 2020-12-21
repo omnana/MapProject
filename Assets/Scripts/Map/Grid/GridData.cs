@@ -12,6 +12,8 @@ public class GridData
 
     public Coordinate WorldCoord = Coordinate.Zero;
 
+    public bool IsWall;
+
     public GridData()
     {
         Id = MapAreaMgr.Instance.GetGridId();

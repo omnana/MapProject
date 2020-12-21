@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public Coordinate Coordinate;
+
     void Start()
     {
         
@@ -11,6 +13,8 @@ public class Player : MonoBehaviour
 
     public void SetCoord(Coordinate coord)
     {
+        Coordinate = coord;
+
         transform.position = coord.CoordinateToVector2();
 
         gameObject.SetActive(true);

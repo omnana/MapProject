@@ -14,6 +14,8 @@ public class GridMono : MonoBehaviour
 
     public GameObject Corridor;
 
+    public GameObject Wall;
+
     public Coordinate WorldCoord;
 
     private float gridSize;
@@ -30,6 +32,8 @@ public class GridMono : MonoBehaviour
         Normal.SetActive(GridType == GridType.Normal);
 
         Corridor.SetActive(GridType == GridType.Corridor);
+
+        Wall.SetActive(data.IsWall);
 
         transform.localPosition = data.WorldCoord.CoordinateToVector2();
 

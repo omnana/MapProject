@@ -11,17 +11,18 @@ public class InputCtr : MonoBehaviour
         mainCam = CameraFollow.Instance.MainCamera;
     }
 
-    void Update()
+    public Coordinate GetMouseCoord()
     {
-        if(Input.GetMouseButtonDown(0))
-        {
-            var mousePos = Input.mousePosition;
+        var mousePos = Input.mousePosition;
 
-            Vector2 worldPos = mainCam.ScreenToWorldPoint(mousePos);
+        mousePos.z = -mainCam.transform.position.z;
 
-            var coord = worldPos.Vector2ToCoord();
+        Vector2 worldPos = mainCam.ScreenToWorldPoint(mousePos);
 
-            Debug.Log(coord);
-        }
+        var coord = worldPos.Vector2ToCoord();
+
+        Debug.Log(coord);
+
+        return coord;
     }
 }

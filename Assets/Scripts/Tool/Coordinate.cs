@@ -37,6 +37,16 @@ public class Coordinate
     //    return this.X == c.X && this.Y == c.Y;
     //}
 
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
+
+    public override bool Equals(object obj)
+    {
+        return base.Equals(obj);
+    }
+
     public override string ToString()
     {
         return string.Format("({0}, {1})", X, Y);
@@ -52,18 +62,13 @@ public class Coordinate
         return new Coordinate(c1.X - c2.X, c1.Y - c2.Y);
     }
 
-    //public static Coordinate operator -(Coordinate c1, Coordinate c2)
-    //{
-    //    return new Coordinate(c1.X - c2.X, c1.Y - c2.Y);
-    //}
+    public static bool operator ==(Coordinate c1, Coordinate c2)
+    {
+        return c1.Y == c2.Y && c2.X == c1.X;
+    }
 
-    //public static bool operator ==(Coordinate c1, Coordinate c2)
-    //{
-    //    return c1.Y == c2.Y && c2.X == c1.X;
-    //}
-
-    //public static bool operator !=(Coordinate c1, Coordinate c2)
-    //{
-    //    return c1.Y != c2.Y || c2.X != c1.X;
-    //}
+    public static bool operator !=(Coordinate c1, Coordinate c2)
+    {
+        return c1.Y != c2.Y || c2.X != c1.X;
+    }
 }

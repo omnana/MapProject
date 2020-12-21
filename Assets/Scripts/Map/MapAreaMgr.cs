@@ -69,6 +69,18 @@ public class MapAreaMgr : MonoBehaviour
     /// <summary>
     /// 
     /// </summary>
+    /// <param name="coord"></param>
+    /// <returns></returns>
+    public GridData GetGrid(Coordinate coord)
+    {
+        if (coord.X < 0 || coord.Y < 0 || coord.X >= Config.MapAreaWidth || coord.Y >= Config.MapAreaHeight) return null;
+
+        return gridMap[coord.X, coord.Y];
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     /// <returns></returns>
     public int GetGridId()
     {
