@@ -70,13 +70,6 @@ public class GameCtr : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            var targetCoord = InputCtr.GetMouseCoord();
-
-            var path = FindPathTool.FindPath(PlayerCtr.Player.Coordinate, targetCoord);
-        }
-
         //if (!isInit) return;
 
         //var rightUpCoord = CameraFollow.Corners[1].Vector3ToCoord();

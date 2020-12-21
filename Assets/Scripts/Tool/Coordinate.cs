@@ -25,26 +25,19 @@ public class Coordinate
 
     public static Coordinate Right = new Coordinate(1, 0);
 
-    //public override int GetHashCode()
-    //{
-    //    return base.GetHashCode();
-    //}
-
-    //public override bool Equals(object obj)
-    //{
-    //    var c = obj as Coordinate;
-
-    //    return this.X == c.X && this.Y == c.Y;
-    //}
 
     public override int GetHashCode()
     {
-        return base.GetHashCode();
+        return X ^ Y;
     }
 
     public override bool Equals(object obj)
     {
-        return base.Equals(obj);
+        var coord = obj as Coordinate;
+
+        if (coord.X == X && coord.Y == Y) return true;
+
+        return false;
     }
 
     public override string ToString()

@@ -28,7 +28,7 @@ public class GridNode
 
 public class FindPathTool
 {
-    public static List<Coordinate> FindPath(Coordinate start, Coordinate end, int limit = 1000)
+    public static List<Coordinate> FindPath(Coordinate start, Coordinate end, int limit = 5000)
     {
         var mapAreaMgr = MapAreaMgr.Instance;
 
@@ -53,11 +53,13 @@ public class FindPathTool
         while (curNode != null && curNode.Coordinate != end)
         {
             loopNum++;
+
             if (loopNum > limit)
             {
                 Debug.Log("死循环");
-                break;
+                return new List<Coordinate>();
             }
+
             GridNode nextNode = null;
 
             for (var i = 0; i < 4; i++)
@@ -113,7 +115,7 @@ public class FindPathTool
 
             curNode = nextNode;
 
-            if (!closeList.Contains(curNode.Coordinate))
+            if (curNode != null && !closeList.Contains(curNode.Coordinate))
             {
                 closeList.Add(curNode.Coordinate);
             }

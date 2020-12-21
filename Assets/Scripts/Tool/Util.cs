@@ -19,11 +19,12 @@ public static class Util
 
     public static Coordinate Vector2ToCoord(this Vector2 pos)
     {
-        return new Coordinate(Mathf.CeilToInt(pos.x / Config.GridSize), Mathf.CeilToInt(pos.y / Config.GridSize));
+        return new Coordinate((int)(pos.x / Config.GridSize + 0.5), (int)(pos.y / Config.GridSize + 0.5));
     }
+
     public static Coordinate Vector3ToCoord(this Vector3 pos)
     {
-        return new Coordinate(Mathf.CeilToInt(pos.x / Config.GridSize), Mathf.CeilToInt(pos.y / Config.GridSize));
+        return new Coordinate((int)(pos.x / Config.GridSize + 0.5), (int)(pos.y / Config.GridSize + 0.5));
     }
 
     public static Coordinate GetNeightbour(this Coordinate coord, int dir)

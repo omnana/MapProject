@@ -6,8 +6,12 @@ public class InputCtr : MonoBehaviour
 {
     private Camera mainCam;
 
+    public static InputCtr Instance;
+
     public void Init()
     {
+        Instance = this;
+
         mainCam = CameraFollow.Instance.MainCamera;
     }
 
@@ -21,7 +25,7 @@ public class InputCtr : MonoBehaviour
 
         var coord = worldPos.Vector2ToCoord();
 
-        Debug.Log(coord);
+        //Debug.Log(coord);
 
         return coord;
     }

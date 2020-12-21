@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class CameraFollow : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class CameraFollow : MonoBehaviour
 
     public GameObject FollowGo;
 
-    public float FollowDelt = 10f;
+    public float FollowDelt = 5f;
 
     public float DeepZ  = -10f;
 
@@ -52,9 +53,9 @@ public class CameraFollow : MonoBehaviour
 
         var disSub = Vector2.Distance(pos, followPos);
 
-        if (disSub < 0.01f) return;
+        if (disSub < 1f) return;
 
-        transform.position = Vector3.Lerp(pos, FollowGo.transform.position, FollowDelt * Time.deltaTime);
+        transform.DOMove(followPos, 0.2f);
     }
 
     private void FindCorners()
