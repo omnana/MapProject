@@ -6,6 +6,8 @@ public class GridData
 {
     public int Id;
 
+    public int AreaId;
+
     public GridType GridType;
 
     public Coordinate RoomCoord = Coordinate.Zero;

@@ -81,7 +81,7 @@ public class RoomData
                 {
                     var roomGrid = new GridData()
                     {
-                        IsWall = Const.Random.Next(0, 10) > 7,
+                        IsWall = i == 0 || i == Width - 1 || j == 0 || j == Height - 1,
                         GridType = GridType.Normal,
                         RoomCoord = roomCoord,
                         WorldCoord = worldCoord,

@@ -48,7 +48,7 @@
     /// <summary>
     /// 走廊宽度
     /// </summary>
-    public static int CorridorWidth = 3;
+    public static int CorridorWidth = 4;
 
     /// <summary>
     /// 房间格子最小数

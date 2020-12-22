@@ -12,7 +12,7 @@ public class MapAreaMgr : MonoBehaviour
     public List<RoomData> RoomDatas { get; private set; }
 
     /// <summary> 走廊数据 </summary>
-    public List<RoomData> CorridorDatas { get; private set; }
+    public List<CorridorData> CorridorDatas { get; private set; }
 
     public List<RoomData> DoorDatas { get; private set; }
 
@@ -53,7 +53,7 @@ public class MapAreaMgr : MonoBehaviour
 
         RoomDatas = new List<RoomData>();
 
-        CorridorDatas = new List<RoomData>();
+        CorridorDatas = new List<CorridorData>();
 
         DoorDatas = new List<RoomData>();
 
@@ -64,6 +64,8 @@ public class MapAreaMgr : MonoBehaviour
         CreateMapAreaGroup(root, Config.MapAreaDepth);
 
         CreateCorridors(root);
+
+        CreateWall();
     }
 
     /// <summary>
@@ -322,11 +324,18 @@ public class MapAreaMgr : MonoBehaviour
 
         if (isVertical) // 垂直
         {
-            if (w > corridorWidth)
+            if (w > corridorWidth) // L形
             {
                 var startX = doors[0].X < doors[1].X ? doors[0].X : doors[1].X;
 
                 var endX = doors[0].X < doors[1].X ? doors[1].X - corridorWidth + 1 : doors[1].X;
+
+                var corridorData = new CorridorData()
+                {
+                    IsStraight = false,
+
+                    IsVerticle = true,
+                };
 
                 var roomData = new RoomData()
                 {
@@ -347,7 +356,7 @@ public class MapAreaMgr : MonoBehaviour
 
                 roomData.Build();
 
-                CorridorDatas.Add(roomData);
+                corridorData.RoomData.Add(roomData);
 
                 if (h > corridorWidth)
                 {
@@ -370,13 +379,22 @@ public class MapAreaMgr : MonoBehaviour
 
                     roomData.Build();
 
-                    CorridorDatas.Add(roomData);
+                    corridorData.RoomData.Add(roomData);
                 }
+
+                CorridorDatas.Add(corridorData);
             }
             else
             {
                 if (h > 0)
                 {
+                    var corridorData = new CorridorData()
+                    {
+                        IsStraight = true,
+
+                        IsVerticle = true,
+                    };
+
                     var roomData = new RoomData()
                     {
                         RoomType = RoomType.Corridor,
@@ -396,17 +414,26 @@ public class MapAreaMgr : MonoBehaviour
 
                     roomData.Build();
 
-                    CorridorDatas.Add(roomData);
+                    corridorData.RoomData.Add(roomData);
+
+                    CorridorDatas.Add(corridorData);
                 }
             }
         }
         else // 水平
         {
-            if (h > corridorWidth)
+            if (h > corridorWidth) // L形
             {
                 var startY = doors[0].Y < doors[1].Y ? doors[0].Y : doors[1].Y;
 
                 var endY = doors[0].Y < doors[1].Y ? doors[1].Y - corridorWidth + 1 : doors[1].Y;
+
+                var corridorData = new CorridorData()
+                {
+                    IsStraight = false,
+
+                    IsVerticle = false,
+                };
 
                 var roomData = new RoomData()
                 {
@@ -427,7 +454,7 @@ public class MapAreaMgr : MonoBehaviour
 
                 roomData.Build();
 
-                CorridorDatas.Add(roomData);
+                corridorData.RoomData.Add(roomData);
 
                 if (h > corridorWidth)
                 {
@@ -450,13 +477,22 @@ public class MapAreaMgr : MonoBehaviour
 
                     roomData.Build();
 
-                    CorridorDatas.Add(roomData);
+                    corridorData.RoomData.Add(roomData);
+
+                    CorridorDatas.Add(corridorData);
                 }
             }
             else
             {
                 if (w > 0)
                 {
+                    var corridorData = new CorridorData()
+                    {
+                        IsStraight = false,
+
+                        IsVerticle = false,
+                    };
+
                     var roomData = new RoomData()
                     {
                         RoomType = RoomType.Corridor,
@@ -476,9 +512,19 @@ public class MapAreaMgr : MonoBehaviour
 
                     roomData.Build();
 
-                    CorridorDatas.Add(roomData);
+                    corridorData.RoomData.Add(roomData);
+
+                    CorridorDatas.Add(corridorData);
                 }
             }
+        }
+    }
+
+    public void CreateWall()
+    {
+        for (var i = 0; i < CorridorDatas.Count; i++)
+        {
+
         }
     }
 

@@ -25,6 +25,8 @@ public class MapArea
         Height = h;
 
         Coordinate = coord;
+
+        Id++;
     }
 
     /// <summary>
