@@ -6,17 +6,17 @@ public class GridNode
 {
     public Coordinate Coordinate;
 
-    public GridNode Next;
+    public GridNode Parent;
 
-    public float W;
+    public int G;
 
-    public float H;
+    public int H;
 
-    public float S
+    public int F
     {
         get
         {
-            return H + W;
+            return H + G;
         }
     }
 
@@ -28,25 +28,26 @@ public class GridNode
 
 public class FindPathTool
 {
+    /// <summary>
+    /// 寻路
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <param name="limit"></param>
+    /// <returns></returns>
     public static List<Coordinate> FindPath(Coordinate start, Coordinate end, int limit = 5000)
     {
-        var mapAreaMgr = MapAreaMgr.Instance;
-
         var path = new List<Coordinate>();
 
-        var openList = new List<Coordinate>();
+        var openList = new List<GridNode>();
 
-        var closeList = new HashSet<Coordinate>();
+        var openSet = new HashSet<Coordinate>();
 
-        var nodeDic = new Dictionary<Coordinate, GridNode>();
+        var closeSet = new HashSet<Coordinate>();
 
-        var startNode = new GridNode(start);
+        var curNode = new GridNode(start);
 
-        var curNode = startNode;
-
-        nodeDic.Add(startNode.Coordinate, curNode);
-
-        closeList.Add(curNode.Coordinate);
+        closeSet.Add(curNode.Coordinate);
 
         var loopNum = 0;
 
@@ -60,73 +61,70 @@ public class FindPathTool
                 return new List<Coordinate>();
             }
 
-            GridNode nextNode = null;
-
             for (var i = 0; i < 4; i++)
             {
                 var nCoord = curNode.Coordinate.GetNeightbour(i);
 
-                var grid = mapAreaMgr.GetGrid(nCoord);
+                var grid = MapAreaMgr.Instance.GetGrid(nCoord);
 
-                if (grid != null && !grid.IsWall && !closeList.Contains(nCoord))
+                if (grid != null && !grid.IsWall && !closeSet.Contains(nCoord))
                 {
-                    var w = curNode.W + 1;
+                    var g = curNode.G + 10;
 
-                    var h = Mathf.Sqrt(Mathf.Pow(end.Y - nCoord.Y, 2) + Mathf.Pow(end.X - nCoord.X, 2));
+                    var h = (int)(nCoord.Distance(end) * 10);
 
-                    if (!nodeDic.ContainsKey(nCoord))
+                    if (!openSet.Contains(nCoord))
                     {
                         var node = new GridNode(nCoord)
                         {
-                            W = w,
+                            G = g,
 
                             H = h,
+
+                            Parent = curNode,
                         };
 
-                        nodeDic.Add(nCoord, node);
+                        openList.Add(node);
 
-                        if (nextNode != null)
-                        {
-                            if (nextNode.H > node.H)
-                            {
-                                nextNode = node;
-                            }
-                        }
-                        else
-                        {
-                            nextNode = node;
-                        }
-                    }
-                    else
-                    {
-                        var n = nodeDic[nCoord];
-
-                        if (n.W < w)
-                        {
-                            n.Next = curNode;
-
-                            curNode.W = n.W + 1;
-                        }
+                        openSet.Add(nCoord);
                     }
                 }
             }
 
-            curNode.Next = nextNode;
+            var minF = int.MaxValue;
 
-            curNode = nextNode;
+            GridNode nextNode = null;
 
-            if (curNode != null && !closeList.Contains(curNode.Coordinate))
+            for (var i = 0; i < openList.Count; ++i)
             {
-                closeList.Add(curNode.Coordinate);
+                if (openList[i].F < minF)
+                {
+                    minF = openList[i].F;
+
+                    nextNode = openList[i];
+
+                    break;
+                }
+            }
+
+            if (nextNode != null)
+            {
+                curNode = nextNode;
+
+                openList.Remove(curNode);
+
+                closeSet.Add(curNode.Coordinate);
             }
         }
 
-        while (startNode != null)
+        while (curNode != null)
         {
-            path.Add(startNode.Coordinate);
+            path.Add(curNode.Coordinate);
 
-            startNode = startNode.Next;
+            curNode = curNode.Parent;
         }
+
+        path.Reverse();
 
         return path;
     }

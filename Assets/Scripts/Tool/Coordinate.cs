@@ -25,10 +25,18 @@ public class Coordinate
 
     public static Coordinate Right = new Coordinate(1, 0);
 
+    public static Coordinate LeftDown = new Coordinate(-1, -1);
+
+    public static Coordinate LeftUp = new Coordinate(-1, 1);
+
+    public static Coordinate RightUp = new Coordinate(1, 1);
+
+    public static Coordinate RightDown = new Coordinate(1, -1);
+
 
     public override int GetHashCode()
     {
-        return X ^ Y;
+        return 7 * X + 3 * Y;
     }
 
     public override bool Equals(object obj)

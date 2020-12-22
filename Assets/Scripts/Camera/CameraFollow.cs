@@ -19,6 +19,8 @@ public class CameraFollow : MonoBehaviour
 
     public Vector3[] Corners = new Vector3[4];
 
+    public float ExtraValue = 10f;
+
     public void Init()
     {
         Instance = this;

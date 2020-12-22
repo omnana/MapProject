@@ -31,7 +31,7 @@ public class GameCtr : MonoBehaviour
 
         gridNum = GetGridMaxNum();
 
-        MapGenerator.LoadMap(gridNum, LoadMapEnd);
+        MapGenerator.LoadMap(LoadMapEnd);
     }
 
     private void LoadMapEnd()

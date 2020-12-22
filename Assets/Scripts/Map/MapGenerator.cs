@@ -5,25 +5,42 @@ using System;
 
 public class MapGenerator : MonoBehaviour
 {
-    public Room roomPrefab;
+    //public Area areaPrefab;
 
     public GridMono gridPrefab;
 
     public List<GridMono> GridList;
+
+    public List<Area> areaList;
 
     private void Awake()
     {
 
     }
 
-    public void LoadMap(int gridNum, Action callback)
+    public void LoadMap(Action callback)
     {
-        StartCoroutine(OnLoadMap(gridNum, callback));
+        StartCoroutine(OnLoadMap(callback));
     }
 
-    private IEnumerator OnLoadMap(int gridNum, Action callback)
+    private IEnumerator OnLoadMap(Action callback)
     {
         var gridDatas = MapAreaMgr.Instance.AllGrids;
+
+        //for (var i = 0; i < Config.MapAreaNum; i++)
+        //{
+        //    var area = Instantiate(areaPrefab);
+
+        //    area.name = string.Format("Area_{0}", i);
+
+        //    area.transform.SetParent(transform, false);
+
+        //    area.Init(i);
+
+        //    areaList.Add(area);
+        //}
+
+        var gridNum = Config.MapAreaWidth * Config.MapAreaHeight / Config.MapAreaNum * Config.MapAreaNum;
 
         for (var i = 0; i < Config.MapAreaWidth * Config.MapAreaHeight; i++)
         {

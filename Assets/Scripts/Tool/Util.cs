@@ -10,8 +10,12 @@ public static class Util
         Coordinate.Left,
         Coordinate.Up,
         Coordinate.Right,
+        Coordinate.LeftDown,
+        Coordinate.LeftUp,
+        Coordinate.RightUp,
+        Coordinate.RightDown,
     };
-    
+
     public static Vector2 CoordinateToVector2(this Coordinate coord)
     {
         return new Vector2(coord.X * Config.GridSize, coord.Y * Config.GridSize);
@@ -30,5 +34,10 @@ public static class Util
     public static Coordinate GetNeightbour(this Coordinate coord, int dir)
     {
         return coord + DirArray[dir];
+    }
+
+    public static float Distance(this Coordinate coord, Coordinate end)
+    {
+        return Mathf.Sqrt(Mathf.Pow(coord.Y - end.Y, 2) + Mathf.Pow(coord.X - end.X, 2));
     }
 }
