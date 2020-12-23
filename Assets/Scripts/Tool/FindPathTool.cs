@@ -91,27 +91,13 @@ public class FindPathTool
                 }
             }
 
-            var minF = int.MaxValue;
+            openList.Sort(ExcuteSort);
 
-            GridNode nextNode = null;
-
-            for (var i = 0; i < openList.Count; ++i)
+            if(openList.Count > 0)
             {
-                if (openList[i].F < minF)
-                {
-                    minF = openList[i].F;
+                curNode = openList[0];
 
-                    nextNode = openList[i];
-
-                    break;
-                }
-            }
-
-            if (nextNode != null)
-            {
-                curNode = nextNode;
-
-                openList.Remove(curNode);
+                openList.RemoveAt(0);
 
                 closeSet.Add(curNode.Coordinate);
             }
@@ -127,5 +113,10 @@ public class FindPathTool
         path.Reverse();
 
         return path;
+    }
+
+    private static int ExcuteSort(GridNode n1, GridNode n2)
+    {
+        return n1.F.CompareTo(n2.F);
     }
 }

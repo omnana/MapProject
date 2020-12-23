@@ -50,7 +50,6 @@ public class SortUtil
     /// <param name="arr"></param>
     public static void InserSort(int[] arr)
     {
-
     }
 
     /// <summary>

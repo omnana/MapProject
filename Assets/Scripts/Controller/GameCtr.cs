@@ -27,17 +27,17 @@ public class GameCtr : MonoBehaviour
         var arr = new int[] { 2, 7, 5, 9, 3, 1 };
 
         //SortUtil.SelectSort(arr);
-        SortUtil.QuickSort(arr, 0, arr.Length - 1);
+        //SortUtil.QuickSort(arr, 0, arr.Length - 1);
 
     }
 
     void Start()
     {
-        //MapAreaMgr.Instance.LoadData();
+        MapAreaMgr.Instance.LoadData();
 
-        //gridNum = GetGridMaxNum();
+        gridNum = GetGridMaxNum();
 
-        //MapGenerator.LoadMap(LoadMapEnd);
+        MapGenerator.LoadMap(LoadMapEnd);
     }
 
     private void LoadMapEnd()
