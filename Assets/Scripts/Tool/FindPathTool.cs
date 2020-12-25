@@ -28,6 +28,8 @@ public class GridNode
 
 public class FindPathTool
 {
+    private static MinHeap minHeap = new MinHeap();
+
     /// <summary>
     /// 寻路
     /// </summary>
@@ -39,9 +41,9 @@ public class FindPathTool
     {
         var path = new List<Coordinate>();
 
-        var openList = new List<GridNode>();
-
         var openSet = new HashSet<Coordinate>();
+
+        minHeap.Clear();
 
         var closeSet = new HashSet<Coordinate>();
 
@@ -69,7 +71,7 @@ public class FindPathTool
 
                 if (grid != null && !grid.IsWall && !closeSet.Contains(nCoord))
                 {
-                    var g = curNode.G + 10;
+                    var g = curNode.G + (i < 4 ? 10 : 14);
 
                     var h = (int)(nCoord.Distance(end) * 10);
 
@@ -84,23 +86,16 @@ public class FindPathTool
                             Parent = curNode,
                         };
 
-                        openList.Add(node);
-
                         openSet.Add(nCoord);
+
+                        minHeap.Add(node);
                     }
                 }
             }
 
-            openList.Sort(ExcuteSort);
+            curNode = minHeap.GetMin();
 
-            if(openList.Count > 0)
-            {
-                curNode = openList[0];
-
-                openList.RemoveAt(0);
-
-                closeSet.Add(curNode.Coordinate);
-            }
+            closeSet.Add(curNode.Coordinate);
         }
 
         while (curNode != null)
@@ -115,8 +110,101 @@ public class FindPathTool
         return path;
     }
 
-    private static int ExcuteSort(GridNode n1, GridNode n2)
+    //private static int ExcuteSort(GridNode n1, GridNode n2)
+    //{
+    //    return n1.F.CompareTo(n2.F);
+    //}
+
+
+    /// <summary>
+    /// 小顶堆
+    /// </summary>
+    public class MinHeap
     {
-        return n1.F.CompareTo(n2.F);
+        private GridNode[] array;
+
+        int count = 0;
+
+        private HashSet<GridNode> haseSet;
+
+        public MinHeap()
+        {
+            array = new GridNode[1000];
+
+            haseSet = new HashSet<GridNode>();
+        }
+
+        public void Add(GridNode a)
+        {
+            array[count] = a;
+
+            haseSet.Add(a);
+
+            count++;
+        }
+
+        public void MaxHeapify(GridNode[] arr, int start, int end)
+        {
+            var dad = start;
+
+            var son = 2 * dad + 1;
+
+            while (son <= end)
+            {
+                if (son + 1 <= end && arr[son].F > arr[son + 1].F) son++;
+
+                if (arr[dad].F <= arr[son].F) return;
+
+                Swap(arr, dad, son);
+            }
+        }
+
+
+        public GridNode GetMin()
+        {
+            for (var i = count / 2 - 1; i >= 0; i--)
+            {
+                MaxHeapify(array, i, count - 1);
+            }
+
+            Swap(array, 0, count - 1);
+
+            var m = array[count - 1];
+
+            array[count - 1] = null;
+
+            count--;
+
+            haseSet.Remove(m);
+
+            return m;
+        }
+
+        public bool Contains(GridNode n)
+        {
+            return haseSet.Contains(n);
+        }
+
+        public void Clear()
+        {
+            haseSet.Clear();
+
+            for (var i = 0; i < count; i++)
+            {
+                array[i] = null;
+            }
+
+            count = 0;
+        }
+
+        private void Swap(GridNode[] arr, int i, int j)
+        {
+            var temp = arr[i];
+
+            arr[i] = arr[j];
+
+            arr[j] = temp;
+        }
     }
+
 }

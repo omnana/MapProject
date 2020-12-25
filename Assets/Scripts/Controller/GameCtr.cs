@@ -24,10 +24,10 @@ public class GameCtr : MonoBehaviour
 
         PlayerCtr.Init();
 
-        var arr = new int[] { 2, 7, 5, 9, 3, 1 };
-
+        //var arr = new int[] { 2, 7, 5, 9, 3, 1 };
         //SortUtil.SelectSort(arr);
         //SortUtil.QuickSort(arr, 0, arr.Length - 1);
+        //SortUtil.HeapSort(arr);
 
     }
 

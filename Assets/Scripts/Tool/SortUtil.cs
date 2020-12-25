@@ -90,6 +90,48 @@ public class SortUtil
         return left;
     }
 
+
+    /// <summary>
+    /// 最小堆调整
+    /// </summary>
+    /// <param name="arr"></param>
+    /// <param name="i"></param>
+    /// <param name="length"></param>
+    public static void MaxHeapify(int[] arr, int start, int end)
+    {
+        var dad = start;
+
+        var son = 2 * dad + 1;
+
+        while (son <= end)
+        {
+            if (son + 1 <= end && arr[son] > arr[son + 1]) son++;
+
+            if (arr[dad] <= arr[son]) return;
+
+            Swap(arr, dad, son);
+        }
+    }
+
+    /// <summary>
+    /// 堆排序
+    /// </summary>
+    /// <param name="arr"></param>
+    public static void HeapSort(int[] arr)
+    {
+        for (var i = arr.Length / 2 - 1; i >= 0; i--)
+        {
+            MaxHeapify(arr, i, arr.Length - 1);
+        }
+
+        for (var i = arr.Length - 1; i >= 0; i--)
+        {
+            Swap(arr, 0, i);
+
+            MaxHeapify(arr, 0, i - 1);
+        }
+    }
+
     private static void Swap(int[] arr, int i, int j)
     {
         var temp = arr[i];
