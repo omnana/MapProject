@@ -7,7 +7,7 @@ public class MinHeap1
 {
     private int[] array;
 
-    private int count = 1;
+    private int count = 0;
 
 
     public MinHeap1()
@@ -17,8 +17,7 @@ public class MinHeap1
 
     public void Add(int a)
     {
-        array[count] = a;
-        count++;
+        array[count++ + 1] = a;
     }
 
     public void MaxHeapify(int[] arr, int start, int end)
@@ -34,6 +33,8 @@ public class MinHeap1
             if (arr[dad] >= arr[son]) return;
 
             Swap(arr, dad, son);
+
+            son *= 2;
         }
     }
 
@@ -42,10 +43,45 @@ public class MinHeap1
     /// </summary>
     public void MaxHeapInit()
     {
-        for(var i = count / 2; i > 0; i--)
+        //for (int i = count / 2; i >= 1; i--)
+        //{
+        //    var dad = i;
+
+        //    var son = 2 * dad;
+
+        //    while (son <= count)
+        //    {
+        //        if (son + 1 <= count && array[son] < array[son + 1]) son++;
+
+        //        if (array[dad] >= array[son]) break;
+
+        //        Swap(array, dad, son);
+
+        //        son *= 2;
+        //    }
+        //}
+        for (int i = count / 2; i >= 1; i--)
         {
-            MaxHeapify(array, i, count);
+            // dad
+            array[0] = array[i];
+
+            int son = i * 2;
+
+            while (son <= count)
+            {
+                if (son < count && array[son] < array[son + 1]) son++;
+
+                if (array[0] >= array[son]) break;
+
+                //array[son / 2] = array[son];
+                Swap(array, son / 2, son);
+
+                son *= 2;
+            }
+
+            //array[son / 2] = array[0];
         }
+
     }
 
     /// <summary>
