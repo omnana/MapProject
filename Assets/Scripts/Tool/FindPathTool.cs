@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridNode
+public class @int
 {
     public Coordinate Coordinate;
 
-    public GridNode Parent;
+    public @int Parent;
 
     public int G;
 
@@ -20,7 +20,7 @@ public class GridNode
         }
     }
 
-    public GridNode(Coordinate coord)
+    public @int(Coordinate coord)
     {
         Coordinate = coord;
     }
@@ -47,7 +47,7 @@ public class FindPathTool
 
         var closeSet = new HashSet<Coordinate>();
 
-        var curNode = new GridNode(start);
+        var curNode = new @int(start);
 
         closeSet.Add(curNode.Coordinate);
 
@@ -77,7 +77,7 @@ public class FindPathTool
 
                     if (!openSet.Contains(nCoord))
                     {
-                        var node = new GridNode(nCoord)
+                        var node = new @int(nCoord)
                         {
                             G = g,
 
@@ -121,20 +121,20 @@ public class FindPathTool
     /// </summary>
     public class MinHeap
     {
-        private GridNode[] array;
+        private @int[] array;
 
         int count = 0;
 
-        private HashSet<GridNode> haseSet;
+        private HashSet<@int> haseSet;
 
         public MinHeap()
         {
-            array = new GridNode[1000];
+            array = new @int[1000];
 
-            haseSet = new HashSet<GridNode>();
+            haseSet = new HashSet<@int>();
         }
 
-        public void Add(GridNode a)
+        public void Add(@int a)
         {
             array[count] = a;
 
@@ -143,7 +143,7 @@ public class FindPathTool
             count++;
         }
 
-        public void MaxHeapify(GridNode[] arr, int start, int end)
+        public void MaxHeapify(@int[] arr, int start, int end)
         {
             var dad = start;
 
@@ -160,7 +160,7 @@ public class FindPathTool
         }
 
 
-        public GridNode GetMin()
+        public @int GetMin()
         {
             for (var i = count / 2 - 1; i >= 0; i--)
             {
@@ -180,7 +180,7 @@ public class FindPathTool
             return m;
         }
 
-        public bool Contains(GridNode n)
+        public bool Contains(@int n)
         {
             return haseSet.Contains(n);
         }
@@ -197,7 +197,7 @@ public class FindPathTool
             count = 0;
         }
 
-        private void Swap(GridNode[] arr, int i, int j)
+        private void Swap(@int[] arr, int i, int j)
         {
             var temp = arr[i];
 

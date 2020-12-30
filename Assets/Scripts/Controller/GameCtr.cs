@@ -24,20 +24,29 @@ public class GameCtr : MonoBehaviour
 
         PlayerCtr.Init();
 
-        //var arr = new int[] { 2, 7, 5, 9, 3, 1 };
+        var arr = new int[] { 2, 7, 5, 9, 3, 1 };
         //SortUtil.SelectSort(arr);
         //SortUtil.QuickSort(arr, 0, arr.Length - 1);
         //SortUtil.HeapSort(arr);
 
+        var maxHeap = new MinHeap1();
+
+        foreach (var a in arr) maxHeap.Add(a);
+
+        maxHeap.MaxHeapInit();
+
+        maxHeap.Insert(100);
+
+        //maxHeap.DeleteTop();
     }
 
     void Start()
     {
-        MapAreaMgr.Instance.LoadData();
+        //MapAreaMgr.Instance.LoadData();
 
-        gridNum = GetGridMaxNum();
+        //gridNum = GetGridMaxNum();
 
-        MapGenerator.LoadMap(LoadMapEnd);
+        //MapGenerator.LoadMap(LoadMapEnd);
     }
 
     private void LoadMapEnd()

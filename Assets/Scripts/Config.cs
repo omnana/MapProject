@@ -33,7 +33,7 @@
     /// <summary>
     /// 地图宽度
     /// </summary>
-    public static int MapAreaWidth = 200;
+    public static int MapAreaWidth = 300;
 
     /// <summary>
     /// 地图高度
