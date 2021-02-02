@@ -29,16 +29,88 @@ public class GameCtr : MonoBehaviour
         //SortUtil.QuickSort(arr, 0, arr.Length - 1);
         //SortUtil.HeapSort(arr);
 
-        var maxHeap = new MinHeap1();
+        //var maxHeap = new MinHeap1();
 
-        foreach (var a in arr) maxHeap.Add(a);
+        //foreach (var a in arr) maxHeap.Add(a);
 
-        maxHeap.MaxHeapInit();
+        //maxHeap.MaxHeapInit();
 
-        maxHeap.Insert(100);
+        //maxHeap.Insert(100);
 
         //maxHeap.DeleteTop();
+
+        var arr1 = new string[] { "a", "bc" };
+        var arr2 = new string[] { "ab", "c" };
+
+        var a = ArrayStringsAreEqual(arr1, arr2);
+
+        Debug.Log(Hash("asdasd"));
+        Debug.Log(Hash("asdasds"));
+        Debug.Log(Hash("asdasdss"));
+        Debug.Log(Hash("asdasdsss"));
     }
+    private int Hash(object key)
+    {
+        int h = key.GetHashCode();
+
+        //return (h ^ (h >> 16)) & (10 - 1); //capicity 表示散列表的大小
+        return h & 0x7FFFFFFF;
+    }
+
+    public bool ArrayStringsAreEqual(string[] word1, string[] word2)
+    {
+        var w1 = 0; var w2 = 0; var i = 0; var j = 0;
+
+        while(w1 < word1.Length && w2 < word2.Length)
+        {
+            if (word1[w1][i] != word2[w2][j]) return false;
+
+            if (++i == word1[w1].Length)
+            {
+                w1++;
+
+                i = 0;
+            }
+
+            if (++j == word2[w2].Length)
+            {
+                w2++;
+
+                j = 0;
+            }
+        }
+
+        return w1 == word1.Length && w2 == word2.Length;
+    }
+
+    public bool HalvesAreAlike(string s)
+    {
+        var i = 0;
+
+        var num1 = 0;
+
+        var num2 = 0;
+
+        var half = s.Length / 2;
+
+        while (i < half)
+        {
+            if (IsVowel(s[i])) num1++;
+
+            if (IsVowel(s[half + i])) num2++;
+
+            i++;
+        }
+
+        return num1 == num2;
+    }
+
+    private bool IsVowel(char a)
+    {
+        return a == 'a' || a == 'e' || a == 'i' || a == 'o' || a == 'u' ||
+            a == 'A' || a == 'E' || a == 'I' || a == 'O' || a == 'U';
+    }
+
 
     void Start()
     {
