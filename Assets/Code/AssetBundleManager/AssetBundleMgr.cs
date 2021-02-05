@@ -19,13 +19,7 @@ namespace AssetBundles
     /// </summary>
     public class AssetBundleMgr : BaseCtrl
     {
-        private Dictionary<string, AssetBundleObject> readyDic; // 准备加载
-
-        private Dictionary<string, AssetBundleObject> loadingDic; // 正在加载
-
-        private Dictionary<string, AssetBundleObject> loadedDic; // 加载成功
-
-        private Dictionary<string, AssetBundleObject> unLoadDic; // 准备卸载
+        private Dictionary<AbObjStatus, Dictionary<string, AssetBundleObject>> queueDic;
 
         private Dictionary<string, string[]> dependsDataDic;
 
@@ -35,13 +29,13 @@ namespace AssetBundles
 
         public AssetBundleMgr()
         {
-            readyDic = new Dictionary<string, AssetBundleObject>();
-
-            loadingDic = new Dictionary<string, AssetBundleObject>();
-
-            loadedDic = new Dictionary<string, AssetBundleObject>();
-
-            unLoadDic = new Dictionary<string, AssetBundleObject>();
+            queueDic = new Dictionary<AbObjStatus, Dictionary<string, AssetBundleObject>>()
+            {
+                { AbObjStatus.Ready, new Dictionary<string, AssetBundleObject>()}, // 准备加载
+                { AbObjStatus.Loading, new Dictionary<string, AssetBundleObject>()}, // 正在加载
+                { AbObjStatus.Loaded, new Dictionary<string, AssetBundleObject>()}, // 加载成功
+                { AbObjStatus.Unload, new Dictionary<string, AssetBundleObject>()}, // 准备卸载
+            };
 
             dependsDataDic = new Dictionary<string, string[]>();
 
@@ -55,7 +49,28 @@ namespace AssetBundles
         /// <returns></returns>
         public bool ContainsAbObj(string abName)
         {
-            return readyDic.ContainsKey(abName) || loadedDic.ContainsKey(abName) || loadingDic.ContainsKey(abName);
+            return GetQueue(AbObjStatus.Loaded).ContainsKey(abName) 
+                || GetQueue(AbObjStatus.Loading).ContainsKey(abName) 
+                || GetQueue(AbObjStatus.Ready).ContainsKey(abName);
+        }
+
+        /// <summary>
+        /// 同步加载
+        /// </summary>
+        /// <param name="abName"></param>
+        /// <returns></returns>
+        public AssetBundleObject LoadSync(string abName)
+        {
+            return LoadAssetBundleSync(abName);
+        }
+
+        /// <summary>
+        /// 异步加载
+        /// </summary>
+        /// <param name="abName"></param>
+        public void LoadAsync(string abName, AssetBundleLoadCallBack callFun)
+        {
+            LoadAssetBundleAsync(abName, callFun);
         }
 
         /// <summary>
@@ -123,40 +138,18 @@ namespace AssetBundles
 
             var status = GetAbObjStatus(abName);
 
-            if(status == AbObjStatus.None) //  未加载
+            if (status == AbObjStatus.None) //  未加载
             {
-                abObj = new AssetBundleObject()
-                {
-                    RefCount = 1,
-                    HashName = abName,
-                    DependLoadingCount = 0,
-                };
+                abObj = CreateAbObj(abName, false);
 
                 DoLoad(abObj, false);
-
-                if (dependsDataDic.ContainsKey(abName))
-                {
-                    var dps = dependsDataDic[abName];
-
-                    if (dps != null)
-                    {
-                        foreach (var d in dps)
-                        {
-                            var curAb = LoadAssetBundleSync(d);
-
-                            abObj.Depends.Add(curAb);
-                        }
-                    }
-                }
-
-                loadedDic.Add(abName, abObj);
 
                 return abObj;
             }
 
             abObj = GetAbObjFromCache(abName);
 
-            if(abObj == null)
+            if (abObj == null)
             {
                 Debug.Log("AbObj no found!!! -> " + abName);
 
@@ -170,20 +163,16 @@ namespace AssetBundles
                 LoadAssetBundleSync(o.HashName);
             }
 
-            if(status == AbObjStatus.Loaded) return abObj; // 已加载
+            if (status == AbObjStatus.Loaded) return abObj; // 已加载
 
-            if (status == AbObjStatus.Loading) // 正在加载，异步改同步
-            {
-                loadingDic.Remove(abName);
-            }
-            else if (status == AbObjStatus.Ready) // 准备加载，直接同步加载
+            if (status == AbObjStatus.Ready) // 准备加载，直接同步加载
             {
                 DoLoad(abObj, false);
-
-                readyDic.Remove(abName);
             }
 
-            loadedDic.Add(abName, abObj);
+            // （1）正在加载，异步改同步；
+            // （2）准备加载，直接同步加载
+            PutAbObjInQueue(AbObjStatus.Loaded, abObj);
 
             DoLoadedCallFun(abObj, false);
 
@@ -204,54 +193,18 @@ namespace AssetBundles
             //  未加载过
             if (status == AbObjStatus.None)
             {
-                abObj = new AssetBundleObject()
-                {
-                    RefCount = 1,
-                    HashName = abName,
-                    DependLoadingCount = 0,
-                };
+                abObj = CreateAbObj(abName);
 
                 abObj.CallFunList.Add(callFun);
 
-                if (dependsDataDic.ContainsKey(abName))
-                {
-                    var dps = dependsDataDic[abName];
-
-                    if (dps != null && dps.Length > 0)
-                    {
-                        abObj.DependLoadingCount = dps.Length;
-
-                        foreach (var d in dps)
-                        {
-                            var dpObj = LoadAssetBundleAsync(d, (ab) =>
-                             {
-                                 if (abObj.DependLoadingCount <= 0) return;
-
-                                 abObj.Main = ab;
-
-                                 abObj.DependLoadingCount--;
-
-                                 if (abObj.DependLoadingCount == 0 && abObj.Request != null && abObj.Request.isDone)
-                                 {
-                                     DoLoadedCallFun(abObj);
-                                 }
-                             });
-
-                            abObj.Depends.Add(dpObj);
-                        }
-                    }
-                }
-
-                // 当前加载数量小于阈值，直接加载，反之，移入待加载队列
-                if (loadingDic.Count < Max_Loading_Count)
+                // 当前加载数量小于阈值，执行加载
+                if (GetQueue(AbObjStatus.Loading).Count < Max_Loading_Count)
                 {
                     DoLoad(abObj);
-
-                    loadingDic.Add(abObj.HashName, abObj);
                 }
                 else
                 {
-                    readyDic.Add(abObj.HashName, abObj);
+                    PutAbObjInQueue(AbObjStatus.Ready, abObj);
                 }
 
                 return abObj;
@@ -268,13 +221,68 @@ namespace AssetBundles
 
             DoDependsRef(abObj);
 
-            if (status == AbObjStatus.Loaded)
+            if (status == AbObjStatus.Loaded) // 已加载
             {
                 callFun?.Invoke(abObj.Main);
             }
             else
             {
                 abObj.CallFunList.Add(callFun);
+            }
+
+            return abObj;
+        }
+
+        /// <summary>
+        /// 创建新的异步资源包
+        /// </summary>
+        /// <param name="abName"></param>
+        /// <returns></returns>
+        private AssetBundleObject CreateAbObj(string abName, bool isAsync = true)
+        {
+            var abObj = new AssetBundleObject()
+            {
+                RefCount = 1,
+                HashName = abName,
+                DependLoadingCount = 0,
+            };
+
+            if (dependsDataDic.ContainsKey(abName))
+            {
+                var dps = dependsDataDic[abName];
+
+                if (dps != null && dps.Length > 0)
+                {
+                    if (isAsync) abObj.DependLoadingCount = dps.Length;
+
+                    AssetBundleObject dpObj = null;
+
+                    foreach (var d in dps)
+                    {
+                        if (!isAsync) // 同步
+                        {
+                            dpObj = LoadAssetBundleSync(d);
+                        }
+                        else
+                        {
+                            dpObj = LoadAssetBundleAsync(d, (ab) =>
+                            {
+                                if (abObj.DependLoadingCount <= 0) return;
+
+                                abObj.DependLoadingCount--;
+                            });
+                        }
+
+                        if (dpObj == null)
+                        {
+                            Debug.Log("curAbObj is null!!!");
+                        }
+                        else
+                        {
+                            abObj.Depends.Add(dpObj);
+                        }
+                    }
+                }
             }
 
             return abObj;
@@ -331,7 +339,7 @@ namespace AssetBundles
 
             if (abObj.RefCount == 0)
             {
-                unLoadDic.Add(abObj.HashName, abObj);
+                PutAbObjInQueue(AbObjStatus.Unload, abObj);
             }
         }
 
@@ -347,6 +355,8 @@ namespace AssetBundles
             if (isAsync)
             {
                 abObj.Request = AssetBundle.LoadFromFileAsync(dir);
+
+                PutAbObjInQueue(AbObjStatus.Loading, abObj); // 异步加入加载队列，同不用加入
             }
             else
             {
@@ -393,26 +403,16 @@ namespace AssetBundles
 
                 abObj.Request = null;
 
-                loadingDic.Remove(abObj.HashName);
-
-                loadedDic.Add(abObj.HashName, abObj);
+                PutAbObjInQueue(AbObjStatus.Loaded, abObj);
             }
 
             if (abObj.Main == null) // 如果还没加载到ab包, 网上下载，先同步下载
             {
-                var path = Utility.GetAssetBundlePath(abObj.HashName);
             }
 
             if (abObj.Main == null) // 未同步下载到，直接移除
             {
-                if (loadedDic.ContainsKey(abObj.HashName))
-                {
-                    loadedDic.Remove(abObj.HashName);
-                }
-                else if (loadingDic.ContainsKey(abObj.HashName))
-                {
-                    loadingDic.Remove(abObj.HashName);
-                }
+                PutAbObjInQueue(AbObjStatus.None, abObj);
             }
 
             if(abObj.Main == null && isAsync) // 异步下载
@@ -424,7 +424,7 @@ namespace AssetBundles
             {
                 callback?.Invoke(abObj.Main);
             }
-
+            Debug.Log(abObj.HashName);
             abObj.CallFunList.Clear();
         }
 
@@ -435,16 +435,16 @@ namespace AssetBundles
         /// <returns></returns>
         private AbObjStatus GetAbObjStatus(string abName)
         {
-            if (loadedDic.ContainsKey(abName)) // 已加载
+            if (queueDic[AbObjStatus.Loaded].ContainsKey(abName)) // 已加载
                 return AbObjStatus.Loaded;
 
-            if (loadingDic.ContainsKey(abName)) // 正在加载，异步改同步
+            if (queueDic[AbObjStatus.Loading].ContainsKey(abName)) // 正在加载，异步改同步
                 return AbObjStatus.Loading;
 
-            if (readyDic.ContainsKey(abName)) // 准备加载，直接同步加载
+            if (queueDic[AbObjStatus.Ready].ContainsKey(abName)) // 准备加载，直接同步加载
                 return AbObjStatus.Ready;
 
-            if (unLoadDic.ContainsKey(abName)) // 待卸载
+            if (queueDic[AbObjStatus.Unload].ContainsKey(abName)) // 待卸载
                 return AbObjStatus.Unload;
 
             return AbObjStatus.None;
@@ -457,19 +457,48 @@ namespace AssetBundles
         /// <returns></returns>
         private AssetBundleObject GetAbObjFromCache(string abName)
         {
-            if (loadedDic.ContainsKey(abName))
-                return loadedDic[abName];
+            if (queueDic[AbObjStatus.Ready].ContainsKey(abName))
+                return queueDic[AbObjStatus.Ready][abName];
 
-            if (loadingDic.ContainsKey(abName))
-                return loadingDic[abName];
+            if (queueDic[AbObjStatus.Loading].ContainsKey(abName))
+                return queueDic[AbObjStatus.Loading][abName];
 
-            if (readyDic.ContainsKey(abName))
-                return readyDic[abName];
+            if (queueDic[AbObjStatus.Loaded].ContainsKey(abName))
+                return queueDic[AbObjStatus.Loaded][abName];
 
-            if (unLoadDic.ContainsKey(abName))
-                return unLoadDic[abName];
+            if (queueDic[AbObjStatus.Unload].ContainsKey(abName))
+                return queueDic[AbObjStatus.Unload][abName];
 
             return null;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        private Dictionary<string, AssetBundleObject> GetQueue(AbObjStatus status)
+        {
+            if (status == AbObjStatus.None) return null;
+
+            return queueDic[status];
+        }
+
+        /// <summary>
+        /// 将资源包加入某个队列
+        /// </summary>
+        /// <param name="status"></param>
+        /// <param name="obj"></param>
+        private void PutAbObjInQueue(AbObjStatus status, AssetBundleObject obj)
+        {
+            var hashName = obj.HashName;
+
+            var curStatus = GetAbObjStatus(hashName);
+
+            // 清除上一个状态
+            GetQueue(curStatus).Remove(hashName);
+
+            if (curStatus != AbObjStatus.None) GetQueue(status).Add(obj.HashName, obj);
         }
 
         /// <summary>
@@ -477,11 +506,13 @@ namespace AssetBundles
         /// </summary>
         public void UpdateLoading()
         {
-            if (loadingDic.Count == 0) return;
+            var queue = GetQueue(AbObjStatus.Loading);
+
+            if (queue.Count == 0) return;
 
             tempList.Clear();
 
-            foreach (var abObj in loadingDic.Values)
+            foreach (var abObj in queue.Values)
             {
                 if (abObj.DependLoadingCount == 0 && abObj.Request != null && abObj.Request.isDone)
                 {
@@ -500,24 +531,24 @@ namespace AssetBundles
         /// </summary>
         public void UpdateReady()
         {
-            if (readyDic.Count == 0 || readyDic.Count > Max_Loading_Count) return;
+            var queue = GetQueue(AbObjStatus.Ready);
+
+            if (queue.Count == 0 || queue.Count > Max_Loading_Count) return;
 
             tempList.Clear();
 
-            foreach (var abObj in readyDic.Values)
+            foreach (var abObj in queue.Values)
             {
                 DoLoad(abObj);
 
                 tempList.Add(abObj);
 
-                loadingDic.Add(abObj.HashName, abObj);
-
-                if (loadingDic.Count > Max_Loading_Count) break;
+                if (GetQueue(AbObjStatus.Loading).Count > Max_Loading_Count) break;
             }
 
             for (var i = 0; i < tempList.Count; i++)
             {
-                readyDic.Remove(tempList[i].HashName);
+                GetQueue(AbObjStatus.Ready).Remove(tempList[i].HashName);
             }
         }
         
@@ -526,17 +557,19 @@ namespace AssetBundles
         /// </summary>
         public void UpdateUnLoad()
         {
-            if (unLoadDic.Count == 0) return;
+            var queue = GetQueue(AbObjStatus.Unload);
+
+            if (queue.Count == 0) return;
 
             tempList.Clear();
 
-            foreach (var abObj in unLoadDic.Values)
+            foreach (var abObj in queue.Values)
             {
                 if(abObj.RefCount == 0 && abObj.Main != null)
                 {
                     DoUnLoad(abObj);
 
-                    loadedDic.Remove(abObj.HashName);
+                    //loadedDic.Remove(abObj.HashName);
 
                     tempList.Add(abObj);
                 }
@@ -544,7 +577,7 @@ namespace AssetBundles
 
             for (var i = 0; i < tempList.Count; i++)
             {
-                unLoadDic.Remove(tempList[i].HashName);
+                //unLoadDic.Remove(tempList[i].HashName);
             }
         }
 

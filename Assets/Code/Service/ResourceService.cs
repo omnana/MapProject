@@ -78,7 +78,7 @@ public class ResourceService : BaseCtrl
     {
         var abName = ResourceTypeToNameDic[type];
 
-        var abObj = assetBundleMgr.LoadAssetBundleSync(abName);
+        var abObj = assetBundleMgr.LoadSync(abName);
 
         if (abObj.Main != null)
         {
@@ -99,7 +99,7 @@ public class ResourceService : BaseCtrl
     {
         var abName = ResourceTypeToNameDic[type];
 
-        var abObj = assetBundleMgr.LoadAssetBundleAsync(abName, (ab)=> 
+        assetBundleMgr.LoadAsync(abName, (ab)=> 
         {
             var asset = ab.LoadAsset(assetName);
 

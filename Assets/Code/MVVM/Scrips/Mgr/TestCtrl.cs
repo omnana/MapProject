@@ -11,6 +11,6 @@ public class TestCtrl : BaseCtrl
 
     public string GetData()
     {
-        return "TestCtrLData";
+        return "robot";
     }
 }
