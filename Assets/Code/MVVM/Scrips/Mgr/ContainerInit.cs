@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using AssetBundles;
 
 public class ContainerInit : MonoBehaviour
 {
@@ -8,6 +9,25 @@ public class ContainerInit : MonoBehaviour
     {
         DontDestroyOnLoad(this);
 
+        InitServices();
+
+        InitCtrl();
+
+        InitMgr();
+    }
+
+    private void InitCtrl()
+    {
         ServiceLocator.RegisterSingleton<TestCtrl>();
+    }
+
+    private void InitServices()
+    {
+        ServiceLocator.RegisterSingleton<ResourceService>();
+    }
+
+    private void InitMgr()
+    {
+        ServiceLocator.RegisterSingleton<AssetBundleMgr>();
     }
 }

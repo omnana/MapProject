@@ -1,0 +1,41 @@
+ManifestFileVersion: 0
+CRC: 3979436987
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 3bab7346448477d025240c37398a50d3
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: f62ae0f2576e926e4562171f90ddf295
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 6feeceb7f0dc8964ba3cb56f9d6272e2, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 135
+  Script: {instanceID: 0}
+Assets:
+- Assets/Art/Models/Cube.prefab
+- Assets/Art/Models/Head.prefab
+- Assets/Art/Models/Hand_Right.prefab
+- Assets/Art/Models/Body.prefab
+- Assets/Art/Models/Robot.prefab
+- Assets/Art/Models/Sphere.prefab
+- Assets/Art/Models/Hand_Left.prefab
+Dependencies:
+- E:/Project/MapProject/Assets/StreamingAssets/Windows/material

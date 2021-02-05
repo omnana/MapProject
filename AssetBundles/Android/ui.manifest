@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 2536676330
+CRC: 3075766409
 Hashes:
   AssetFileHash:
     serializedVersion: 2
@@ -44,6 +44,6 @@ ClassTypes:
 - Class: 687078895
   Script: {instanceID: 0}
 Assets:
-- Assets/Art/UIs/TestGui.prefab
+- Assets/Art/UI/TestGui.prefab
 Dependencies:
 - E:/Project/MapProject/AssetBundles/Android/atlas

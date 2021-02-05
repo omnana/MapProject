@@ -1,0 +1,21 @@
+ManifestFileVersion: 0
+CRC: 757360982
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: model
+      Dependencies:
+        Dependency_0: material
+    Info_1:
+      Name: ui
+      Dependencies: {}
+    Info_2:
+      Name: texture
+      Dependencies: {}
+    Info_3:
+      Name: atlas
+      Dependencies: {}
+    Info_4:
+      Name: material
+      Dependencies:
+        Dependency_0: texture

@@ -1,0 +1,22 @@
+ManifestFileVersion: 0
+CRC: 586768682
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 7845580fb45743cf0d8b92a652da8065
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: fe397485c3cec1106b49e9ff95e8f8a2
+HashAppended: 0
+ClassTypes:
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+Assets:
+- Assets/Art/Materials/M1.mat
+- Assets/Art/Materials/M2.mat
+Dependencies:
+- E:/Project/MapProject/Assets/StreamingAssets/Windows/texture

@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 2473440003
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 091f3f56e6fb462498c2801deb2ea09f
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: f19fbf085e00d23fbc8d6cf7b345590b
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+Assets:
+- Assets/Art/Textures/lu_qi_10.png
+Dependencies: []

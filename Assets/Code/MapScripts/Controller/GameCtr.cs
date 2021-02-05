@@ -14,7 +14,7 @@ public class GameCtr : MonoBehaviour
 
     private int gridNum;
 
-    private bool isInit;
+    //private bool isInit;
 
     private void Awake()
     {
@@ -137,7 +137,7 @@ public class GameCtr : MonoBehaviour
 
         CameraFollow.SetFollow(PlayerCtr.Player.gameObject);
 
-        isInit = true;
+        //isInit = true;
     }
 
     private int GetGridMaxNum()
