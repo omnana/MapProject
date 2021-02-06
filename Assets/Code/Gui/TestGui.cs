@@ -22,8 +22,7 @@ public class TestGui : MonoBehaviour
     public Button UnLoadBtn;
     public Button UnLoadBtn1;
 
-    private GameObject obj1;
-    private GameObject obj2;
+    private Queue<GameObject> objQueue = new Queue<GameObject>();
 
     void Awake()
     {
@@ -37,47 +36,37 @@ public class TestGui : MonoBehaviour
         });
 
         TestBtn.onClick.AddListener(OnClick);
-        TestBtn1.onClick.AddListener(OnClick1);
         UnLoadBtn.onClick.AddListener(UnLoad_OnClick);
-        UnLoadBtn1.onClick.AddListener(UnLoad_OnClick1);
     }
 
     private void OnClick()
     {
-       ServiceLocator.Resolve<ResourceService>().LoadModelAsync(TestView.TestInput.text, (obj)=> 
+       //var prefab = ServiceLocator.Resolve<ResourceService>().LoadModelSync(TestView.TestInput.text);
+
+       // if (prefab != null)
+       // {
+       //     var obj1 = Instantiate(prefab);
+
+       //     objQueue.Enqueue(obj1);
+       // }
+        ServiceLocator.Resolve<ResourceService>().LoadModelAsync(TestView.TestInput.text, (obj) =>
        {
            if (obj != null)
            {
-               obj1 = Instantiate(obj);
+               var obj1 = Instantiate(obj);
+
+               objQueue.Enqueue(obj1);
            }
        });
     }
 
-    private void OnClick1()
-    {
-        var modelGo = ServiceLocator.Resolve<ResourceService>().LoadModelSync("Sphere");
-
-        if (modelGo != null)
-        {
-            obj2 = Instantiate(modelGo);
-        }
-    }
-
-
     private void UnLoad_OnClick()
     {
-        if (obj1 is null) return;
+        if (objQueue.Count == 0) return;
 
-        Destroy(obj1);
+        var b = objQueue.Dequeue();
 
-        ServiceLocator.Resolve<ResourceService>().UnLoadAsset(ResourceType.Model);
-    }
-
-    private void UnLoad_OnClick1()
-    {
-        if (obj2 is null) return;
-
-        Destroy(obj2);
+        Destroy(b);
 
         ServiceLocator.Resolve<ResourceService>().UnLoadAsset(ResourceType.Model);
     }

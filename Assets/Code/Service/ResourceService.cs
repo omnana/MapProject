@@ -54,6 +54,8 @@ public class ResourceService : BaseCtrl
     /// <param name="callback"></param>
     public void LoadModelAsync(string assetName, Action<GameObject> callback)
     {
+        if (string.IsNullOrEmpty(assetName)) return;
+
         var abName = ResourceTypeToNameDic[ResourceType.Model];
 
         assetBundleMgr.LoadAssetBundleAsync(abName, (ab)=>

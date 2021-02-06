@@ -25,7 +25,7 @@ namespace AssetBundles
 
         private List<AssetBundleObject> tempList;
 
-        private int Max_Loading_Count = 10;
+        private const int Max_Loading_Count = 10;
 
         public AssetBundleMgr()
         {
@@ -93,7 +93,9 @@ namespace AssetBundles
             if (ab == null)
             {
                 string errormsg = string.Format("LoadMainfest ab NULL error !");
+
                 Debug.LogError(errormsg);
+
                 return;
             }
 
@@ -102,7 +104,9 @@ namespace AssetBundles
             if (mainfest == null)
             {
                 string errormsg = string.Format("LoadMainfest NULL error !");
+
                 Debug.LogError(errormsg);
+
                 return;
             }
 
@@ -144,10 +148,12 @@ namespace AssetBundles
 
                 DoLoad(abObj, false);
 
+                PutAbObjInQueue(AbObjStatus.Loaded, abObj);
+
                 return abObj;
             }
 
-            abObj = GetAbObjFromCache(abName);
+            abObj = GetAbObjFromQueue(abName);
 
             if (abObj == null)
             {
@@ -163,16 +169,18 @@ namespace AssetBundles
                 LoadAssetBundleSync(o.HashName);
             }
 
+            PutAbObjInQueue(AbObjStatus.Loaded, abObj);
+
             if (status == AbObjStatus.Loaded) return abObj; // 已加载
 
-            if (status == AbObjStatus.Ready) // 准备加载，直接同步加载
+            if (status == AbObjStatus.Ready)
             {
                 DoLoad(abObj, false);
             }
-
-            // （1）正在加载，异步改同步；
-            // （2）准备加载，直接同步加载
-            PutAbObjInQueue(AbObjStatus.Loaded, abObj);
+            else if (status == AbObjStatus.Loading) // 强制异步为同步加载
+            {
+                ForceLoadAsyncToSync(abObj);
+            }
 
             DoLoadedCallFun(abObj, false);
 
@@ -197,20 +205,13 @@ namespace AssetBundles
 
                 abObj.CallFunList.Add(callFun);
 
-                // 当前加载数量小于阈值，执行加载
-                if (GetQueue(AbObjStatus.Loading).Count < Max_Loading_Count)
-                {
-                    DoLoad(abObj);
-                }
-                else
-                {
-                    PutAbObjInQueue(AbObjStatus.Ready, abObj);
-                }
+                // 移入准备队列
+                PutAbObjInQueue(AbObjStatus.Ready, abObj);
 
                 return abObj;
             }
 
-            abObj = GetAbObjFromCache(abName);
+            abObj = GetAbObjFromQueue(abName);
 
             if (abObj == null)
             {
@@ -243,7 +244,9 @@ namespace AssetBundles
             var abObj = new AssetBundleObject()
             {
                 RefCount = 1,
+
                 HashName = abName,
+
                 DependLoadingCount = 0,
             };
 
@@ -253,6 +256,7 @@ namespace AssetBundles
 
                 if (dps != null && dps.Length > 0)
                 {
+                    // 异步加载，需要加载完所有依赖项
                     if (isAsync) abObj.DependLoadingCount = dps.Length;
 
                     AssetBundleObject dpObj = null;
@@ -289,7 +293,7 @@ namespace AssetBundles
         }
 
         /// <summary>
-        /// 
+        /// 计算某个资源包的引用计数
         /// </summary>
         /// <param name="abObj"></param>
         private void DoDependsRef(AssetBundleObject abObj)
@@ -310,7 +314,7 @@ namespace AssetBundles
         /// <param name="abName"></param>
         public void UnLoadAssetBundleAsync(string abName)
         {
-            var abObj = GetAbObjFromCache(abName);
+            var abObj = GetAbObjFromQueue(abName);
 
             if(abObj == null)
             {
@@ -344,6 +348,20 @@ namespace AssetBundles
         }
 
         /// <summary>
+        /// 强制异步为同步加载
+        /// </summary>
+        /// <param name="abObj"></param>
+        private void ForceLoadAsyncToSync(AssetBundleObject abObj)
+        {
+            if (abObj.Request != null)
+            {
+                abObj.Main = abObj.Request.assetBundle;
+
+                abObj.Request = null;
+            }
+        }
+
+        /// <summary>
         /// 加载
         /// </summary>
         /// <param name="abObj"></param>
@@ -355,17 +373,10 @@ namespace AssetBundles
             if (isAsync)
             {
                 abObj.Request = AssetBundle.LoadFromFileAsync(dir);
-
-                PutAbObjInQueue(AbObjStatus.Loading, abObj); // 异步加入加载队列，同不用加入
             }
             else
             {
                 abObj.Main = AssetBundle.LoadFromFile(dir);
-
-                if (abObj.Main == null)
-                {
-                    Debug.Log("未加载到ab包!!! -> " + abObj.HashName);
-                }
             }
         }
 
@@ -391,21 +402,12 @@ namespace AssetBundles
         }
 
         /// <summary>
-        /// 加载资源后的回调，（未提供服务器下载资源）
+        /// 加载资源后的回调，（暂未提供服务器下载资源）
         /// </summary>
         /// <param name="abObj"></param>
         /// <param name="isAsync"></param>
         private void DoLoadedCallFun(AssetBundleObject abObj, bool isAsync = true)
         {
-            if (abObj.Request != null) // 异步加载, 直接强制同步加载
-            {
-                abObj.Main = abObj.Request.assetBundle;
-
-                abObj.Request = null;
-
-                PutAbObjInQueue(AbObjStatus.Loaded, abObj);
-            }
-
             if (abObj.Main == null) // 如果还没加载到ab包, 网上下载，先同步下载
             {
             }
@@ -424,7 +426,9 @@ namespace AssetBundles
             {
                 callback?.Invoke(abObj.Main);
             }
+
             Debug.Log(abObj.HashName);
+
             abObj.CallFunList.Clear();
         }
 
@@ -455,19 +459,19 @@ namespace AssetBundles
         /// </summary>
         /// <param name="abName"></param>
         /// <returns></returns>
-        private AssetBundleObject GetAbObjFromCache(string abName)
+        private AssetBundleObject GetAbObjFromQueue(string abName)
         {
-            if (queueDic[AbObjStatus.Ready].ContainsKey(abName))
-                return queueDic[AbObjStatus.Ready][abName];
+            if (GetQueue(AbObjStatus.Ready).ContainsKey(abName))
+                return GetQueue(AbObjStatus.Ready)[abName];
 
             if (queueDic[AbObjStatus.Loading].ContainsKey(abName))
-                return queueDic[AbObjStatus.Loading][abName];
+                return GetQueue(AbObjStatus.Loading)[abName];
 
             if (queueDic[AbObjStatus.Loaded].ContainsKey(abName))
-                return queueDic[AbObjStatus.Loaded][abName];
+                return GetQueue(AbObjStatus.Loaded)[abName];
 
             if (queueDic[AbObjStatus.Unload].ContainsKey(abName))
-                return queueDic[AbObjStatus.Unload][abName];
+                return GetQueue(AbObjStatus.Unload)[abName];
 
             return null;
         }
@@ -479,9 +483,7 @@ namespace AssetBundles
         /// <returns></returns>
         private Dictionary<string, AssetBundleObject> GetQueue(AbObjStatus status)
         {
-            if (status == AbObjStatus.None) return null;
-
-            return queueDic[status];
+            return status == AbObjStatus.None ? null : queueDic[status];
         }
 
         /// <summary>
@@ -496,9 +498,9 @@ namespace AssetBundles
             var curStatus = GetAbObjStatus(hashName);
 
             // 清除上一个状态
-            GetQueue(curStatus).Remove(hashName);
+            if (curStatus != AbObjStatus.None) GetQueue(curStatus).Remove(hashName);
 
-            if (curStatus != AbObjStatus.None) GetQueue(status).Add(obj.HashName, obj);
+            if (status != AbObjStatus.None) GetQueue(status).Add(obj.HashName, obj);
         }
 
         /// <summary>
@@ -516,6 +518,8 @@ namespace AssetBundles
             {
                 if (abObj.DependLoadingCount == 0 && abObj.Request != null && abObj.Request.isDone)
                 {
+                    abObj.Main = abObj.Request.assetBundle;
+
                     tempList.Add(abObj);
                 }
             }
@@ -523,6 +527,8 @@ namespace AssetBundles
             for (var i = 0; i < tempList.Count; i++)
             {
                 DoLoadedCallFun(tempList[i]);
+
+                PutAbObjInQueue(AbObjStatus.Loaded, tempList[i]);
             }
         }
 
@@ -531,24 +537,24 @@ namespace AssetBundles
         /// </summary>
         public void UpdateReady()
         {
-            var queue = GetQueue(AbObjStatus.Ready);
+            var readyQueue = GetQueue(AbObjStatus.Ready);
 
-            if (queue.Count == 0 || queue.Count > Max_Loading_Count) return;
+            var loadingQueue = GetQueue(AbObjStatus.Loading);
 
-            tempList.Clear();
+            if (readyQueue.Count == 0 || loadingQueue.Count > Max_Loading_Count) return;
 
-            foreach (var abObj in queue.Values)
+            foreach (var abObj in readyQueue.Values)
             {
-                DoLoad(abObj);
+                DoLoad(abObj); // 执行异步加载
 
                 tempList.Add(abObj);
 
-                if (GetQueue(AbObjStatus.Loading).Count > Max_Loading_Count) break;
+                if (loadingQueue.Count > Max_Loading_Count) break;
             }
 
             for (var i = 0; i < tempList.Count; i++)
             {
-                GetQueue(AbObjStatus.Ready).Remove(tempList[i].HashName);
+                PutAbObjInQueue(AbObjStatus.Loading, tempList[i]);
             }
         }
         
@@ -569,15 +575,13 @@ namespace AssetBundles
                 {
                     DoUnLoad(abObj);
 
-                    //loadedDic.Remove(abObj.HashName);
-
                     tempList.Add(abObj);
                 }
             }
 
             for (var i = 0; i < tempList.Count; i++)
             {
-                //unLoadDic.Remove(tempList[i].HashName);
+                PutAbObjInQueue(AbObjStatus.None, tempList[i]);
             }
         }
 

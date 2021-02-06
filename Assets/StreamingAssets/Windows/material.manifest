@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 586768682
+CRC: 914987629
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 7845580fb45743cf0d8b92a652da8065
+    Hash: 6af8dc25931317bf5cbd654554474b6c
   TypeTreeHash:
     serializedVersion: 2
-    Hash: fe397485c3cec1106b49e9ff95e8f8a2
+    Hash: 21c99c86a43ad817b2cb7f65458ae090
 HashAppended: 0
 ClassTypes:
 - Class: 21
@@ -16,7 +16,9 @@ ClassTypes:
 - Class: 48
   Script: {instanceID: 0}
 Assets:
+- Assets/Art/Materials/M3.mat
 - Assets/Art/Materials/M1.mat
 - Assets/Art/Materials/M2.mat
 Dependencies:
-- E:/Project/MapProject/Assets/StreamingAssets/Windows/texture
+- D:/UnityProject/MapProject/Assets/StreamingAssets/Windows/texture
+- D:/UnityProject/MapProject/Assets/StreamingAssets/Windows/shader

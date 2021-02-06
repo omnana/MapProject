@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3401830720
+CRC: 3807121863
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 724e4604ca73b3984a37b5de754a1c00
+    Hash: 9dae3303a29775ea8a4a3356cf38a17b
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 98bf8902dba10ca277db995a4b6ea698
+    Hash: dc65a783c702502990c50ecdc8ae54a7
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -34,4 +34,4 @@ Assets:
 - Assets/Art/Models/Sphere.prefab
 - Assets/Art/Models/Hand_Left.prefab
 Dependencies:
-- E:/Project/MapProject/Assets/StreamingAssets/Windows/material
+- D:/UnityProject/MapProject/Assets/StreamingAssets/Windows/material
