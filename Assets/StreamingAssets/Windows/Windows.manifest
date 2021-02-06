@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 846605085
+CRC: 3182356040
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -18,8 +18,7 @@ AssetBundleManifest:
     Info_4:
       Name: material
       Dependencies:
-        Dependency_0: texture
-        Dependency_1: shader
+        Dependency_0: shader
     Info_5:
       Name: shader
       Dependencies: {}

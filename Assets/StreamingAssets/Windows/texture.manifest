@@ -1,16 +1,16 @@
 ManifestFileVersion: 0
-CRC: 1696332853
+CRC: 4118761042
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 742640d57e0655bc3bc98f160ea35337
+    Hash: f54a888d8fce92de1ea93acd8a2962bd
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 2ed26e3ad9f6be9c24f85f5f5b54339d
+    Hash: bfb87d18134d160e3a907b7674713721
 HashAppended: 0
 ClassTypes:
-- Class: 28
+- Class: 687078895
   Script: {instanceID: 0}
 Assets:
-- Assets/Art/Textures/lu_qi_10.png
+- Assets/Art/Textures/ModelTex.spriteatlas
 Dependencies: []
