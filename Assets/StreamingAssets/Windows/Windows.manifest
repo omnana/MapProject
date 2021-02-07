@@ -1,24 +1,15 @@
 ManifestFileVersion: 0
-CRC: 3182356040
+CRC: 1809965287
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: model
+      Name: model_a
       Dependencies:
         Dependency_0: material
     Info_1:
-      Name: ui
-      Dependencies: {}
-    Info_2:
-      Name: atlas
-      Dependencies: {}
-    Info_3:
-      Name: texture
-      Dependencies: {}
-    Info_4:
-      Name: material
+      Name: model_b
       Dependencies:
-        Dependency_0: shader
-    Info_5:
-      Name: shader
+        Dependency_0: material
+    Info_2:
+      Name: material
       Dependencies: {}

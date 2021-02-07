@@ -47,6 +47,13 @@ public class AssetBundleTool
         }
     }
 
+
+    [MenuItem("AssetsBundle/解析资源依赖关系")]
+    private static void BuildAssetBundleDepedences()
+    {
+        AssetBundleBuildMgr.Instance.Analyze();
+    }
+
     public static bool DeleteAllFile(string fullPath)
     {
         //获取指定路径下面的所有资源文件  然后进行删除
