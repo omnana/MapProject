@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using System.Linq;
 using UnityEditor;
 
 namespace AssetBundles
@@ -10,11 +11,13 @@ namespace AssetBundles
     {
         public static AssetBundleBuildMgr Instance = new AssetBundleBuildMgr();
 
-        private List<AssetBundleBuild> assetBundleBuilds = new List<AssetBundleBuild>();
-
         private Dictionary<string, ABNode> abNodeDic = new Dictionary<string, ABNode>();
 
-        public void Analyze()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public AssetBundleBuild[] Analyze()
         {
             Clear();
 
@@ -30,6 +33,21 @@ namespace AssetBundles
             }
 
             AnalyzeComplex(targetFiles);
+
+            var abBuilds = new List<AssetBundleBuild>();
+
+            foreach (var n in abNodeDic.Values)
+            {
+                if (n.IsCombine) continue;
+
+                abBuilds.Add(new AssetBundleBuild()
+                {
+                    assetBundleName = GetAbName(n),
+                    assetNames = n.Combinelist.ToArray(),
+                });
+            }
+
+            return abBuilds.ToArray();
         }
 
         private bool IsFileVaild(string filePath)
@@ -42,6 +60,20 @@ namespace AssetBundles
             if (filePath.Contains("arteditor")) return false;
 
             return true;
+        }
+
+        private string GetAbName(ABNode abNode)
+        {
+            if (abNode.IsRoot)
+            {
+                // root节点以所在路径为加载路径
+                return abNode.Name.Replace("Assets/", "") + ".ab";
+            }
+            else
+            {
+                // 依赖节点以guid作为路径
+                return "depends/" + AssetDatabase.AssetPathToGUID(abNode.Path) + ".ab";
+            }
         }
 
         /// <summary>
@@ -85,16 +117,12 @@ namespace AssetBundles
                 {
                     Name = Path.GetFileNameWithoutExtension(path),
                     Path = path,
-                    IsRoot = false,
+                    IsRoot = true,
                 };
 
                 abNode.Combinelist.Add(path);
 
                 abNodeDic.Add(path, abNode);
-            }
-            else
-            {
-                abNodeDic[path].IsRoot = true;
             }
 
             return abNodeDic[path];
@@ -140,8 +168,6 @@ namespace AssetBundles
         {
             foreach(var abNode in abNodeDic.Values)
             {
-                if (abNode.BeDependences.Count < 2) continue;
-
                 var cropList = new List<string>();
 
                 // 被依赖项
@@ -181,60 +207,107 @@ namespace AssetBundles
         {
             foreach (var abNode in abNodeDic.Values)
             {
-                var removeList = new List<string>();
+                MergeWithBeDependNode(abNode);
+            }
 
-                if (abNode.Dependences.Count == 1)
+            foreach (var abNode in abNodeDic.Values)
+            {
+                MergeWithDependNode(abNode);
+            }
+        }
+
+        /// <summary>
+        /// 跟被依赖合并
+        /// </summary>
+        /// <param name="abNode"></param>
+        private void MergeWithBeDependNode(ABNode abNode)
+        {
+            if (abNode.IsCombine) return;
+
+            if (abNode.Path.ToLower().EndsWith(".shader")) return;
+
+            if (abNode.Dependences.Count == 0)
+            {
+                // 向上合并
+                if (abNode.BeDependences.Count == 1)
                 {
-                   var depend = abNode.Dependences.GetEnumerator().Current.Value;
+                    var beDepend = abNode.BeDependences.Values.ToArray()[0];
 
-                    // 当该依赖项的被依赖项只有一个，向上合并
-                    if (depend.BeDependences.Count == 1)
-                    {
+                    abNode.IsCombine = true;
 
-                    }
+                    beDepend.Combinelist.AddRange(abNode.Combinelist);
+
+                    abNode.BeDependences.Remove(beDepend.Path);
+
+                    beDepend.Dependences.Remove(abNode.Path);
                 }
-                else
+            }
+            else
+            {
+                var depends = abNode.Dependences.Values.ToArray();
+
+                for (var i = 0; i < depends.Length; i++)
                 {
-
-                }
-
-                foreach (var depend in abNode.Dependences.Values)
-                {
-                    // 当依赖项没有依赖项
-                    if(depend.Dependences.Count == 0)
-                    {
-                        // 当被依赖项只有一个
-                        if (depend.BeDependences.Count == 1)
-                        {
-                            //（1）向上合并
-                            if(abNode.Dependences.Count < 2)
-                            {
-                                abNode.IsCombine = true;
-
-                                abNode.Combinelist.Add(depend.Path);
-
-                                depend.BeDependences.Remove(abNode.Path);
-                            }
-                            //（2）同级合并
-                            else
-                            {
-
-                            }
-                        }
-                    }
-                }
-
-                foreach (var r in removeList)
-                {
-                    abNode.Dependences.Remove(r);
+                    MergeWithBeDependNode(depends[i]);
                 }
             }
         }
 
+        /// <summary>
+        /// 所有依赖项合并
+        /// </summary>
+        /// <param name="abNode"></param>
+        private void MergeWithDependNode(ABNode abNode)
+        {
+            if (abNode.IsCombine) return;
+
+            var depends = abNode.Dependences.Values.ToArray();
+
+            for (var i = 0; i < depends.Length; i++)
+            {
+                if (depends[i].IsCombine) continue;
+
+                for (var j = i + 1; j < depends.Length; j++)
+                {
+                    if (depends[j].IsCombine) continue;
+
+                    if (IsBeDependsEqual(depends[i], depends[j]))
+                    {
+                        depends[i].Combinelist.AddRange(depends[j].Combinelist);
+
+                        foreach(var beDepend in depends[j].BeDependences.Values)
+                        {
+                            beDepend.Dependences.Remove(depends[j].Path);
+                        }
+
+                        depends[j].IsCombine = true;
+
+                        depends[j].BeDependences.Clear();
+
+                        //depends[j].BeDependences.Remove(abNode.Path);
+
+                        abNode.Dependences.Remove(depends[j].Path);
+                    }
+                }
+            }
+        }
+
+        private bool IsBeDependsEqual(ABNode a, ABNode b)
+        {
+            if (a.BeDependences.Count != b.BeDependences.Count) return false;
+
+            if (a.BeDependences.Count == 0) return false;
+
+            foreach (var beDepend in a.BeDependences.Values)
+            {
+                if (!b.BeDependences.ContainsKey(beDepend.Path)) return false;
+            }
+
+            return true;
+        }
+
         public void Clear()
         {
-            assetBundleBuilds.Clear();
-
             abNodeDic.Clear();
         }
     } 

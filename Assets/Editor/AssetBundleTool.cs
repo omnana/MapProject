@@ -42,18 +42,12 @@ public class AssetBundleTool
 
         if (Directory.Exists(dir))
         {
-            // 参数一为打包到哪个路径，参数二压缩选项  参数三 平台的目标
-            BuildPipeline.BuildAssetBundles(dir, BuildAssetBundleOptions.None, buildTarget);
+            AssetBundleBuild[] builds = AssetBundleBuildMgr.Instance.Analyze();
+
+            BuildPipeline.BuildAssetBundles(dir, builds, BuildAssetBundleOptions.None, buildTarget);
         }
     }
-
-
-    [MenuItem("AssetsBundle/解析资源依赖关系")]
-    private static void BuildAssetBundleDepedences()
-    {
-        AssetBundleBuildMgr.Instance.Analyze();
-    }
-
+ 
     public static bool DeleteAllFile(string fullPath)
     {
         //获取指定路径下面的所有资源文件  然后进行删除
@@ -61,8 +55,6 @@ public class AssetBundleTool
         {
             DirectoryInfo direction = new DirectoryInfo(fullPath);
             FileInfo[] files = direction.GetFiles("*", SearchOption.AllDirectories);
-
-            Debug.Log(files.Length);
 
             for (int i = 0; i < files.Length; i++)
             {

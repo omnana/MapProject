@@ -1,15 +1,21 @@
 ManifestFileVersion: 0
-CRC: 1809965287
+CRC: 153851363
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: model_a
-      Dependencies:
-        Dependency_0: material
+      Name: common.ab
+      Dependencies: {}
     Info_1:
-      Name: model_b
-      Dependencies:
-        Dependency_0: material
+      Name: m1.ab
+      Dependencies: {}
     Info_2:
-      Name: material
+      Name: cube_a.ab
+      Dependencies:
+        Dependency_0: m1.ab
+    Info_3:
+      Name: cube_b.ab
+      Dependencies:
+        Dependency_0: m1.ab
+    Info_4:
+      Name: testgui.ab
       Dependencies: {}

@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2041535749
+CRC: 3345698934
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 8d64f000f5b70a3d96079f30185e65fa
+    Hash: 78a4965f95d4bef94c26a26581c7277f
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 7652f69dff3dcd0741269161f69220a7
+    Hash: 8ca8c96fca4d8df7a97d1698923e6399
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -17,13 +17,21 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 23
   Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
 - Class: 33
   Script: {instanceID: 0}
 - Class: 43
   Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
 Assets:
-- Assets/Art/Model/Cube_B.prefab
-Dependencies:
-- E:/Project/MapProject/Assets/StreamingAssets/Windows/material
+- Assets/Art/Materials/M1.mat
+- Assets/Art/Model/Cube_C.prefab
+- Assets/Art/Textures/lu_qi_10.png
+- Assets/Art/Model/Cube_D.prefab
+Dependencies: []
