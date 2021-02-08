@@ -66,9 +66,11 @@ public class TestGui : MonoBehaviour
 
         var b = objQueue.Dequeue();
 
+        var assetName = b.name;
+
         Destroy(b);
 
-        ServiceLocator.Resolve<ResourceService>().UnLoadAsset(ResourceType.Model);
+        ServiceLocator.Resolve<ResourceService>().UnLoadAsset(assetName);
     }
 
     private void Start()

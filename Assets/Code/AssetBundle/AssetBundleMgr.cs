@@ -368,7 +368,8 @@ namespace AssetBundles
         /// <param name="isAsync">是否异步</param>
         private void DoLoad(AssetBundleObject abObj, bool isAsync = true)
         {
-            string dir = Utility.GetAssetBundlePath(abObj.HashName);
+            string assetName = abObj.HashName.ToLower() + ".ab";
+            string dir = Utility.GetAssetBundlePath(assetName);
 
             if (isAsync)
             {

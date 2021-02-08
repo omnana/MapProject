@@ -35,9 +35,7 @@ public class ResourceService : BaseCtrl
     /// <returns></returns>
     public GameObject LoadModelSync(string assetName)
     {
-        var abName = ResourceTypeToNameDic[ResourceType.Model];
-
-        var abObj = assetBundleMgr.LoadAssetBundleSync(abName);
+        var abObj = assetBundleMgr.LoadAssetBundleSync(assetName);
 
         if (abObj.Main != null)
         {
@@ -56,9 +54,9 @@ public class ResourceService : BaseCtrl
     {
         if (string.IsNullOrEmpty(assetName)) return;
 
-        var abName = ResourceTypeToNameDic[ResourceType.Model];
+        //var abName = ResourceTypeToNameDic[ResourceType.Model];
 
-        assetBundleMgr.LoadAssetBundleAsync(abName, (ab)=>
+        assetBundleMgr.LoadAssetBundleAsync(assetName, (ab)=>
         {
             var asset = ab.LoadAsset(assetName);
 
@@ -78,9 +76,9 @@ public class ResourceService : BaseCtrl
     /// <returns></returns>
     public T LoadAssetSync<T>(ResourceType type, string assetName) where T : Object
     {
-        var abName = ResourceTypeToNameDic[type];
+        //var abName = ResourceTypeToNameDic[type];
 
-        var abObj = assetBundleMgr.LoadSync(abName);
+        var abObj = assetBundleMgr.LoadSync(assetName);
 
         if (abObj.Main != null)
         {
@@ -99,9 +97,9 @@ public class ResourceService : BaseCtrl
     /// <returns></returns>
     public void LoadAssetAsync<T>(ResourceType type, string assetName, Action<T> callback) where T : Object
     {
-        var abName = ResourceTypeToNameDic[type];
+        //var abName = ResourceTypeToNameDic[type];
 
-        assetBundleMgr.LoadAsync(abName, (ab)=> 
+        assetBundleMgr.LoadAsync(assetName, (ab)=> 
         {
             var asset = ab.LoadAsset(assetName);
 
@@ -119,10 +117,10 @@ public class ResourceService : BaseCtrl
     /// <param name="type"></param>
     /// <param name="assetName"></param>
     /// <returns></returns>
-    public void UnLoadAsset(ResourceType type)
+    public void UnLoadAsset(string assetName)
     {
-        var abName = ResourceTypeToNameDic[type];
+        //var abName = ResourceTypeToNameDic[type];
 
-        assetBundleMgr.UnLoadAssetBundleAsync(abName);
+        assetBundleMgr.UnLoadAssetBundleAsync(assetName);
     }
 }

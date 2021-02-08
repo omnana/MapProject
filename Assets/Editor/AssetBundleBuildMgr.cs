@@ -94,6 +94,8 @@ namespace AssetBundles
 
                 var abNode = CreateNode(unityPath);
 
+                abNode.IsRoot = true;
+
                 AnalyzeNode(abNode);
             }
 
@@ -117,7 +119,6 @@ namespace AssetBundles
                 {
                     Name = Path.GetFileNameWithoutExtension(path),
                     Path = path,
-                    IsRoot = true,
                 };
 
                 abNode.Combinelist.Add(path);
@@ -168,6 +169,8 @@ namespace AssetBundles
         {
             foreach(var abNode in abNodeDic.Values)
             {
+                if (abNode.IsRoot) continue;
+
                 var cropList = new List<string>();
 
                 // 被依赖项
@@ -283,8 +286,6 @@ namespace AssetBundles
                         depends[j].IsCombine = true;
 
                         depends[j].BeDependences.Clear();
-
-                        //depends[j].BeDependences.Remove(abNode.Path);
 
                         abNode.Dependences.Remove(depends[j].Path);
                     }
