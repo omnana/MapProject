@@ -43,6 +43,16 @@ namespace AssetBundles
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="abName"></param>
+        /// <returns></returns>
+        public bool IsFileExist(string abName)
+        {
+            return false;
+        }
+
+        /// <summary>
         /// 是否有该ab包
         /// </summary>
         /// <param name="abName"></param>

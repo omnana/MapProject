@@ -74,6 +74,7 @@
 				}
 
 				//_Color.a = step(mindis, dis);
+
 				_Color.a = step(dis, mindis);
 
 				return _Color;

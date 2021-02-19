@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using AssetBundles;
+using UnityEditor;
 
 public class Code : MonoBehaviour
 {
-    private AssetBundleMgr assetBundleMgr;
+    private AssetLoadMgr assetLoadMgr;
 
     private void Awake()
     {
         DontDestroyOnLoad(this);
 
-        assetBundleMgr = ServiceLocator.Resolve<AssetBundleMgr>();
+        var mgr = ServiceLocator.Resolve<AssetLoadMgr>();
 
-        assetBundleMgr.LoadMainfest();
+        assetLoadMgr = AssetLoadMgr.Instance;
+
     }
 
     private void Start()
@@ -23,6 +25,6 @@ public class Code : MonoBehaviour
 
     private void Update()
     {
-        assetBundleMgr.Update();
+        assetLoadMgr.Update();
     }
 }
