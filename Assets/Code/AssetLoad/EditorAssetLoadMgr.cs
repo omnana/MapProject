@@ -8,6 +8,8 @@ public class EditorAssetLoadMgr : BaseCtrl
 {
     public Dictionary<string, string> resourceDic;
 
+    private const string AssetPath = "Assets/Art/{0}";
+
     public void Init()
     {
         resourceDic = new Dictionary<string, string>();
@@ -18,6 +20,7 @@ public class EditorAssetLoadMgr : BaseCtrl
     private void ReadConfig()
     {
         string path = Application.dataPath + "/Art/";
+
         string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
 
         string txt = "";
@@ -26,14 +29,17 @@ public class EditorAssetLoadMgr : BaseCtrl
             if (file.EndsWith(".meta")) continue;
 
             string name = file.Replace(path, "");
-            name = name.Substring(0, name.LastIndexOf("."));
+            //name = name.Substring(0, name.LastIndexOf("."));
+            name = name.ToLower();
             name = name.Replace("\\", "/");
 
             var startIndex = name.LastIndexOf("/")  + 1;
 
             if(startIndex != -1 && name.Length > startIndex)
             {
-                var assetName = name.Substring(startIndex, name.Length - startIndex);
+                var cutName = name.Substring(0, name.LastIndexOf("."));
+
+                var assetName = cutName.Substring(startIndex, cutName.Length - startIndex);
 
                 if (!resourceDic.ContainsKey(assetName))
                 {
@@ -47,33 +53,26 @@ public class EditorAssetLoadMgr : BaseCtrl
 
     public bool IsFileExist(string assetName)
     {
-        return false;
+        return resourceDic.ContainsKey(assetName);
+    }
+
+    private string GetAssetPath(string assetName)
+    {
+        return string.Format(AssetPath, assetName);
     }
 
     public Object LoadSync(string assetName)
     {
         if (resourceDic.ContainsKey(assetName))
         {
-            return AssetDatabase.LoadAssetAtPath<Object>(resourceDic[assetName]);
+            var assetPath = GetAssetPath(resourceDic[assetName]);
+
+            return AssetDatabase.LoadAssetAtPath<Object>(assetPath);
         }
 
         return null;
     }
 
-
-    public EditorAssetRequest LoadAsync(string assetName)
-    {
-        if (resourceDic.ContainsKey(assetName))
-        {
-            var request = new EditorAssetRequest();
-
-            request.asset = AssetDatabase.LoadAssetAtPath<Object>(resourceDic[assetName]);
-
-            return request;
-        }
-
-        return null;
-    }
 
     public void Unload(Object asset)
     {

@@ -24,6 +24,7 @@ public class TestGui : MonoBehaviour
 
     private Queue<GameObject> objQueue = new Queue<GameObject>();
 
+
     void Awake()
     {
         TestView.BindingContext = new TestViewModel();
@@ -36,6 +37,7 @@ public class TestGui : MonoBehaviour
         });
 
         TestBtn.onClick.AddListener(OnClick);
+
         UnLoadBtn.onClick.AddListener(UnLoad_OnClick);
     }
 
@@ -70,7 +72,7 @@ public class TestGui : MonoBehaviour
 
         Destroy(b);
 
-        ServiceLocator.Resolve<ResourceService>().UnLoadAsset(assetName);
+        ServiceLocator.Resolve<ResourceService>().UnLoadAsset(b);
     }
 
     private void Start()

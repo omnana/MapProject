@@ -31,5 +31,6 @@ public class ContainerInit : MonoBehaviour
         ServiceLocator.RegisterSingleton<AssetBundleMgr>();
         ServiceLocator.RegisterSingleton<ResourcesLoadMgr>();
         ServiceLocator.RegisterSingleton<EditorAssetLoadMgr>();
+        ServiceLocator.RegisterSingleton<AssetLoadMgr>();
     }
 }

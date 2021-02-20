@@ -13,9 +13,6 @@ public enum AssetObjStatus
 
 public class AssetLoadMgr
 {
-
-    public static AssetLoadMgr Instance { get; private set; } = new AssetLoadMgr();
-
     public AssetBundleMgr AssetBundleMgr { get; set; }
 
     public EditorAssetLoadMgr EditorAssetLoadMgr { get; set; }
@@ -31,6 +28,8 @@ public class AssetLoadMgr
     private Dictionary<int, AssetObject> goInstanceIDList; //创建的实例对应的asset
 
     private int loadingIntervalCount;
+
+    private const int UNLOAD_DELAY_TICK_BASE = 60;
 
     public AssetLoadMgr()
     {
@@ -49,10 +48,14 @@ public class AssetLoadMgr
 
         tempLoadeds = new List<AssetObject>();
 
+        goInstanceIDList = new Dictionary<int, AssetObject>();
+
 #if UNITY_EDITOR
         EditorAssetLoadMgr.Init();
-#else
 #endif
+        ResourcesLoadMgr.Init();
+
+        AssetBundleMgr.Init();
     }
 
     /// <summary>
@@ -80,44 +83,13 @@ public class AssetLoadMgr
     }
 
     /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="assetName"></param>
-    /// <returns></returns>
-    private AssetObject CreateAssetObj(string assetName)
-    {
-        var assetObj = new AssetObject()
-        {
-            AssetName = assetName,
-            RefCount = 1
-        };
-
-#if UNITY_EDITOR
-        assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
-#else
-        if (AssetBundleMgr.IsFileExist(assetName))
-        {
-            assetObj.IsAbLoad = true;
-            var ab = AssetBundleMgr.LoadSync(assetName);
-            assetObj.Asset = ab.Main.LoadAsset(ab.Main.GetAllAssetNames()[0]);
-            // 异步转同步，需要卸载异步的引用计数
-            //AssetBundleMgr.Unload(assetName);
-        }
-        else
-        {
-            assetObj.IsAbLoad = false;
-            assetObj.Asset = ResourcesLoadMgr.LoadSync(assetName);
-        }
-#endif
-        return assetObj;
-    }
-
-    /// <summary>
     /// 同步加载
     /// </summary>
     /// <param name="assetName"></param>
     public object LoadSync(string assetName)
     {
+        assetName = assetName.ToLower();
+
         if(!IsAssetExist(assetName))
         {
             return null;
@@ -134,15 +106,27 @@ public class AssetLoadMgr
             return assetObj.Asset;
         }
 
-        if (assetObj == null || status == AssetObjStatus.None)
-        {
-            assetObj = CreateAssetObj(assetName);
-        }
-
         if (status == AssetObjStatus.Loading)
         {
+            if (assetObj.Request == null)
+            {
+                if (assetObj.Request is AssetBundleRequest)
+                {
+                    assetObj.Asset = (assetObj.Request as AssetBundleRequest).asset;
+                }
+                else if (assetObj.Request is ResourceRequest)
+                {
+                    assetObj.Asset = (assetObj.Request as ResourceRequest).asset;
+                }
+                else if (assetObj.Request is EditorAssetRequest)
+                {
+                    assetObj.Asset = (assetObj.Request as EditorAssetRequest).asset;
+                }
+            }
+            else
+            {
 #if UNITY_EDITOR
-            assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
+                assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
 #else
             if(assetObj.IsAbLoad)
             {
@@ -158,26 +142,55 @@ public class AssetLoadMgr
                 assetObj.Asset = ResourcesLoadMgr.LoadSync(assetName);
             }
 #endif
-
-            if(assetObj.Asset == null)
-            {
-                PutAssetObInDic(AssetObjStatus.None, assetObj);
-
-                return null;
             }
 
-            assetObj.InstanceID = assetObj.Asset.GetInstanceID();
-
-            goInstanceIDList.Add(assetObj.InstanceID, assetObj);
-
-            PutAssetObInDic(AssetObjStatus.Loaded, assetObj);
-
-            assetObj.RefCount++;
-
-            return assetObj.Asset;
         }
 
-        return null;
+        if (assetObj == null || status == AssetObjStatus.None)
+        {
+            assetObj = new AssetObject()
+            {
+                AssetName = assetName,
+                RefCount = 1
+            };
+
+#if UNITY_EDITOR
+            assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
+#else
+            if (AssetBundleMgr.IsFileExist(assetName))
+            {
+                assetObj.IsAbLoad = true;
+                var ab = AssetBundleMgr.LoadSync(assetName);
+                assetObj.Asset = ab.Main.LoadAsset(ab.Main.GetAllAssetNames()[0]);
+                // 异步转同步，需要卸载异步的引用计数
+                //AssetBundleMgr.Unload(assetName);
+            }
+            else
+            {
+                assetObj.IsAbLoad = false;
+                assetObj.Asset = ResourcesLoadMgr.LoadSync(assetName);
+            }
+#endif
+        }
+
+        if (assetObj.Asset == null)
+        {
+            PutAssetObInDic(AssetObjStatus.None, assetObj);
+
+            Debug.LogError("asset is null -> " + assetObj.AssetName);
+
+            return null;
+        }
+
+        assetObj.InstanceID = assetObj.Asset.GetInstanceID();
+
+        goInstanceIDList.Add(assetObj.InstanceID, assetObj);
+
+        PutAssetObInDic(AssetObjStatus.Loaded, assetObj);
+
+        assetObj.RefCount++;
+
+        return assetObj.Asset;
     }
 
 
@@ -187,6 +200,8 @@ public class AssetLoadMgr
     /// <param name="assetName"></param>
     public void LoadAsync(string assetName, AssetsLoadCallback callFun)
     {
+        assetName = assetName.ToLower();
+
         AssetObject assetObj = GetAssetObj(assetName);
 
         var status = GetAssetObjStatus(assetName);
@@ -195,20 +210,12 @@ public class AssetLoadMgr
         {
             assetObj = new AssetObject() { AssetName = assetName, };
 
-            assetObj.CallbackList.Add(callFun);
-
 #if UNITY_EDITOR
-
-            PutAssetObInDic(AssetObjStatus.Loading, assetObj);
-
-            assetObj.Request = EditorAssetLoadMgr.LoadAsync(assetName);
-
-            ///////////// else
+            assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
+#else
             if (AssetBundleMgr.IsFileExist(assetName))
             {
                 assetObj.IsAbLoad = true;
-
-                PutAssetObInDic(AssetObjStatus.Loading, assetObj);
 
                 AssetBundleMgr.LoadAsync(assetName, (ab) =>
                 {
@@ -222,13 +229,11 @@ public class AssetLoadMgr
             {
                 assetObj.IsAbLoad = false;
 
-                PutAssetObInDic(AssetObjStatus.Loading, assetObj);
-
                 assetObj.Request = ResourcesLoadMgr.LoadAsync(assetName);
             }
-#else
-
 #endif
+
+            PutAssetObInDic(AssetObjStatus.Loading, assetObj);
         }
 
         assetObj.CallbackList.Add(callFun);
@@ -243,9 +248,56 @@ public class AssetLoadMgr
     /// 
     /// </summary>
     /// <param name="assetName"></param>
-    public void Unload(string assetName)
+    public void Unload(Object obj)
     {
+        if (obj == null) return;
 
+        var instanceID = obj.GetInstanceID();
+
+        if(!goInstanceIDList.ContainsKey(instanceID)) // 非从本类创建的资源，直接销毁即可
+        {
+            if (obj is GameObject)
+            {
+                Object.Destroy(obj);
+            }
+#if UNITY_EDITOR
+            else if(UnityEditor.EditorApplication.isPlaying)
+            {
+
+            }
+#else
+#endif
+            return;
+        }
+
+        var assetObj =goInstanceIDList[instanceID];
+
+        if (assetObj.InstanceID == instanceID) // obj不是GameObject，不销毁
+        {
+            assetObj.RefCount--;
+        }
+        else // error
+        {
+            string errormsg = string.Format("AssetsLoadMgr Destroy error ! assetName:{0}", assetObj.AssetName);
+            Debug.LogError(errormsg);
+            return;
+        }
+
+        if (assetObj.RefCount < 0)
+        {
+            string errormsg = string.Format("AssetsLoadMgr Destroy refCount error ! assetName:{0}", assetObj.AssetName);
+            Debug.LogError(errormsg);
+            return;
+        }
+
+        var unLoadList = GetDic(AssetObjStatus.Unload);
+
+        if (assetObj.RefCount == 0 && !unLoadList.ContainsKey(assetObj.AssetName))
+        {
+            assetObj.UnloadTick = UNLOAD_DELAY_TICK_BASE + unLoadList.Count;
+
+            unLoadList.Add(assetObj.AssetName, assetObj);
+        }
     }
 
     /// <summary>
@@ -278,24 +330,23 @@ public class AssetLoadMgr
 
         foreach (var assetObj in loadingList.Values)
         {
+#if UNITY_EDITOR
+            if(assetObj.Asset != null)
+            {
+                assetObj.InstanceID = assetObj.Asset.GetInstanceID();
+
+                goInstanceIDList.Add(assetObj.InstanceID, assetObj);
+
+                tempLoadeds.Add(assetObj);
+            }
+#else
             if (assetObj.Request != null && assetObj.Request.isDone)
             {
-#if UNITY_EDITOR
-                assetObj.Asset = (assetObj.Request as EditorAssetRequest).asset;
-
-                if (assetObj.Asset == null) // 提取的资源失败，从加载列表删除
-                {
-                    PutAssetObInDic(AssetObjStatus.None, assetObj);
-                    loadingList.Remove(assetObj.AssetName);
-                    Debug.LogError("AssetsLoadMgr assetObj._asset Null " + assetObj.AssetName);
-                    break;
-                }
-#else
                 if (assetObj.IsAbLoad)
                     assetObj.Asset = (assetObj.Request as AssetBundleRequest).asset;
                 else
                     assetObj.Asset = (assetObj.Request as ResourceRequest).asset;
-#endif
+
                 assetObj.InstanceID = assetObj.Asset.GetInstanceID();
 
                 goInstanceIDList.Add(assetObj.InstanceID, assetObj);
@@ -304,6 +355,7 @@ public class AssetLoadMgr
 
                 tempLoadeds.Add(assetObj);
             }
+#endif
         }
 
         //回调中有可能对loadingList进行操作，先移动
@@ -328,7 +380,38 @@ public class AssetLoadMgr
     /// </summary>
     private void UpdateUnload()
     {
+        //遍历卸载，延迟卸载
+        var unloadList = GetDic(AssetObjStatus.Unload);
 
+        if (unloadList.Count == 0) return;
+
+        tempLoadeds.Clear();
+
+        foreach (var assetObj in unloadList.Values)
+        {
+            if (assetObj.IsWeak && assetObj.RefCount == 0 && assetObj.CallbackList.Count == 0) 
+            {
+                // 引用计数为0，且没有需要回调的函数，销毁
+                if (assetObj.UnloadTick < 0)
+                {
+                    DoUnLoad(assetObj);
+
+                    tempLoadeds.Add(assetObj);
+                }
+                else assetObj.UnloadTick--;
+            }
+
+            if (assetObj.RefCount > 0 || !assetObj.IsWeak)
+            {
+                // 引用计数增加（销毁期间有加载）
+                tempLoadeds.Add(assetObj);
+            }
+        }
+
+        foreach (var assetObj in tempLoadeds)
+        {
+            PutAssetObInDic(AssetObjStatus.None, assetObj);
+        }
     }
 
     /// <summary>
@@ -347,9 +430,23 @@ public class AssetLoadMgr
     /// 
     /// </summary>
     /// <param name="assetObject"></param>
-    private void DoLoad(AssetObject assetObject)
+    private void DoUnLoad(AssetObject assetObject)
     {
+        //真正卸载
+#if UNITY_EDITOR
+        EditorAssetLoadMgr.Unload(assetObject.Asset);
+#else
+        if (assetObject.IsAbLoad)
+            AssetBundleMgr.UnLoadAssetBundleAsync(assetObject.AssetName);
+        else
+            ResourcesLoadMgr.Unload(assetObject.Asset);
+#endif
+        assetObject.Asset = null;
 
+        if (goInstanceIDList.ContainsKey(assetObject.InstanceID))
+        {
+            goInstanceIDList.Remove(assetObject.InstanceID);
+        }
     }
 
     /// <summary>
@@ -439,18 +536,18 @@ public class AssetLoadMgr
     {
         var assetName = obj.AssetName;
 
-        var curStatus = GetAssetObjStatus(assetName);
+        if (assetObjDic[AssetObjStatus.Loaded].ContainsKey(assetName))
+            assetObjDic[AssetObjStatus.Loaded].Remove(assetName);
 
-        if (status == AssetObjStatus.None)
-        {
-            GetDic(curStatus).Remove(assetName);
+        if (assetObjDic[AssetObjStatus.Loading].ContainsKey(assetName))
+            assetObjDic[AssetObjStatus.Loading].Remove(assetName);
 
-            return;
-        }
+        if (assetObjDic[AssetObjStatus.Unload].ContainsKey(assetName))
+            assetObjDic[AssetObjStatus.Unload].Remove(assetName);
 
-        // 清除上一个状态
-        if (curStatus != AssetObjStatus.None) GetDic(curStatus).Remove(assetName);
+        if (status == AssetObjStatus.None) return;
 
-        if (status != AssetObjStatus.None) GetDic(status).Add(obj.AssetName, obj);
+        if (assetObjDic.ContainsKey(status))
+            assetObjDic[status].Add(obj.AssetName, obj);
     }
 }

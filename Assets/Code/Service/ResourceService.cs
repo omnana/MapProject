@@ -7,16 +7,8 @@ using Object = UnityEngine.Object;
 
 public class ResourceService : BaseCtrl
 {
-    private AssetBundleMgr assetBundleMgr;
+    private AssetLoadMgr assetLoadMgr;
 
-    private readonly Dictionary<ResourceType, string> ResourceTypeToNameDic = new Dictionary<ResourceType, string>()
-    {
-        {ResourceType.Gui,  "ui"},
-        {ResourceType.Model,  "model"},
-        {ResourceType.Texture,  "texture"},
-        {ResourceType.Atlas,  "atlas"},
-        {ResourceType.Scene,  "scene"},
-    };
 
     public override void DispoWith()
     {
@@ -25,7 +17,7 @@ public class ResourceService : BaseCtrl
 
     public ResourceService()
     {
-        assetBundleMgr = ServiceLocator.Resolve<AssetBundleMgr>();
+        assetLoadMgr = ServiceLocator.Resolve<AssetLoadMgr>();
     }
 
     /// <summary>
@@ -35,11 +27,11 @@ public class ResourceService : BaseCtrl
     /// <returns></returns>
     public GameObject LoadModelSync(string assetName)
     {
-        var abObj = assetBundleMgr.LoadAssetBundleSync(assetName);
+        var obj = assetLoadMgr.LoadSync(assetName);
 
-        if (abObj.Main != null)
+        if (obj != null)
         {
-            return abObj.Main.LoadAsset(assetName) as GameObject;
+            return obj as GameObject;
         }
 
         return null;
@@ -54,16 +46,9 @@ public class ResourceService : BaseCtrl
     {
         if (string.IsNullOrEmpty(assetName)) return;
 
-        //var abName = ResourceTypeToNameDic[ResourceType.Model];
-
-        assetBundleMgr.LoadAssetBundleAsync(assetName, (ab)=>
+        assetLoadMgr.LoadAsync(assetName, (name, obj)=>
         {
-            var asset = ab.LoadAsset(assetName);
-
-            if (asset != null)
-            {
-                callback?.Invoke(asset as GameObject);
-            }
+            callback?.Invoke(obj as GameObject);
         });
     }
 
@@ -76,13 +61,11 @@ public class ResourceService : BaseCtrl
     /// <returns></returns>
     public T LoadAssetSync<T>(ResourceType type, string assetName) where T : Object
     {
-        //var abName = ResourceTypeToNameDic[type];
+        var obj = assetLoadMgr.LoadSync(assetName);
 
-        var abObj = assetBundleMgr.LoadSync(assetName);
-
-        if (abObj.Main != null)
+        if (obj != null)
         {
-            return abObj.Main.LoadAsset(assetName) as T;
+            return obj as T;
         }
 
         return null;
@@ -97,16 +80,9 @@ public class ResourceService : BaseCtrl
     /// <returns></returns>
     public void LoadAssetAsync<T>(ResourceType type, string assetName, Action<T> callback) where T : Object
     {
-        //var abName = ResourceTypeToNameDic[type];
-
-        assetBundleMgr.LoadAsync(assetName, (ab)=> 
+        assetLoadMgr.LoadAsync(assetName, (name, obj) =>
         {
-            var asset = ab.LoadAsset(assetName);
-
-            if(asset != null)
-            {
-                callback?.Invoke(asset as T);
-            }
+            callback?.Invoke(obj as T);
         });
     }
 
@@ -117,10 +93,8 @@ public class ResourceService : BaseCtrl
     /// <param name="type"></param>
     /// <param name="assetName"></param>
     /// <returns></returns>
-    public void UnLoadAsset(string assetName)
+    public void UnLoadAsset(Object obj)
     {
-        //var abName = ResourceTypeToNameDic[type];
-
-        assetBundleMgr.UnLoadAssetBundleAsync(assetName);
+        assetLoadMgr.Unload(obj);
     }
 }
