@@ -12,15 +12,12 @@ public class Code : MonoBehaviour
     {
         DontDestroyOnLoad(this);
 
-        var mgr = ServiceLocator.Resolve<AssetLoadMgr>();
-
-        assetLoadMgr = AssetLoadMgr.Instance;
-
+        assetLoadMgr = ServiceLocator.Resolve<AssetLoadMgr>();
     }
 
     private void Start()
     {
-        GuiManager.Instance.OpenSync<TestGui>();
+        GuiManager.Instance.OpenAsync<TestGui>();
     }
 
     private void Update()
