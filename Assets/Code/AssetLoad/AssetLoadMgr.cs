@@ -345,6 +345,7 @@ public class AssetLoadMgr
 
     /// <summary>
     /// 预加载
+    /// 每次只取一个加载，直到加载完成，再去下一个
     /// </summary>
     private void UpdatePreload()
     {
