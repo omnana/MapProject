@@ -27,9 +27,13 @@ public class AssetLoadMgr
 
     private Dictionary<int, AssetObject> goInstanceIDList; //创建的实例对应的asset
 
+    private Queue<PreloadAssetObject> preloadedAsyncList; // 预加载队列
+
     private int loadingIntervalCount;
 
     private const int UNLOAD_DELAY_TICK_BASE = 60;
+
+    private const int LOADING_INTERVAL_MAX_COUNT = 15;
 
     public AssetLoadMgr()
     {
@@ -48,7 +52,12 @@ public class AssetLoadMgr
 
         tempLoadeds = new List<AssetObject>();
 
+        loadedAsyncList = new List<AssetObject>();
+
         goInstanceIDList = new Dictionary<int, AssetObject>();
+
+
+        preloadedAsyncList = new Queue<PreloadAssetObject>();
 
 #if UNITY_EDITOR
         EditorAssetLoadMgr.Init();
@@ -245,6 +254,40 @@ public class AssetLoadMgr
     }
 
     /// <summary>
+    /// 预加载，isWeak弱引用，true为使用过后会销毁，为false将不会销毁，慎用
+    /// </summary>
+    /// <param name="_assetName"></param>
+    /// <param name="_isWeak"></param>
+    public void PreLoad(string assetName, bool isWeak = true)
+    {
+        AssetObject assetObj = null;
+
+        var status = GetAssetObjStatus(assetName);
+
+        assetObj = GetDic(status)[assetName];
+
+        if (assetObj != null)
+        {
+            assetObj.IsWeak = isWeak;
+
+            var unLoadList = GetDic(AssetObjStatus.Unload);
+
+            if (isWeak && assetObj.RefCount == 0)
+            {
+                PutAssetObInDic(AssetObjStatus.Unload, assetObj);
+            }
+
+            return;
+        }
+
+        preloadedAsyncList.Enqueue(new PreloadAssetObject()
+        {
+            AssetName = assetName,
+            IsWeak = isWeak
+        });
+    }
+
+    /// <summary>
     /// 
     /// </summary>
     /// <param name="assetName"></param>
@@ -301,19 +344,68 @@ public class AssetLoadMgr
     }
 
     /// <summary>
-    /// 
+    /// 预加载
     /// </summary>
     private void UpdatePreload()
     {
+        var loadingList = GetDic(AssetObjStatus.Loading);
 
+        // 加载队列空闲才需要预加载
+        if (loadingList.Count > 0 || preloadedAsyncList.Count == 0) return;
+
+        // 从队列支取处取出一个，异步加载，直到加载完，在取下一个
+        var plAssetObj = preloadedAsyncList.Peek();
+
+        var status = GetAssetObjStatus(plAssetObj.AssetName);
+
+        var assetObj = GetAssetObj(plAssetObj.AssetName);
+
+        if(assetObj != null)
+        {
+            assetObj.IsWeak = plAssetObj.IsWeak;
+        }
+        else
+        {
+            LoadAsync(plAssetObj.AssetName, null);
+        }
+
+        if (status == AssetObjStatus.Loaded)
+        {
+            preloadedAsyncList.Dequeue();
+        }
     }
 
     /// <summary>
-    /// 
+    /// 加载异步，当调用已加载的资源，仍希望异步回调
     /// </summary>
     private void UpdateLoadAsync()
     {
+        if (loadedAsyncList.Count == 0) return;
 
+        int count = loadedAsyncList.Count;
+
+        for (int i = 0; i < count; i++)
+        {
+            //先锁定回调数量，保证异步成立
+            loadedAsyncList[i].LockCallbackCount = loadedAsyncList[i].CallbackList.Count;
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            DoAssetCallback(loadedAsyncList[i]);
+        }
+
+        loadedAsyncList.RemoveRange(0, count);
+
+        var loadingList = GetDic(AssetObjStatus.Loading);
+
+        if (loadingList.Count == 0 && loadingIntervalCount > LOADING_INTERVAL_MAX_COUNT)
+        {
+            //在连续的大量加载后，强制调用一次gc
+            loadingIntervalCount = 0;
+            Resources.UnloadUnusedAssets();
+            System.GC.Collect();
+        }
     }
 
     /// <summary>

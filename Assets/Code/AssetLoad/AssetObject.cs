@@ -20,6 +20,9 @@ public class AssetObject
 
     public bool IsAbLoad; // 标识是否是ab资源加载的
 
+    /// <summary>
+    /// 是弱引用标识，为true时，表示这个资源可以在没有引用时卸载，否则常驻内存。常驻内存是指引用计数为0也不卸载。
+    /// </summary>
     public bool IsWeak = true; // 是否是弱引用，用于预加载和释放
 
     public int RefCount; // 引用计数

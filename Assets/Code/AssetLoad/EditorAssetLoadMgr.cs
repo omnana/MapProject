@@ -76,12 +76,12 @@ public class EditorAssetLoadMgr : BaseCtrl
 
     public void Unload(Object asset)
     {
-        if (asset is GameObject)
+        if (asset is null)
         {
             return;
         }
 
-        Resources.UnloadAsset(asset);
+        Object.Destroy(asset);
 
         asset = null;
     }
