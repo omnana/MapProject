@@ -4,6 +4,8 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 
+#if UNITY_EDITOR
+
 public class EditorAssetLoadMgr : BaseCtrl
 {
     public Dictionary<string, string> resourceDic;
@@ -67,7 +69,7 @@ public class EditorAssetLoadMgr : BaseCtrl
         {
             var assetPath = GetAssetPath(resourceDic[assetName]);
 
-            return AssetDatabase.LoadAssetAtPath<Object>(assetPath);
+            return UnityEditor.AssetDatabase.LoadAssetAtPath<Object>(assetPath);
         }
 
         return null;
@@ -86,3 +88,4 @@ public class EditorAssetLoadMgr : BaseCtrl
         asset = null;
     }
 }
+#endif

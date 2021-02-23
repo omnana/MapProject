@@ -30,7 +30,7 @@ public class ContainerInit : MonoBehaviour
     {
         ServiceLocator.RegisterSingleton<AssetBundleMgr>();
         ServiceLocator.RegisterSingleton<ResourcesLoadMgr>();
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
         ServiceLocator.RegisterSingleton<EditorAssetLoadMgr>();
 #endif
         ServiceLocator.RegisterSingleton<AssetLoadMgr>();

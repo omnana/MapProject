@@ -1,18 +1,16 @@
 ManifestFileVersion: 0
-CRC: 1808961219
+CRC: 3822898017
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 04be7bd84013b70674c9e761364bf293
+    Hash: acbdc59e3c90a391fdc00f0cc37d76d8
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 9e6ad29cbd2df8fbe1a15315db0e51ab
+    Hash: 55d48f4ad9c3b13330b9eb5ee5686477
 HashAppended: 0
 ClassTypes:
-- Class: 28
-  Script: {instanceID: 0}
-- Class: 213
+- Class: 48
   Script: {instanceID: 0}
 Assets:
-- Assets/Art/Textures/lu_qi_10.png
+- Assets/Art/Shader/TestShader.shader
 Dependencies: []

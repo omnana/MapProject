@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 307175488
+CRC: 2103095471
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -27,5 +27,11 @@ AssetBundleManifest:
       Name: cube_d.ab
       Dependencies: {}
     Info_7:
+      Name: polygonmask.ab
+      Dependencies: {}
+    Info_8:
+      Name: testshader.ab
+      Dependencies: {}
+    Info_9:
       Name: testgui.ab
       Dependencies: {}

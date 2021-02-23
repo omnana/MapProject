@@ -8,6 +8,7 @@ using Object = UnityEngine.Object;
 public class ResourceService : BaseCtrl
 {
     private AssetLoadMgr assetLoadMgr;
+
     private PrefabLoadMgr prefabLoadMgr;
 
 
@@ -52,6 +53,27 @@ public class ResourceService : BaseCtrl
         {
             callback?.Invoke(obj as GameObject);
         });
+    }
+
+    /// <summary>
+    /// 从Common图集中，同步加载图片
+    /// </summary>
+    /// <param name="assetName"></param>
+    /// <returns></returns>
+    public Sprite LoadSpriteFromAtlasSync(string assetName)
+    {
+        if (string.IsNullOrEmpty(assetName)) return null;
+
+        var obj = assetLoadMgr.LoadSync("common");
+
+        if (obj != null)
+        {
+           var atlas = obj as UnityEngine.U2D.SpriteAtlas;
+
+           return atlas.GetSprite(assetName);
+        }
+
+        return null;
     }
 
     /// <summary>

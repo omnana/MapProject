@@ -15,8 +15,9 @@ public class AssetLoadMgr
 {
     public AssetBundleMgr AssetBundleMgr { get; set; }
 
+#if UNITY_EDITOR
     public EditorAssetLoadMgr EditorAssetLoadMgr { get; set; }
-
+#endif
     public ResourcesLoadMgr ResourcesLoadMgr { get; set; }
 
     private Dictionary<AssetObjStatus, Dictionary<string, AssetObject>> assetObjDic = new Dictionary<AssetObjStatus, Dictionary<string, AssetObject>>();
@@ -39,7 +40,9 @@ public class AssetLoadMgr
     {
         AssetBundleMgr = ServiceLocator.Resolve<AssetBundleMgr>();
 
+#if UNITY_EDITOR
         EditorAssetLoadMgr = ServiceLocator.Resolve<EditorAssetLoadMgr>();
+#endif
 
         ResourcesLoadMgr = ServiceLocator.Resolve<ResourcesLoadMgr>();
 
@@ -59,7 +62,7 @@ public class AssetLoadMgr
 
         preloadedAsyncList = new Queue<PreloadAssetObject>();
 
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
         EditorAssetLoadMgr.Init();
 #endif
         ResourcesLoadMgr.Init();
@@ -76,7 +79,7 @@ public class AssetLoadMgr
     /// <returns></returns>
     public bool IsAssetExist(string assetName)
     {
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
         return EditorAssetLoadMgr.IsFileExist(assetName);
 #else
         if (ResourcesLoadMgr.IsFileExist(assetName)) return true;
@@ -127,7 +130,7 @@ public class AssetLoadMgr
             }
             else
             {
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
                 assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
 #else
             if(assetObj.IsAbLoad)
@@ -156,7 +159,7 @@ public class AssetLoadMgr
                 RefCount = 1
             };
 
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
             assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
 #else
             if (AssetBundleMgr.IsFileExist(assetName))
@@ -214,7 +217,7 @@ public class AssetLoadMgr
 
             PutAssetObInDic(AssetObjStatus.Loading, assetObj);
 
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
             assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
 #else
             if (AssetBundleMgr.IsFileExist(assetName))
@@ -416,7 +419,7 @@ public class AssetLoadMgr
 
         foreach (var assetObj in loadingList.Values)
         {
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
             if(assetObj.Asset != null)
             {
                 assetObj.InstanceID = assetObj.Asset.GetInstanceID();
@@ -511,7 +514,7 @@ public class AssetLoadMgr
         UpdateLoading();
         UpdateUnload();
 
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
 
 #else
         AssetBundleMgr.Update();
@@ -524,7 +527,7 @@ public class AssetLoadMgr
     /// <param name="assetObject"></param>
     private void DoUnLoad(AssetObject assetObject)
     {
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
         EditorAssetLoadMgr.Unload(assetObject.Asset);
 #else
         if (assetObject.IsAbLoad)
