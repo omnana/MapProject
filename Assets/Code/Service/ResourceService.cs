@@ -8,6 +8,7 @@ using Object = UnityEngine.Object;
 public class ResourceService : BaseCtrl
 {
     private AssetLoadMgr assetLoadMgr;
+    private PrefabLoadMgr prefabLoadMgr;
 
 
     public override void DispoWith()
@@ -18,6 +19,7 @@ public class ResourceService : BaseCtrl
     public ResourceService()
     {
         assetLoadMgr = ServiceLocator.Resolve<AssetLoadMgr>();
+        prefabLoadMgr = ServiceLocator.Resolve<PrefabLoadMgr>();
     }
 
     /// <summary>

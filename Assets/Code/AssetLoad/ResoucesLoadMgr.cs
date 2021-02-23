@@ -29,6 +29,7 @@ public class ResourcesLoadMgr : BaseCtrl
             string name = file.Replace(path, "");
             name = name.Substring(0, name.LastIndexOf("."));
             name = name.Replace("\\", "/");
+            name = name.ToLower();
             txt += name + "\n";
         }
 

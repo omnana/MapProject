@@ -59,12 +59,14 @@ public class AssetLoadMgr
 
         preloadedAsyncList = new Queue<PreloadAssetObject>();
 
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
         EditorAssetLoadMgr.Init();
 #endif
         ResourcesLoadMgr.Init();
 
         AssetBundleMgr.Init();
+
+        AssetBundleMgr.LoadMainfest();
     }
 
     /// <summary>
@@ -74,7 +76,7 @@ public class AssetLoadMgr
     /// <returns></returns>
     public bool IsAssetExist(string assetName)
     {
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
         return EditorAssetLoadMgr.IsFileExist(assetName);
 #else
         if (ResourcesLoadMgr.IsFileExist(assetName)) return true;
@@ -83,19 +85,10 @@ public class AssetLoadMgr
     }
 
     /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="assetName"></param>
-    public void PreLoad(string assetName)
-    {
-
-    }
-
-    /// <summary>
     /// 同步加载
     /// </summary>
     /// <param name="assetName"></param>
-    public object LoadSync(string assetName)
+    public Object LoadSync(string assetName)
     {
         assetName = assetName.ToLower();
 
@@ -134,7 +127,7 @@ public class AssetLoadMgr
             }
             else
             {
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
                 assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
 #else
             if(assetObj.IsAbLoad)
@@ -163,7 +156,7 @@ public class AssetLoadMgr
                 RefCount = 1
             };
 
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
             assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
 #else
             if (AssetBundleMgr.IsFileExist(assetName))
@@ -219,7 +212,9 @@ public class AssetLoadMgr
         {
             assetObj = new AssetObject() { AssetName = assetName, };
 
-#if UNITY_EDITOR
+            PutAssetObInDic(AssetObjStatus.Loading, assetObj);
+
+#if !UNITY_EDITOR
             assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
 #else
             if (AssetBundleMgr.IsFileExist(assetName))
@@ -241,8 +236,6 @@ public class AssetLoadMgr
                 assetObj.Request = ResourcesLoadMgr.LoadAsync(assetName);
             }
 #endif
-
-            PutAssetObInDic(AssetObjStatus.Loading, assetObj);
         }
 
         assetObj.CallbackList.Add(callFun);
@@ -423,7 +416,7 @@ public class AssetLoadMgr
 
         foreach (var assetObj in loadingList.Values)
         {
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
             if(assetObj.Asset != null)
             {
                 assetObj.InstanceID = assetObj.Asset.GetInstanceID();
@@ -517,16 +510,21 @@ public class AssetLoadMgr
         UpdateLoadAsync();
         UpdateLoading();
         UpdateUnload();
+
+#if !UNITY_EDITOR
+
+#else
+        AssetBundleMgr.Update();
+#endif
     }
 
     /// <summary>
-    /// 
+    /// 执行卸载
     /// </summary>
     /// <param name="assetObject"></param>
     private void DoUnLoad(AssetObject assetObject)
     {
-        //真正卸载
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
         EditorAssetLoadMgr.Unload(assetObject.Asset);
 #else
         if (assetObject.IsAbLoad)
@@ -534,6 +532,7 @@ public class AssetLoadMgr
         else
             ResourcesLoadMgr.Unload(assetObject.Asset);
 #endif
+
         assetObject.Asset = null;
 
         if (goInstanceIDList.ContainsKey(assetObject.InstanceID))

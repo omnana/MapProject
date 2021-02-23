@@ -6,7 +6,7 @@ using UnityEngine;
 using AssetBundles;
 
 
-public class TestGui : MonoBehaviour
+public class TestGui : BaseGui
 {
     public TestView TestView;
 
@@ -43,23 +43,28 @@ public class TestGui : MonoBehaviour
 
     private void OnClick()
     {
-       //var prefab = ServiceLocator.Resolve<ResourceService>().LoadModelSync(TestView.TestInput.text);
+        //var prefab = ServiceLocator.Resolve<ResourceService>().LoadModelSync(TestView.TestInput.text);
 
-       // if (prefab != null)
-       // {
-       //     var obj1 = Instantiate(prefab);
+        // if (prefab != null)
+        // {
+        //     var obj1 = Instantiate(prefab);
 
-       //     objQueue.Enqueue(obj1);
-       // }
-        ServiceLocator.Resolve<ResourceService>().LoadModelAsync(TestView.TestInput.text, (obj) =>
-       {
-           if (obj != null)
-           {
-               var obj1 = Instantiate(obj);
+        //     objQueue.Enqueue(obj1);
+        // }
 
-               objQueue.Enqueue(obj1);
-           }
-       });
+        ServiceLocator.Resolve<PrefabLoadMgr>().LoadAsync(TestView.TestInput.text, (assetName, obj) =>
+        {
+            objQueue.Enqueue(obj);
+        }, transform);
+       //ServiceLocator.Resolve<ResourceService>().LoadModelAsync(TestView.TestInput.text, (obj) =>
+       //{
+       //    if (obj != null)
+       //    {
+       //        var obj1 = Instantiate(obj);
+
+       //        objQueue.Enqueue(obj1);
+       //    }
+       //});
     }
 
     private void UnLoad_OnClick()
@@ -72,7 +77,7 @@ public class TestGui : MonoBehaviour
 
         Destroy(b);
 
-        ServiceLocator.Resolve<ResourceService>().UnLoadAsset(b);
+        ServiceLocator.Resolve<PrefabLoadMgr>().Destroy(b);
     }
 
     private void Start()

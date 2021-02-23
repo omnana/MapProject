@@ -49,7 +49,7 @@ namespace AssetBundles
         /// <returns></returns>
         public bool IsFileExist(string abName)
         {
-            return false;
+            return dependsDataDic.ContainsKey(abName);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace AssetBundles
         /// </summary>
         /// <param name="abName"></param>
         /// <returns></returns>
-        public AssetBundleObject LoadAssetBundleSync(string abName)
+        private AssetBundleObject LoadAssetBundleSync(string abName)
         {
             AssetBundleObject obj = null;
 
@@ -202,7 +202,7 @@ namespace AssetBundles
         /// </summary>
         /// <param name="abName"></param>
         /// <param name="callFun"></param>
-        public AssetBundleObject LoadAssetBundleAsync(string abName, AssetBundleLoadCallBack callFun)
+        private AssetBundleObject LoadAssetBundleAsync(string abName, AssetBundleLoadCallBack callFun)
         {
             AssetBundleObject obj = null;
 
