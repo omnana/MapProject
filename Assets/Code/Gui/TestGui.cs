@@ -1,10 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine.UI;
-using UnityEngine.U2D;
 using UnityEngine;
-using AssetBundles;
-
 
 public class TestGui : BaseGui
 {
@@ -13,10 +9,10 @@ public class TestGui : BaseGui
     public Image image;
 
     public Button TestBtn;
-    public Button TestBtn1;
 
     public Button UnLoadBtn;
-    public Button UnLoadBtn1;
+
+    public Button HttpGetBtn;
 
     private Queue<GameObject> objQueue = new Queue<GameObject>();
 
@@ -25,16 +21,26 @@ public class TestGui : BaseGui
     {
         TestView.BindingContext = new TestViewModel();
 
-        MessageAggregator<string>.Instance.Subscribe("Test", RefreshTest);
+        TestView.OnAppear();
 
-        TestView.TestInput.onValueChanged.AddListener(n =>
-        {
-            MessageAggregator<string>.Instance.Publish("Test", this, new MessageArgs<string>(n));
-        });
+        TestView.TestInput.onValueChanged.AddListener(n => { TestView.ExcuteSetInput(n); });
 
         TestBtn.onClick.AddListener(OnClick);
 
         UnLoadBtn.onClick.AddListener(UnLoad_OnClick);
+
+        HttpGetBtn.onClick.AddListener(HttpGetBtn_OnClick);
+    }
+
+    private void Start()
+    {
+        var data = FiguresModelMgr.Ins.GetModelById(1);
+
+        Debug.Log(data.Brief);
+
+        image.sprite = ServiceContainer.Resolve<ResourceService>().LoadSpriteFromAtlasSync("RedPoint1");
+
+        image.SetNativeSize();
     }
 
     private void OnClick()
@@ -52,6 +58,7 @@ public class TestGui : BaseGui
         {
             objQueue.Enqueue(obj);
         }, transform);
+
        //ServiceLocator.Resolve<ResourceService>().LoadModelAsync(TestView.TestInput.text, (obj) =>
        //{
        //    if (obj != null)
@@ -76,21 +83,8 @@ public class TestGui : BaseGui
         ServiceLocator.Resolve<PrefabLoadMgr>().Destroy(b);
     }
 
-    private void Start()
+    private void HttpGetBtn_OnClick()
     {
-        image.sprite = ServiceLocator.Resolve<ResourceService>().LoadSpriteFromAtlasSync("RedPoint1");
-    }
-
-   
-    private int A(int i)
-    {
-        if (i == 1 || i == 2) return 1;
-
-        return A(i - 1) + A(i - 2);
-    }
-
-    private void RefreshTest(object sender, MessageArgs<string> args)
-    {
-        TestView.TestViewModel.TestName.Value = args.Item;
+        TestView.ExcuteGetData();
     }
 }

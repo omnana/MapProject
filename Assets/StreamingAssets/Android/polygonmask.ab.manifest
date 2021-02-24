@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 3397048576
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: a5663c06e255a9dc4fd73fbf66c0aac0
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 55d48f4ad9c3b13330b9eb5ee5686477
+HashAppended: 0
+ClassTypes:
+- Class: 48
+  Script: {instanceID: 0}
+Assets:
+- Assets/Art/Shader/PolygonMask.shader
+Dependencies: []

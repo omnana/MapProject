@@ -16,7 +16,7 @@ public class GuiManager : MonoBehaviour
     {
         Instance = this;
 
-        resourceService = ServiceLocator.Resolve<ResourceService>();
+        resourceService = ServiceContainer.Resolve<ResourceService>();
     }
 
     /// <summary>
@@ -30,7 +30,7 @@ public class GuiManager : MonoBehaviour
             uiName = typeof(T).ToString();
         }
 
-        var uiPrefab = resourceService.LoadAssetSync<GameObject>(ResourceType.Gui, uiName);
+        var uiPrefab = resourceService.LoadAssetSync<GameObject>(uiName);
 
         if (uiPrefab != null)
         {
@@ -54,7 +54,7 @@ public class GuiManager : MonoBehaviour
             uiName = typeof(T).ToString();
         }
 
-        resourceService.LoadAssetAsync<GameObject>(ResourceType.Gui, uiName, (obj) =>
+        resourceService.LoadAssetAsync<GameObject>(uiName, (obj) =>
          {
              if (obj != null)
              {

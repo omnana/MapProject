@@ -9,11 +9,16 @@ public class ContainerInit : MonoBehaviour
     {
         DontDestroyOnLoad(this);
 
+        InitMgr();
+
         InitServices();
 
         InitCtrl();
 
-        InitMgr();
+        TableMgrInit.Init(() => 
+        {
+            GuiManager.Instance.OpenAsync<TestGui>();
+        });
     }
 
     private void InitCtrl()
@@ -23,16 +28,20 @@ public class ContainerInit : MonoBehaviour
 
     private void InitServices()
     {
-        ServiceLocator.RegisterSingleton<ResourceService>();
+        // 基础服务
+        ServiceContainer.AddService<RestService>(gameObject);
+        ServiceContainer.AddService<ResourceService>(gameObject);
+        // 业务服务
+        ServiceContainer.AddService<TestServicer>(gameObject);
     }
 
     private void InitMgr()
     {
-        ServiceLocator.RegisterSingleton<AssetBundleMgr>();
-        ServiceLocator.RegisterSingleton<ResourcesLoadMgr>();
 #if UNITY_EDITOR
         ServiceLocator.RegisterSingleton<EditorAssetLoadMgr>();
 #endif
+        ServiceLocator.RegisterSingleton<AssetBundleMgr>();
+        ServiceLocator.RegisterSingleton<ResourcesLoadMgr>();
         ServiceLocator.RegisterSingleton<AssetLoadMgr>();
         ServiceLocator.RegisterSingleton<PrefabLoadMgr>();
     }

@@ -43,4 +43,14 @@ public class TestView : ViewBase<TestViewModel>
     {
         TestInput.text = newValue;
     }
+
+    public void ExcuteGetData()
+    {
+        MessageAggregator<object>.Instance.Publish("GetData", this, new MessageArgs<object>(0));
+    }
+
+    public void ExcuteSetInput(string input)
+    {
+        MessageAggregator<string>.Instance.Publish("SetInput", this, new MessageArgs<string>(input));
+    }
 }

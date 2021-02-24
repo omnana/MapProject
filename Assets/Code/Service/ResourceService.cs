@@ -5,20 +5,16 @@ using AssetBundles;
 using System;
 using Object = UnityEngine.Object;
 
-public class ResourceService : BaseCtrl
+public class ResourceService : ServiceBase
 {
     private AssetLoadMgr assetLoadMgr;
 
     private PrefabLoadMgr prefabLoadMgr;
 
 
-    public override void DispoWith()
+    public override void Loaded()
     {
-        base.DispoWith();
-    }
-
-    public ResourceService()
-    {
+        base.Loaded();
         assetLoadMgr = ServiceLocator.Resolve<AssetLoadMgr>();
         prefabLoadMgr = ServiceLocator.Resolve<PrefabLoadMgr>();
     }
@@ -77,13 +73,49 @@ public class ResourceService : BaseCtrl
     }
 
     /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="configName"></param>
+    /// <returns></returns>
+    public TextAsset LoadTxtSync(string configName)
+    {
+        if (string.IsNullOrEmpty(configName)) return null;
+
+        var obj = assetLoadMgr.LoadSync(configName);
+
+        if (obj != null)
+        {
+            return obj as TextAsset;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="configName"></param>
+    /// <param name="callback"></param>
+    public void LoadTxtAsync(string configName, Action<string> callback)
+    {
+        if (string.IsNullOrEmpty(configName)) return;
+
+        assetLoadMgr.LoadAsync(configName, (name, obj) =>
+        {
+            callback?.Invoke(obj.ToString());
+
+            assetLoadMgr.Unload(obj);
+        });
+    }
+
+    /// <summary>
     /// 同步加载资源
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="type"></param>
     /// <param name="assetName"></param>
     /// <returns></returns>
-    public T LoadAssetSync<T>(ResourceType type, string assetName) where T : Object
+    public T LoadAssetSync<T>(string assetName) where T : Object
     {
         var obj = assetLoadMgr.LoadSync(assetName);
 
@@ -102,7 +134,7 @@ public class ResourceService : BaseCtrl
     /// <param name="type"></param>
     /// <param name="assetName"></param>
     /// <returns></returns>
-    public void LoadAssetAsync<T>(ResourceType type, string assetName, Action<T> callback) where T : Object
+    public void LoadAssetAsync<T>(string assetName, Action<T> callback) where T : Object
     {
         assetLoadMgr.LoadAsync(assetName, (name, obj) =>
         {

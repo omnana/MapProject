@@ -37,6 +37,7 @@ public class ViewBase<T> : MonoBehaviour, IView<T> where T: ViewModelBase
 
     public Action OnRevealed; // 显示完毕，额外操作
 
+
     protected virtual void OnBindingContextChanged(T oldViewModel, T newViewModel)
     {
         Binder.Unbind(oldViewModel);

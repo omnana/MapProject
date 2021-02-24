@@ -69,7 +69,7 @@ public class EditorAssetLoadMgr : BaseCtrl
         {
             var assetPath = GetAssetPath(resourceDic[assetName]);
 
-            return UnityEditor.AssetDatabase.LoadAssetAtPath<Object>(assetPath);
+            return AssetDatabase.LoadAssetAtPath<Object>(assetPath);
         }
 
         return null;
@@ -82,8 +82,6 @@ public class EditorAssetLoadMgr : BaseCtrl
         {
             return;
         }
-
-        Object.Destroy(asset);
 
         asset = null;
     }

@@ -4,13 +4,30 @@ using UnityEngine;
 
 public class TestCtrl : BaseCtrl
 {
-    public TestCtrl()
+    public TestServicer TestServicer;
+
+    private TestViewModel TestViewModel
     {
-        Debug.Log("TestCtrl init");
+        get
+        {
+            return viewModel as TestViewModel;
+        }
     }
 
-    public string GetData()
+    public TestCtrl()
     {
-        return "robot";
+        TestServicer = ServiceContainer.Resolve<TestServicer>();
+    }
+
+    public async void GetData()
+    {
+        await TestServicer.Test();
+    }
+
+    public void SetInput(string input)
+    {
+        TestViewModel.TestName.Value = input;
+
+        TestViewModel.TestInput.Value = input;
     }
 }

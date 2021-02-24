@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 1825617040
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: d76f555e05fc118f9bb9556182160e33
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 5ad585dd02dfb5016c0dad519eab8f49
+HashAppended: 0
+ClassTypes:
+- Class: 49
+  Script: {instanceID: 0}
+Assets:
+- Assets/Art/Configs/Figures.json
+Dependencies: []

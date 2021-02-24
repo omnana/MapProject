@@ -21,7 +21,6 @@ public class Code : MonoBehaviour
 
     private void Start()
     {
-        GuiManager.Instance.OpenAsync<TestGui>();
     }
 
     private void Update()

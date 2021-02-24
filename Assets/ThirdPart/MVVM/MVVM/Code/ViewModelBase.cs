@@ -14,12 +14,13 @@ public class ViewModelBase
 
     public bool IsHideInProgress { get; private set; }
 
+    protected BaseCtrl controller { get; set; }
+
     /// <summary>
     /// 初始化
     /// </summary>
     protected virtual void OnInitialize()
     {
-
     }
 
     /// <summary>

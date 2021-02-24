@@ -1,18 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
-public class TestServicer : MonoBehaviour
+public class TestServicer : ServiceBase
 {
-    // Start is called before the first frame update
-    void Start()
+    public RestService RestService;
+
+    public override void Loaded()
     {
-        
+        base.Loaded();
+
+        RestService = ServiceContainer.Resolve<RestService>();
     }
 
-    // Update is called once per frame
-    void Update()
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public async Task<string> Test()
     {
-        
+        var data = await RestService.HttpGet<object>("www.baidu.com");
+
+        return "Test";
     }
 }
