@@ -1,34 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 
 namespace VoiceChat.Behaviour
 {
-    public class VoiceChatRecorder : MonoBehaviour
+    public class VoiceChatRecorder : ServiceBase
     {
-        #region Instance
-
-        static VoiceChatRecorder instance;
-
-        public static VoiceChatRecorder Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = FindObjectOfType(typeof(VoiceChatRecorder)) as VoiceChatRecorder;
-                }
-
-                return instance;
-            }
-        }
-
         public AudioClip audioClip
         {
             get { return clip; }
         }
-
-        #endregion
 
         public event Action StartedRecording;
 
@@ -103,53 +85,34 @@ namespace VoiceChat.Behaviour
 
         public event System.Action<VoiceChatPacket> NewSample;
 
-        private void Awake()
+        public void Loaded()
         {
-            if (instance != null && instance != this)
-            {
-                MonoBehaviour.Destroy(this);
-                Debug.LogError("Only one instance of VoiceChatRecorder can exist");
-                return;
-            }
-
             Application.RequestUserAuthorization(UserAuthorization.Microphone);
 
-            instance = this;
-
             string[] Devices = Microphone.devices;
+
             if (Devices.Length > 0)
             {
                 Device = Microphone.devices[0];
             }
+
         }
+
 
         private void OnEnable()
         {
-            if (instance != null && instance != this)
-            {
-                MonoBehaviour.Destroy(this);
-                Debug.LogError("Only one instance of VoiceChatRecorder can exist");
-                return;
-            }
-
             Application.RequestUserAuthorization(UserAuthorization.Microphone);
-            instance = this;
+
+            StartRecording();
         }
 
         private void OnDisable()
         {
-            if (instance == this)
-            {
-                instance = null;
-            }
+           
         }
 
         private void OnDestroy()
         {
-            if (instance == this)
-            {
-                instance = null;
-            }
         }
 
         private void Update()
@@ -160,7 +123,6 @@ namespace VoiceChat.Behaviour
             }
 
             forceTransmit -= Time.deltaTime;
-
 
             bool transmit = transmitToggled;
 
@@ -186,6 +148,11 @@ namespace VoiceChat.Behaviour
             }
         }
 
+        /// <summary>
+        /// 重新取样
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="dst"></param>
         private void Resample(float[] src, float[] dst)
         {
             if (src.Length == dst.Length)
@@ -194,51 +161,56 @@ namespace VoiceChat.Behaviour
             }
             else
             {
-                //TODO: Low-pass filter 
-                float rec = 1.0f / (float)dst.Length;
+                //TODO: Low-pass filter 低通滤波器
+                float rec = 1.0f / dst.Length;
 
                 for (int i = 0; i < dst.Length; ++i)
                 {
-                    float interp = rec * (float)i * (float)src.Length;
-                    dst[i] = src[(int)interp];
+                    var interp = (int)(rec * i * src.Length);
+
+                    dst[i] = src[interp];
                 }
             }
         }
 
+        /// <summary>
+        /// 读取样本
+        /// </summary>
+        /// <param name="transmit"></param>
         private void ReadSample(bool transmit)
         {
-            // Extract data
+            // 提取数据， sampleIndex特定位置
             clip.GetData(sampleBuffer, sampleIndex);
 
-            // Grab a new sample buffer
+            // 抓住一个新的样品缓冲区
             float[] targetSampleBuffer = VoiceChatFloatPool.Instance.Get();
 
-            // Resample our real sample into the buffer
+            // 将我们的真实样本重新取样到缓冲区中
             Resample(sampleBuffer, targetSampleBuffer);
 
             // Forward index
             sampleIndex += recordSampleSize;
 
-            // Highest auto-detected frequency
+            // 最高自动检测频率
             float freq = float.MinValue;
             int index = -1;
 
-            // Auto detect speech, but no need to do if we're pushing a key to transmit
+            // 自动检测语音，但如果我们要按键传输，就不需要检测了
             if (autoDetectSpeaking && !transmit)
             {
-                // Clear FFT buffer
+                // 清除FFT缓冲区
                 for (int i = 0; i < fftBuffer.Length; ++i)
                 {
                     fftBuffer[i] = 0;
                 }
 
-                // Copy to FFT buffer
+                //  复制到FFT缓冲区
                 Array.Copy(targetSampleBuffer, 0, fftBuffer, 0, targetSampleBuffer.Length);
 
-                // Apply FFT
-                Exocortex.DSP.Fourier.FFT(fftBuffer, fftBuffer.Length / 2, Exocortex.DSP.FourierDirection.Forward);
+                // 应用FFT
+                Fourier.FFT(fftBuffer, fftBuffer.Length / 2, FourierDirection.Forward);
 
-                // Get highest frequency
+                // 获取最高频率
                 for (int i = 0; i < fftBuffer.Length; ++i)
                 {
                     if (fftBuffer[i] > freq)
@@ -249,10 +221,10 @@ namespace VoiceChat.Behaviour
                 }
             }
 
-            // If we have an event, and 
+            // 如果我们有一个事件，并且 
             if (NewSample != null && (transmit || forceTransmit > 0 || index >= autoDetectIndex))
             {
-                // If we auto-detected a voice, force recording for a while
+                // 如果我们自动检测到声音，就强行录音一会儿
                 if (index >= autoDetectIndex)
                 {
                     if (forceTransmit <= 0)
@@ -286,8 +258,8 @@ namespace VoiceChat.Behaviour
             var packet = VoiceChatUtils.Compress(buffer);
 
             packet.PacketId = ++packetId;
-            // Raise event
 
+            // Raise event
             NewSample?.Invoke(packet);
         }
 
@@ -304,14 +276,19 @@ namespace VoiceChat.Behaviour
 
             int minFreq;
             int maxFreq;
+
             Microphone.GetDeviceCaps(Device, out minFreq, out maxFreq);
 
             recordFrequency = minFreq == 0 && maxFreq == 0 ? 44100 : maxFreq;
-            recordSampleSize = recordFrequency / (targetFrequency / targetSampleSize);
+
+            recordSampleSize = targetSampleSize * recordFrequency / targetFrequency;
 
             clip = Microphone.Start(Device, true, 1, recordFrequency);
+
             sampleBuffer = new float[recordSampleSize];
+
             fftBuffer = new float[VoiceChatUtils.ClosestPowerOfTwo(targetSampleSize)];
+
             recording = true;
 
             if (StartedRecording != null)
@@ -336,6 +313,19 @@ namespace VoiceChat.Behaviour
         public void StopTransmit()
         {
             transmitToggled = false;
+        }
+
+        public void Setup()
+        {
+        }
+
+        public IEnumerator SetupAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

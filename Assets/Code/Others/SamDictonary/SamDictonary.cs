@@ -128,6 +128,7 @@ public class SamDictonary <TKey, TValue>
                 if (entries[i].hashCode == hashCode && entries[i].key.Equals(key)) return i;
             }
         }
+
         return -1;
     }
 

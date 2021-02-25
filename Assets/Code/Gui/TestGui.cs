@@ -30,6 +30,19 @@ public class TestGui : BaseGui
         UnLoadBtn.onClick.AddListener(UnLoad_OnClick);
 
         HttpGetBtn.onClick.AddListener(HttpGetBtn_OnClick);
+
+        var tree = new BSTTree();
+        tree.Add(8);
+        tree.Add(1);
+        tree.Add(3);
+        tree.Add(4);
+        tree.Add(5);
+        tree.Add(15);
+        tree.Add(9);
+
+        tree.MiddleOrderTraversal();
+
+        var s = tree.Search(5);
     }
 
     private void Start()

@@ -412,6 +412,12 @@ public class Fourier
         UnlockBufferF(ref buffer);
     }
 
+    /// <summary>
+    /// 傅里叶转换
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="length"></param>
+    /// <param name="direction"></param>
     public static void FFT(float[] data, int length, FourierDirection direction)
     {
         SyncLookupTableLength(length);
