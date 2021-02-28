@@ -46,9 +46,9 @@ public class DownloadFileMac
     {
         TryCount++;
 
-        //State = DownloadMacState.ResetSize;
+        State = DownloadMacState.ResetSize;
 
-        //if (!ResetSize()) return;
+        if (!ResetSize()) return;
 
         State = DownloadMacState.Download;
 
@@ -80,7 +80,7 @@ public class DownloadFileMac
         {
             DownUnit.Size = GetWebFileSize(DownUnit.DownUrl);
 
-            if (DownUnit.Size == 0) return false;
+            if (DownUnit.Size <= 0) return false;
         }
 
         CurSize = 0;
@@ -95,7 +95,7 @@ public class DownloadFileMac
     {
         if (string.IsNullOrEmpty(DownUnit.Md5)) return true; //不做校验，默认成功
 
-        string md5 = GetMD5HashFromFile(DownUnit.SavePath);
+        string md5 = MD5Helper.GetMD5HashFromFile(DownUnit.SavePath);
 
         if (md5 != DownUnit.Md5)
         {
@@ -143,7 +143,7 @@ public class DownloadFileMac
                 fs.Close();
 
                 fs = null;
-
+                
                 if (File.Exists(DownUnit.SavePath)) File.Delete(DownUnit.SavePath);
 
                 File.Move(tempFile, DownUnit.SavePath);
@@ -251,7 +251,9 @@ public class DownloadFileMac
 
             State = DownloadMacState.Error;
 
-            Error = string.Format("Download Error {0}", ex.Message);
+            Error = string.Format("Download Error : {0}", ex.Message);
+
+            Debug.LogError(Error);
         }
         finally
         {
@@ -269,47 +271,32 @@ public class DownloadFileMac
         return true;
     }
 
-    private string GetMD5HashFromFile(string fileName)
-    {
-        byte[] buffer = new byte[Md5ReadLen];
-
-        int readLength = 0;//每次读取长度
-
-        var output = new byte[Md5ReadLen];
-
-        using (Stream inputStream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-        {
-            using (System.Security.Cryptography.HashAlgorithm hashAlgorithm = new System.Security.Cryptography.MD5CryptoServiceProvider())
-            {
-                while ((readLength = inputStream.Read(buffer, 0, buffer.Length)) > 0) // 计算MD5
-                {
-                    hashAlgorithm.TransformBlock(buffer, 0, readLength, output, 0);
-                }
-
-                //完成最后计算，必须调用(由于上一部循环已经完成所有运算，所以调用此方法时后面的两个参数都为0)  
-                hashAlgorithm.TransformFinalBlock(buffer, 0, 0);
-
-                var retVal = hashAlgorithm.Hash;
-
-                var sb = new System.Text.StringBuilder(32);
-
-                for (int i = 0; i < retVal.Length; i++)
-                {
-                    sb.Append(retVal[i].ToString("x2"));
-                }
-
-                hashAlgorithm.Clear();
-
-                inputStream.Close();
-
-                return sb.ToString();
-            }
-        }
-    }
-
     private int GetWebFileSize(string url)
     {
-        return 0;
+        HttpWebRequest request = null;
+        WebResponse respone = null;
+        int length = 0;
+        try
+        {
+            request = WebRequest.Create(url) as HttpWebRequest;
+            request.Timeout = TimeOutWait;
+            request.ReadWriteTimeout = ReadWriteTimeOut;
+            //向服务器请求，获得服务器回应数据流
+            respone = request.GetResponse();
+            length = (int)respone.ContentLength;
+        }
+        catch (WebException e)
+        {
+            Debug.Log("获取文件长度出错：" + e.Message);
+            State = DownloadMacState.Error;
+            Error = "Request File Length Error " + e.Message;
+        }
+        finally
+        {
+            if (respone != null) { respone.Close(); respone = null; }
+            if (request != null) { request.Abort(); request = null; }
+        }
+        return length;
     }
 
     /// <summary>

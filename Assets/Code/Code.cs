@@ -1,14 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using AssetBundles;
-using UnityEditor;
+﻿using UnityEngine;
 
 public class Code : MonoBehaviour
 {
     private AssetLoadMgr assetLoadMgr;
 
     private PrefabLoadMgr prefabLoadMgr;
+
+    private DownloadMgr downloadMgr;
 
     private void Awake()
     {
@@ -17,6 +15,8 @@ public class Code : MonoBehaviour
         assetLoadMgr = ServiceLocator.Resolve<AssetLoadMgr>();
 
         prefabLoadMgr = ServiceLocator.Resolve<PrefabLoadMgr>();
+
+        downloadMgr = ServiceLocator.Resolve<DownloadMgr>();
     }
 
     private void Start()
@@ -27,5 +27,6 @@ public class Code : MonoBehaviour
     {
         assetLoadMgr.Update();
         prefabLoadMgr.Update();
+        downloadMgr.Update();
     }
 }

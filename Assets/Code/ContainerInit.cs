@@ -15,10 +15,10 @@ public class ContainerInit : MonoBehaviour
 
         InitCtrl();
 
-        TableMgrInit.Init(() => 
-        {
-            GuiManager.Instance.OpenAsync<TestGui>();
-        });
+        //TableMgrInit.Init(() => 
+        //{
+        //    GuiManager.Instance.OpenAsync<TestGui>();
+        //});
     }
 
     private void InitCtrl()
@@ -44,5 +44,6 @@ public class ContainerInit : MonoBehaviour
         ServiceLocator.RegisterSingleton<ResourcesLoadMgr>();
         ServiceLocator.RegisterSingleton<AssetLoadMgr>();
         ServiceLocator.RegisterSingleton<PrefabLoadMgr>();
+        ServiceLocator.RegisterSingleton<DownloadMgr>();
     }
 }

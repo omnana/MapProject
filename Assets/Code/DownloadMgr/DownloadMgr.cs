@@ -22,6 +22,8 @@ using System.Net.Security;
 
 public class DownloadMgr
 {
+    public static DownloadMgr Inst = new DownloadMgr();
+
     private const int MAX_THREAD_COUNT = 20;
 
     private static readonly object mlock = new object();
@@ -34,7 +36,7 @@ public class DownloadMgr
 
     private List<DownloadFileMac> errorList;
 
-    private DownloadMgr()
+    public DownloadMgr()
     {
         readyList = new Queue<DownloadFileMac>();
 
