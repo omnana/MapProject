@@ -4,7 +4,7 @@ public interface ITableManager<T> where T : ITableModel
 {
     string TableName();
 
-    void InitModel(T model, Dictionary<string, object> cellMap);
+    void InitModel(T model, Dictionary<string, string> cellMap);
 
     object TableData { get; }
 }

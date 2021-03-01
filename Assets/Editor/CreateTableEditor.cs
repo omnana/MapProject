@@ -8,13 +8,30 @@ public class CreateTableEditor : Editor
 {
     private static string ScriptFoldPath = Application.dataPath + "/Code/ModelData/";
 
-    private static string ConfigFoldPath = Application.dataPath + "/Art/Configs";
+    private static string ConfigFoldPath = Application.dataPath + "/Art/Csv";
 
     private static string _modeTemplateContent;
 
     private static List<string> ScripteNameList = new List<string>();
 
-    [@MenuItem("Tools/Model解析工具/解析所有配置,会覆盖已存在脚本")]
+    private static Dictionary<string, string> FieldTypeDic = new Dictionary<string, string>()
+    {
+        {"string", "            model.{0} = cellMap[\"{1}\"];" },
+        {"int", "            model.{0} = FieldParser.IntParser(cellMap[\"{1}\"]);" },
+        {"float", "            model.{0} = FieldParser.FloatParser(cellMap[\"{1}\"]);" },
+        {"long", "            model.{0} = FieldParser.LongParser(cellMap[\"{1}\"]);" },
+        {"double", "            model.{0} = FieldParser.DoubleParser(cellMap[\"{1}\"]);" },
+        {"int[]", "            model.{0} = FieldParser.IntArrayParser(cellMap[\"{1}\"]);" },
+        {"int[][]", "            model.{0} = FieldParser.IntArraysParser(cellMap[\"{1}\"]);" },
+        {"float[]", "            model.{0} = FieldParser.FloatArrayParser(cellMap[\"{1}\"]);" },
+        {"float[][]", "            model.{0} = FieldParser.FloatArraysParser(cellMap[\"{1}\"]);" },
+        {"long[]", "            model.{0} = FieldParser.LongArrayParser(cellMap[\"{1}\"]);" },
+        {"long[][]", "            model.{0} = FieldParser.LongArraysParser(cellMap[\"{1}\"]);" },
+        {"double[]", "            model.{0} = FieldParser.DoubleArrayParser(cellMap[\"{1}\"]);" },
+        {"double[][]", "            model.{0} = FieldParser.DoubleArraysParser(cellMap[\"{1}\"]);" },
+    };
+
+    [@MenuItem("Tools/Csv/解析所有配置,会覆盖已存在脚本")]
     public static void Parse()
     {
         var fullPath = ConfigFoldPath;
@@ -33,7 +50,7 @@ public class CreateTableEditor : Editor
             {
                 var fileName = files[i].Name;
 
-                if (fileName.EndsWith(".json"))
+                if (fileName.EndsWith(".csv"))
                 {
                     EditorUtility.DisplayProgressBar("解析Json", "解析中...", i / (float)files.Length);
 
@@ -47,7 +64,7 @@ public class CreateTableEditor : Editor
 
     private static void GenerateModelFile(string tableName)
     {
-        tableName = tableName.Substring(0, tableName.Length - 5); // 去掉".json"
+        tableName = tableName.Substring(0, tableName.Length - 4); // 去掉".csv"
 
         if (string.IsNullOrEmpty(tableName))
         {
@@ -71,13 +88,10 @@ public class CreateTableEditor : Editor
             sb.AppendLine("");
             sb.AppendLine(string.Format("public class {0}Model : ITableModel", tableName));
             sb.AppendLine("{");
-            sb.AppendLine("    public int Id { get; set; }");
-            foreach (var header in headers)
+            for (var i = 0; i < headers[0].Count; i++)
             {
-                if (!header.Equals("Id"))
-                {
-                    sb.AppendLine(string.Format("    public string {0} ", header) + " { get; set; }");
-                }
+                sb.AppendLine(string.Format("    /// {0}", headers[2][i]));
+                sb.AppendLine(string.Format("    public {0} {1} ", headers[1][i], headers[0][i]) + " { get; set; }");
             }
             sb.AppendLine("    public object Key()");
             sb.AppendLine("    {");
@@ -91,25 +105,24 @@ public class CreateTableEditor : Editor
             sb.AppendLine("    {");
             sb.AppendLine(string.Format("        return \"{0}\";", tableName));
             sb.AppendLine("    }");
-            sb.AppendLine(string.Format("    public override void InitModel({0}Model model, Dictionary<string, object> cellMap)", tableName));
+            sb.AppendLine(string.Format("    public override void InitModel({0}Model model, Dictionary<string, string> cellMap)", tableName));
             sb.AppendLine("    {");
-            sb.AppendLine("        if (cellMap[\"Id\"] != null)");
-            sb.AppendLine("            model.Id = int.Parse(cellMap[\"Id\"].ToString());");
-            foreach (var header in headers)
+            for (var i = 0; i < headers[0].Count; i++)
             {
-                if (!header.Equals("Id"))
-                {
-                    sb.AppendLine(string.Format("        if (cellMap[\"{0}\"] != null)", header));
-                    sb.AppendLine(string.Format("            model.{0} = cellMap[\"{1}\"].ToString();", header, header));
-                }
+                sb.AppendLine(string.Format("        /// {0};", headers[2][i]));
+                sb.AppendLine(string.Format("        if (cellMap[\"{0}\"] != null)", headers[0][i]));
+                sb.AppendLine(string.Format(FieldTypeDic[headers[1][i]], headers[0][i], headers[0][i]));
             }
             sb.AppendLine("    }");
             sb.AppendLine("}");
 
-            sw.Write(sb.ToString());
+            sw.Write(sb);
             sw.Close();
             fs.Close();
         }
+        object arr = new int[3];
+
+        var d = (int[])arr;
         Debug.Log("生成数据模型代码成功:" + tableName);
     }
 }

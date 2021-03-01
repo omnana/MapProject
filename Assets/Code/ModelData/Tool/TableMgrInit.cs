@@ -4,16 +4,16 @@ public class TableMgrInit
 {
     private static Type[] types = new Type[]
     {
-        typeof(FiguresModelMgr),
+        typeof(TestModelMgr),
     };
 
     public static void Init(Action callback)
     {
         var tableCount = types.Length;
 
-        FiguresModelMgr.Ins = new FiguresModelMgr();
+        TestModelMgr.Ins = new TestModelMgr();
 
-        FiguresModelMgr.Ins.Reload(callback);
+        TestModelMgr.Ins.Reload(callback);
 
         //foreach (var t in types)
         //{

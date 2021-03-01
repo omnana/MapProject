@@ -75,5 +75,10 @@ namespace AssetBundles
                     return null;
             }
         }
+
+        public static string GetMainfestFileVersionPath()
+        {
+            return string.Format("{0}/{1}/{2}.{3}", Application.streamingAssetsPath, GetPlatformName(), GetPlatformName(), "manifest");
+        }
     }
 }

@@ -8,7 +8,7 @@ public abstract class TableManager<T, M> : ITableManager<T> where T : ITableMode
 
     public abstract string TableName();
 
-    public abstract void InitModel(T model, Dictionary<string, object> cellMap);
+    public abstract void InitModel(T model, Dictionary<string, string> cellMap);
 
     public object TableData => _modelArray;
 

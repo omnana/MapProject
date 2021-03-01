@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SimulationThermalUpdates : MonoBehaviour
 {
+
     private IEnumerator Start()
     {
         yield return new WaitForEndOfFrame();
@@ -27,9 +28,26 @@ public class SimulationThermalUpdates : MonoBehaviour
         DownloadMgr.Inst.DownloadAsync(
         new DownloadUnit()
         {
-            DownUrl = "http://192.168.31.219:80/Windows/Windows.manifest",
+            DownUrl = ServerHelper.DownloadUrl + "Windows.manifest",
             SavePath = Application.streamingAssetsPath + "/Windows/Windows.manifest",
-            Name = "Windows.manifest"
+            Name = "Windows.manifest",
+            ErrorFun = DonwloadError,
+            ProgressFun = DonwloadProcess,
+            CompleteFun = DonwloadComplete,
         });
+    }
+
+    private void DonwloadProcess(DownloadUnit unit, int curSize, int allize)
+    {
+        Debug.Log("DonwloadProcess -> " + curSize + ", all = " + allize);
+    }
+
+    private void DonwloadComplete(DownloadUnit unit)
+    {
+        Debug.Log("DonwloadComplete -> " + unit.Name);
+    }
+
+    private void DonwloadError(DownloadUnit unit, string msg)
+    {
     }
 }

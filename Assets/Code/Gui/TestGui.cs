@@ -57,9 +57,9 @@ public class TestGui : BaseGui
 
     private void Start()
     {
-        var data = FiguresModelMgr.Ins.GetModelById(1);
+        //var data = FiguresModelMgr.Ins.GetModelById(1);
 
-        Debug.Log(data.Brief);
+        //Debug.Log(data.Brief);
 
         image.sprite = ServiceContainer.Resolve<ResourceService>().LoadSpriteFromAtlasSync("RedPoint1");
 

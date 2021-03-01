@@ -27,6 +27,8 @@ namespace AssetBundles
 
         private const int Max_Loading_Count = 10;
 
+        private MainfestVersion localMainfestVersion;
+
         public void Init()
         {
             queueDic = new Dictionary<objStatus, Dictionary<string, AssetBundleObject>>()
@@ -109,7 +111,9 @@ namespace AssetBundles
                 return;
             }
 
-            var mainfest = ab.LoadAsset("AssetBundleManifest") as AssetBundleManifest;
+            var asset = ab.LoadAsset("AssetBundleManifest");
+
+            var mainfest = asset as AssetBundleManifest;
 
             if (mainfest == null)
             {
@@ -138,7 +142,7 @@ namespace AssetBundles
 
             ab = null;
 
-            Debug.Log("AssetBundleLoadMgr dependsCount=" + dependsDataDic.Count);
+            Debug.Log("AssetBundleLoadMgr dependsCount = " + dependsDataDic.Count);
         }
 
         /// <summary>
