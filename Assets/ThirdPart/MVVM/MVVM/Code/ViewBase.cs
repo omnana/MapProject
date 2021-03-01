@@ -45,7 +45,6 @@ public class ViewBase<T> : MonoBehaviour, IView<T> where T: ViewModelBase
         Binder.Bind(newViewModel);
     }
 
-
     /// <summary>
     /// 无所ViewModel的Value怎样变化，只对OnValueChanged事件监听(绑定)一次
     /// </summary>

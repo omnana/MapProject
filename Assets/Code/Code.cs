@@ -2,6 +2,12 @@
 
 public class Code : MonoBehaviour
 {
+    public MgrInit MgrInit;
+
+    public ControllerInit ControllerInit;
+
+    public ServiceContainerInit ServiceContainerInit;
+
     private AssetLoadMgr assetLoadMgr;
 
     private PrefabLoadMgr prefabLoadMgr;
@@ -12,15 +18,17 @@ public class Code : MonoBehaviour
     {
         DontDestroyOnLoad(this);
 
+        MgrInit.Load();
+
+        ControllerInit.Load();
+
+        ServiceContainerInit.Load();
+
         assetLoadMgr = ServiceLocator.Resolve<AssetLoadMgr>();
 
         prefabLoadMgr = ServiceLocator.Resolve<PrefabLoadMgr>();
 
         downloadMgr = ServiceLocator.Resolve<DownloadMgr>();
-    }
-
-    private void Start()
-    {
     }
 
     private void Update()

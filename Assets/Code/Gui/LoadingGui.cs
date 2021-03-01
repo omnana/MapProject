@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class LoadingGui : BaseGui
 {
-    // Update is called once per frame
-    void Update()
+    public LoadingView LoadingView;
+
+    private void Awake()
     {
-        
+        LoadingView.BindingContext = new LoadingViewModel();
+
+        LoadingView.OnAppear();
     }
 }

@@ -123,6 +123,7 @@ public class CreateTableEditor : Editor
         object arr = new int[3];
 
         var d = (int[])arr;
+
         Debug.Log("生成数据模型代码成功:" + tableName);
     }
 }

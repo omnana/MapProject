@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2903823010
+CRC: 1293804437
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
       Name: common.ab
       Dependencies: {}
     Info_1:
-      Name: figures.ab
+      Name: test.ab
       Dependencies: {}
     Info_2:
       Name: m1.ab
@@ -36,8 +36,5 @@ AssetBundleManifest:
       Name: testshader.ab
       Dependencies: {}
     Info_10:
-      Name: loadinggui.ab
-      Dependencies: {}
-    Info_11:
       Name: testgui.ab
       Dependencies: {}

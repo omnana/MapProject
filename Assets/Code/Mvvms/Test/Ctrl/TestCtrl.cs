@@ -14,8 +14,10 @@ public class TestCtrl : BaseCtrl
         }
     }
 
-    public TestCtrl()
+    public override void Loaded(ViewModelBase vm)
     {
+        base.Loaded(vm);
+
         TestServicer = ServiceContainer.Resolve<TestServicer>();
     }
 

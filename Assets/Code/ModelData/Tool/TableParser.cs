@@ -83,17 +83,11 @@ public class TableParser
         {
             Debug.Log(path);
 
-            var txt = File.ReadAllText(path);
-
-            var content = txt.Replace("\r\n", "*");
-
-            Debug.Log(content);
-
-            var datas = content.Split('*');
+            var content = File.ReadAllLines(path);
 
             for (var i = 0; i < 3; i++)
             {
-                var d = datas[i].Split(',');
+                var d = content[i].Split(',');
 
                 headers[i] = new List<string>();
 
