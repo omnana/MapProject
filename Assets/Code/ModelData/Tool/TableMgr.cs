@@ -10,11 +10,11 @@ public abstract class TableManager<T, M> : ITableManager<T> where T : ITableMode
 
     public abstract void InitModel(T model, Dictionary<string, string> cellMap);
 
-    public object TableData => _modelArray;
+    public object TableData => modelArray;
 
-    private T[] _modelArray;
+    private T[] modelArray;
 
-    private readonly Dictionary<object, int> _keyModelMap = new Dictionary<object, int>();
+    private readonly Dictionary<object, int> keyModelMap = new Dictionary<object, int>();
 
     internal TableManager()
     {
@@ -22,38 +22,36 @@ public abstract class TableManager<T, M> : ITableManager<T> where T : ITableMode
 
     public virtual void Init()
     {
-        //Reload();
+        Reload();
     }
 
-    public void Reload(Action callback)
+    public void Reload()
     {
-        ServiceContainer.Resolve<ResourceService>().StartCoroutine(TableParser.Parse<T>(TableName(), InitModel, data =>
+        TableParser.Parse<T>(TableName(), InitModel, data =>
         {
             if (data != null)
             {
-                _keyModelMap.Clear();
+                keyModelMap.Clear();
 
-                _modelArray = data;
+                modelArray = data;
 
-                for (var i = 0; i < _modelArray.Length; ++i)
+                for (var i = 0; i < modelArray.Length; ++i)
                 {
-                    if (_modelArray[i] != null)
+                    if (modelArray[i] != null)
                     {
-                        var key = _modelArray[i].Key();
-                        if (_keyModelMap.ContainsKey(key))
+                        var key = modelArray[i].Key();
+                        if (keyModelMap.ContainsKey(key))
                         {
-                            _keyModelMap[key] = i;
+                            keyModelMap[key] = i;
                         }
                         else
                         {
-                            _keyModelMap.Add(key, i);
+                            keyModelMap.Add(key, i);
                         }
                     }
                 }
             }
-
-            callback?.Invoke();
-        }));
+        });
     }
 
     /// <summary>
@@ -64,11 +62,11 @@ public abstract class TableManager<T, M> : ITableManager<T> where T : ITableMode
     public T GetModelById(object key)
     {
         int index;
-        if (_keyModelMap.TryGetValue(key, out index))
+        if (keyModelMap.TryGetValue(key, out index))
         {
-            if (_modelArray != null)
+            if (modelArray != null)
             {
-                return _modelArray[index];
+                return modelArray[index];
             }
         }
         else
@@ -85,20 +83,20 @@ public abstract class TableManager<T, M> : ITableManager<T> where T : ITableMode
     /// <returns></returns>
     public T[] GetAllModel()
     {
-        return _modelArray;
+        return modelArray;
     }
 
     public List<T> GetAllModel(Func<T, bool> comp)
     {
         var list = new List<T>();
 
-        if (_modelArray != null)
+        if (modelArray != null)
         {
-            for (var i = 0; i < _modelArray.Length; ++i)
+            for (var i = 0; i < modelArray.Length; ++i)
             {
-                if (comp(_modelArray[i]))
+                if (comp(modelArray[i]))
                 {
-                    list.Add(_modelArray[i]);
+                    list.Add(modelArray[i]);
                 }
             }
         }

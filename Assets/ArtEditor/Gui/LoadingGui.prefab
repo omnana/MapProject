@@ -216,8 +216,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: -5, y: 0}
-  m_SizeDelta: {x: -20, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3323582765226835722
 GameObject:
@@ -228,7 +228,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7853534420770957328}
-  - component: {fileID: 3000163325831756609}
+  - component: {fileID: 6330489988436289415}
   m_Layer: 5
   m_Name: LoadingGui
   m_TagString: Untagged
@@ -258,7 +258,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &3000163325831756609
+--- !u!114 &6330489988436289415
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -267,9 +267,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3323582765226835722}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00d64d04edcae5d4bbd0369059f18170, type: 3}
+  m_Script: {fileID: 11500000, guid: cffac7e7bde38994ca272a1dc0c0a64a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Slider: {fileID: 5311851995194884372}
 --- !u!1 &3851275824901661496
 GameObject:
   m_ObjectHideFlags: 0
@@ -381,7 +382,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 500.4, y: 20}
+  m_SizeDelta: {x: 535.61, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5311851995194884372
 MonoBehaviour:
@@ -448,7 +449,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4302522422606707888
 RectTransform:
   m_ObjectHideFlags: 0
@@ -504,7 +505,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 10, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5589743927393323234
 CanvasRenderer:
@@ -527,7 +528,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.63800234, b: 0, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:

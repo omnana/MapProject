@@ -4,33 +4,34 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using AssetBundles;
+using System.Security.Cryptography;
 
 public class AssetBundleTool
 {
-    [MenuItem("AssetsBundle/打包安卓资源")]
-    static void BuildAndroidAssetBundles()
-    {
-        BuildAllAssetBundles(BuildTarget.Android);
-    }
+    //[MenuItem("AssetsBundle/打包安卓资源")]
+    //static void BuildAndroidAssetBundles()
+    //{
+    //    BuildAllAssetBundles(BuildTarget.Android);
+    //}
 
-    [MenuItem("AssetsBundle/打包苹果资源")]
-    static void BuildIosAssetBundles()
-    {
-        BuildAllAssetBundles(BuildTarget.iOS);
-    }
+    //[MenuItem("AssetsBundle/打包苹果资源")]
+    //static void BuildIosAssetBundles()
+    //{
+    //    BuildAllAssetBundles(BuildTarget.iOS);
+    //}
 
 
-    [MenuItem("AssetsBundle/打包Window资源")]
-    static void BuildWindowAssetBundles()
-    {
-        BuildAllAssetBundles(BuildTarget.StandaloneWindows64);
-    }
+    //[MenuItem("AssetsBundle/打包Window资源")]
+    //static void BuildWindowAssetBundles()
+    //{
+    //    BuildAllAssetBundles(BuildTarget.StandaloneWindows64);
+    //}
 
-    private static void BuildAllAssetBundles(BuildTarget buildTarget) // 进行打包
+    public static void BuildAllAssetBundles(BuildTarget buildTarget) // 进行打包
     {
         string dir = Utility.GetAssetBundlePath();
 
-        if(Directory.Exists(dir))
+        if (Directory.Exists(dir))
         {
             DeleteAllFile(dir);
         }
@@ -47,7 +48,7 @@ public class AssetBundleTool
             BuildPipeline.BuildAssetBundles(dir, builds, BuildAssetBundleOptions.None, buildTarget);
         }
     }
- 
+
     public static bool DeleteAllFile(string fullPath)
     {
         //获取指定路径下面的所有资源文件  然后进行删除
@@ -66,9 +67,10 @@ public class AssetBundleTool
 
                 File.Delete(FilePath);
             }
+
             return true;
         }
+
         return false;
     }
-
 }

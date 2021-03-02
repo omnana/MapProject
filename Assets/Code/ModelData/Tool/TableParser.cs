@@ -6,7 +6,6 @@ using System.Collections;
 using Newtonsoft.Json;
 public class TableParser
 {
-
     private static readonly List<string> TableHeaders = new List<string>();
 
     /// <summary>
@@ -20,45 +19,41 @@ public class TableParser
     /// <param name="initModel"></param>
     /// <param name="callback"></param>
     /// <returns></returns>
-    public static IEnumerator Parse<T>(string tableName, Action<T, Dictionary<string, string>> initModel, Action<T[]> callback)
+    public static void Parse<T>(string tableName, Action<T, Dictionary<string, string>> initModel, Action<T[]> callback)
     {
         T[] list = null;
 
-       ServiceContainer.Resolve<ResourceService>().LoadTxtAsync(tableName, txt =>
+        var txt = ServiceContainer.Resolve<ResourceService>().LoadTxtSync(tableName).text;
+
+        var content = txt.Replace("\r\n", "*");
+
+        var datas = content.Split('*');
+
+        var count = datas.Length - 3;
+
+        list = new T[count];
+
+        var headers = datas[0].Split(',');
+
+        for (var i = 0; i < count; i++)
         {
-            var content = txt.Replace("\r\n", "*");
+            var d = datas[i + 3].Split(',');
 
-            var datas = content.Split('*');
+            var m = Activator.CreateInstance<T>();
 
-            var count = datas.Length - 3;
+            var dic = new Dictionary<string, string>();
 
-            list = new T[count];
-
-            var headers = datas[0].Split(',');
-
-            for (var i = 3; i < count; i++)
+            for (var j = 0; j < headers.Length; i++)
             {
-                var d = datas[i].Split(',');
-
-                var m = Activator.CreateInstance<T>();
-
-                var dic = new Dictionary<string, string>();
-
-                for (var j = 0; j < headers.Length; i++)
-                {
-                    dic.Add(headers[j], d[j]);
-                }
-
-                initModel.Invoke(m, dic);
-
-                list[i] = m;
+                dic.Add(headers[j], d[j]);
             }
 
+            initModel.Invoke(m, dic);
 
-            callback?.Invoke(list);
-        });
+            list[i] = m;
+        }
 
-        yield return 0;
+        callback?.Invoke(list);
     }
 
     #region 给编辑器用

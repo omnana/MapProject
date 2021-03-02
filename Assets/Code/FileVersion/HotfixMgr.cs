@@ -26,6 +26,39 @@ public class HotfixMgr
 
     public delegate void HotfixCallback(HotfixState state, string msg, Action<bool> callback);
 
+    /// <summary>
+    /// 下载进度
+    /// </summary>
+    public float DownloadProgress
+    {
+        get
+        {
+            if (allDownloadSize == 0) return 0f;
+
+            return CurDownloadSize / (float)allDownloadSize;
+        }
+    }
+
+    private int[] curDownloadArray;
+
+    private int CurDownloadSize
+    {
+        get
+        {
+            var size = 0;
+
+            if (curDownloadArray == null) return 0;
+
+            for (var i = 0; i < curDownloadArray.Length; i++)
+            {
+                size += curDownloadArray[i];
+            }
+
+            return size;
+        }
+    }
+
+    private int allDownloadSize;
 
     private FileVersionMgr fileVersionMgr;
 
@@ -61,11 +94,17 @@ public class HotfixMgr
 
         fileVersionMgr = ServiceLocator.Resolve<FileVersionMgr>();
 
+        fileVersionMgr.Init();
+
         if (hotfixCallback == null)
         {
             Debug.LogError("Null Error is _currentState");
             return;
         }
+
+        clientVersion = new VersionCode();
+
+        serverVersion = new VersionCode();
 
 #if UNIRY_EDITOR
         //编辑器状态，不热更
@@ -101,9 +140,9 @@ public class HotfixMgr
     /// <summary>
     /// 读取服务端版本号
     /// </summary>
-    private void CheckCDNVersion()
+    public void CheckCDNVersion()
     {
-        DownloadMgr.Inst.ClearAllDownloads();
+        downloadMgr.ClearAllDownloads();
 
         currentState = HotfixState.CheckCDNVersion;
 
@@ -121,7 +160,7 @@ public class HotfixMgr
         versionUnit.ErrorFun = (DownloadUnit downUnit, string msg) =>
         {
             Debug.LogWarning("CheckAssetVersion Download Error " + msg + "\n" + downUnit.DownUrl);
-            DownloadMgr.Inst.DeleteDownload(versionUnit);
+            downloadMgr.DeleteDownload(versionUnit);
             UpdateError();
         };
 
@@ -172,25 +211,32 @@ public class HotfixMgr
     /// </summary>
     private void DownloadVersionFile()
     {
+        allDownloadSize = 0;
+
         currentState = HotfixState.DownloadVersionFile;
 
-        string versionListServerFile = GPath.PersistentAssetsPath + serverVersion.ToString() + ".txt";
+        var versionListServerFile = GPath.PersistentAssetsPath + serverVersion.ToString() + ".txt";
+
         if (File.Exists(versionListServerFile)) File.Delete(versionListServerFile);
 
-        DownloadUnit versionListUnit = new DownloadUnit();
-        versionListUnit.Name = serverVersion.ToString() + ".txt";
-        versionListUnit.DownUrl = GPath.CDNUrl + versionListUnit.Name;
-        versionListUnit.SavePath = versionListServerFile;
+        var versionListUnit = new DownloadUnit()
+        {
+            Name = serverVersion.ToString() + ".txt",
+            SavePath = versionListServerFile,
+            DownUrl = GPath.CDNUrl + serverVersion.ToString() + ".txt",
+        };
+
         versionListUnit.ErrorFun = (DownloadUnit downUnit, string msg) =>
         {
             Debug.LogWarning("CompareVersion Download Error " + msg + "\n" + downUnit.DownUrl);
-            DownloadMgr.Inst.DeleteDownload(versionListUnit);
+            downloadMgr.DeleteDownload(versionListUnit);
             UpdateError();
         };
+
         versionListUnit.CompleteFun = (DownloadUnit downUnit) =>
         {
-            if (!File.Exists(versionListServerFile))
-            {//文件不存在，重新下载
+            if (!File.Exists(versionListServerFile)) // 文件不存在，重新下载
+            {
                 UpdateError();
                 return;
             }
@@ -199,12 +245,17 @@ public class HotfixMgr
 
             var updateList = fileVersionMgr.FindUpdateFiles(clientVersion.Version);
 
+            allDownloadSize = fileVersionMgr.DownloadSize;
+
             Debug.Log("版本文件数量:" + updateList.Count);
+
             if (updateList.Count > 0) StartDownloadList(updateList);
+
             else SaveVersion();
         };
 
-        DownloadMgr.Inst.DownloadAsync(versionListUnit);
+        downloadMgr.DownloadAsync(versionListUnit);
+
         Debug.Log("版本文件url:" + versionListUnit.DownUrl);
     }
 
@@ -216,13 +267,15 @@ public class HotfixMgr
     {
         currentState = HotfixState.CompareAssetVersion;
 
-        string saveRootPath = GPath.PersistentAssetsPath;
-        string urlRootPath = GPath.CDNUrl;
+        var saveRootPath = GPath.StreamingAssetsPath;
+        var urlRootPath = GPath.CDNUrl;
 
-        List<DownloadUnit> downloadList = new List<DownloadUnit>();
-        Dictionary<string, int> downloadSizeList = new Dictionary<string, int>();
+        var downloadList = new List<DownloadUnit>();
+        var downloadSizeList = new Dictionary<string, int>();
         int downloadCount = updateList.Count;
         int downloadMaxCount = downloadCount;
+
+        curDownloadArray = new int[downloadCount];
 
         int existAllSize = 0;
         int totalAllSize = 0;
@@ -232,7 +285,7 @@ public class HotfixMgr
 
         foreach (var fileData in updateList)
         {
-            string savePath = saveRootPath + fileData.Name;
+            var savePath = saveRootPath + fileData.Name;
             if (File.Exists(savePath))
             {
                 FileInfo fi = new FileInfo(savePath);
@@ -242,8 +295,8 @@ public class HotfixMgr
                     //downloadNameList.Add(fileData.Name, fileData.Name);
                     //existAllName += fileData.Name;
                 }
-                else
-                {//长度不相等，需要重新下载
+                else // 长度不相等，需要重新下载
+                {
                     //Utils.Log("StartDownloadList Delete fileData.Size="+ fileData.Size + " fi.Length="+ fi.Length);
                     fi.Delete();
                     downloadSizeList.Add(fileData.Name, 0);
@@ -256,12 +309,13 @@ public class HotfixMgr
                 totalAllSize += fileData.Size;
             }
 
-            DownloadUnit downloadUnit = new DownloadUnit()
+            var downloadUnit = new DownloadUnit()
             {
                 Name = fileData.Name,
                 DownUrl = urlRootPath + fileData.Version + "/Assets/" + fileData.Name,
+                SavePath = savePath,
                 Size = fileData.Size,
-                Md5 = fileData.Md5
+                Md5 = fileData.Md5,
             };
 
             downloadUnit.ErrorFun = (DownloadUnit downUnit, string msg) =>
@@ -272,8 +326,10 @@ public class HotfixMgr
 
             downloadUnit.ProgressFun = (DownloadUnit downUnit, int curSize, int allSize) =>
             {
+                curDownloadArray[downloadMaxCount - downloadCount] = curSize;
                 downloadedFileSizes += curSize - downloadSizeList[downUnit.Name];
                 downloadSizeList[downUnit.Name] = curSize;
+                //Debug.LogFormat("正在下载资源：{0}，已下载大小：{1}，总大小：{2}", downUnit.Name, curSize, allSize);
             };
 
             downloadUnit.CompleteFun = (DownloadUnit downUnit) =>
@@ -282,9 +338,11 @@ public class HotfixMgr
 
                 int percent = (downloadMaxCount - downloadCount) * 10 / downloadMaxCount;
 
-                if (downloadCount == 0)
-                {//下载完成
+                if (downloadCount == 0) // 下载完成
+                {
                     SaveVersion();
+
+                    hotfixCallback(HotfixState.Finished, "下载完成", null);
                 }
             };
 

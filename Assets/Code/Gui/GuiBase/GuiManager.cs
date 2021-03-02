@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
-using AssetBundles;
 
 public class GuiManager : MonoBehaviour
 {
@@ -10,13 +9,13 @@ public class GuiManager : MonoBehaviour
 
     public Transform UiRoot;
 
-    private ResourceService resourceService;
+    private PrefabLoadMgr prefabLoadMgr;
 
     public virtual void Awake()
     {
         Instance = this;
 
-        resourceService = ServiceContainer.Resolve<ResourceService>();
+        prefabLoadMgr = ServiceLocator.Resolve<PrefabLoadMgr>();
     }
 
     /// <summary>
@@ -30,16 +29,20 @@ public class GuiManager : MonoBehaviour
             uiName = typeof(T).ToString();
         }
 
-        var uiPrefab = resourceService.LoadAssetSync<GameObject>(uiName);
+        BaseGui gui = null;
 
-        if (uiPrefab != null)
+        var uiObj = prefabLoadMgr.LoadSync(uiName, UiRoot);
+
+        if (uiObj != null)
         {
-            var uiObj = Instantiate(uiPrefab);
+            gui = uiObj.GetComponent<BaseGui>();
 
-            uiObj.transform.SetParent(UiRoot, false);
+            gui.Init();
 
             uiObj.SetActive(true);
         }
+
+        if (gui != null) gui.Open();
     }
 
     /// <summary>
@@ -54,16 +57,31 @@ public class GuiManager : MonoBehaviour
             uiName = typeof(T).ToString();
         }
 
-        resourceService.LoadAssetAsync<GameObject>(uiName, (obj) =>
-         {
-             if (obj != null)
-             {
-                 var uiObj = Instantiate(obj);
+        prefabLoadMgr.LoadAsync(uiName, (assetName, obj) =>
+        {
+            BaseGui gui = null;
 
-                 uiObj.transform.SetParent(UiRoot, false);
+            if (obj != null)
+            {
+                var uiObj = Instantiate(obj);
 
-                 uiObj.SetActive(true);
-             }
-         });
+                uiObj.transform.SetParent(UiRoot, false);
+
+                gui = uiObj.GetComponent<BaseGui>();
+
+                gui.Init();
+
+                uiObj.SetActive(true);
+            }
+
+            if (gui != null)
+                gui.Open();
+
+        }, UiRoot);
+    }
+
+    public void Close(BaseGui gui)
+    {
+        prefabLoadMgr.Destroy(gui.gameObject);
     }
 }

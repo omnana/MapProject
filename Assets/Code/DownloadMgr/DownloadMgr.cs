@@ -22,8 +22,6 @@ using System.Net.Security;
 
 public class DownloadMgr
 {
-    public static DownloadMgr Inst = new DownloadMgr();
-
     private const int MAX_THREAD_COUNT = 20;
 
     private static readonly object mlock = new object();
@@ -245,7 +243,7 @@ public class DownloadMgr
 
         for(var i = 0; i< completes.Length; i++)
         {
-            var info = completeList[i];
+            var info = completes[i];
 
             if (info.IsDelete) continue;
 
@@ -261,7 +259,7 @@ public class DownloadMgr
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("UpdateComplete " + ex.Message);
+                    Debug.LogError("UpdateComplete : " + ex.Message);
                 }
             }
         }

@@ -4,6 +4,21 @@ using System.IO;
 
 public class FileVersionMgr
 {
+    public int DownloadSize
+    {
+        get
+        {
+            var size = 0;
+
+            foreach(var d in fileList)
+            {
+                size += d.Value.Size;
+            }
+
+            return size;
+        }
+    }
+
     private Dictionary<string, FileVersionData> fileList;
 
     public void Init()
@@ -59,7 +74,7 @@ public class FileVersionMgr
         return null;
     }
 
-    //提取大于当前版本文件
+    // 提取大于当前版本文件
     public List<FileVersionData> FindUpdateFiles(int version)
     {
         List<FileVersionData> updateList = new List<FileVersionData>();
@@ -76,7 +91,7 @@ public class FileVersionMgr
         return updateList;
     }
 
-    //根据版本获取路径
+    // 根据版本获取路径
     public string GetFilePath(string Name)
     {
         if (fileList.ContainsKey(Name) && fileList[Name].InitPackage)
@@ -87,7 +102,7 @@ public class FileVersionMgr
         return GPath.StreamingAssetsPath + Name;
     }
 
-    //根据文件是否存在，返回路径，没有返回null
+    // 根据文件是否存在，返回路径，没有返回null
     public string GetFilePathByExist(string Name)
     {
         if (fileList.ContainsKey(Name) && fileList[Name].InitPackage)
@@ -105,7 +120,7 @@ public class FileVersionMgr
     }
 
 
-    //新文件或有更改，替换
+    // 新文件或有更改，替换
     public bool ReplaceFileVersionData(FileVersionData newData)
     {
         if (!fileList.ContainsKey(newData.Name))

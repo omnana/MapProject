@@ -166,7 +166,7 @@ public class PrefabLoadMgr : BaseCtrl
 
         goInstanceIDList.Add(instanceID, prefabObj);
 
-        if (parent != null) go.transform.SetParent(parent);
+        if (parent != null) go.transform.SetParent(parent, false);
 
         return go;
     }

@@ -31,6 +31,10 @@ public class Code : MonoBehaviour
         downloadMgr = ServiceLocator.Resolve<DownloadMgr>();
     }
 
+    private void Start()
+    {
+    }
+
     private void Update()
     {
         assetLoadMgr.Update();

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 版本文件单元
+/// </summary>
 public class FileVersionData
 {
     public string Name;

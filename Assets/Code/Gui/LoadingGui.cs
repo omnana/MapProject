@@ -1,15 +1,41 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine.UI;
+using AssetBundles;
 
 public class LoadingGui : BaseGui
 {
-    public LoadingView LoadingView;
+    public Slider Slider;
 
-    private void Awake()
+    private HotfixMgr hotfixMgr;
+
+    private AssetBundleMgr assetBundleMgr;
+
+    private void Start()
     {
-        LoadingView.BindingContext = new LoadingViewModel();
+        hotfixMgr = ServiceLocator.Resolve<HotfixMgr>();
 
-        LoadingView.OnAppear();
+        assetBundleMgr = ServiceLocator.Resolve<AssetBundleMgr>();
+
+        // 热更完毕或者已下载
+        hotfixMgr.RegisterRequsetCallback((state, sgm, isComplete) =>
+        {
+            assetBundleMgr.LoadMainfest();
+
+            TableMgrInit.Load();
+
+            GuiManager.Instance.OpenSync<TestGui>();
+
+            Destroy(gameObject);
+
+        });
+
+        hotfixMgr.Start();
+
+        hotfixMgr.CheckCDNVersion();
+    }
+
+
+    private void Update()
+    {
+        Slider.value = hotfixMgr.DownloadProgress;
     }
 }

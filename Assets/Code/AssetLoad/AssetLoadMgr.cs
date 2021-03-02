@@ -68,8 +68,6 @@ public class AssetLoadMgr
         ResourcesLoadMgr.Init();
 
         AssetBundleMgr.Init();
-
-        AssetBundleMgr.LoadMainfest();
     }
 
     /// <summary>
