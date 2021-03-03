@@ -93,17 +93,18 @@ public class CreateTableEditor : Editor
                 sb.AppendLine(string.Format("    /// {0}", headers[2][i]));
                 sb.AppendLine(string.Format("    public {0} {1} ", headers[1][i], headers[0][i]) + " { get; set; }");
             }
+            sb.AppendLine("");
             sb.AppendLine("    public object Key()");
             sb.AppendLine("    {");
             sb.AppendLine("        return Id;");
             sb.AppendLine("    }");
             sb.AppendLine("}");
             sb.AppendLine("");
-            sb.AppendLine(string.Format("public class {0}ModelMgr : TableManager<{1}Model, {2}ModelMgr>", tableName, tableName, tableName));
+            sb.AppendLine(string.Format("public class {0}ModelMgr : TableManager<{1}Model>", tableName, tableName, tableName));
             sb.AppendLine("{");
             sb.AppendLine("    public override string TableName()");
             sb.AppendLine("    {");
-            sb.AppendLine(string.Format("        return \"{0}\";", tableName));
+            sb.AppendLine(string.Format("        return \"{0}.csv\";", tableName));
             sb.AppendLine("    }");
             sb.AppendLine(string.Format("    public override void InitModel({0}Model model, Dictionary<string, string> cellMap)", tableName));
             sb.AppendLine("    {");

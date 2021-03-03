@@ -16,9 +16,10 @@ public class TestGui : BaseGui
 
     private Queue<GameObject> objQueue = new Queue<GameObject>();
 
-
-    void Awake()
+    public override void Init()
     {
+        base.Init();
+
         TestView.BindingContext = new TestViewModel();
 
         TestView.OnAppear();
@@ -55,9 +56,11 @@ public class TestGui : BaseGui
         tree.MiddleOrderTraversal();
     }
 
-    private void Start()
+    public override void Open()
     {
-        var data = TestModelMgr.Ins.GetModelById(1);
+        base.Open();
+
+        var data = TableMgrContainer.Resolve<TestModelMgr>().GetTableById(0);
 
         Debug.Log(data.Test1);
 
@@ -65,6 +68,7 @@ public class TestGui : BaseGui
 
         image.SetNativeSize();
     }
+
 
     private void OnClick()
     {

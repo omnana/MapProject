@@ -3,7 +3,7 @@
 public class TestModel : ITableModel
 {
     /// id
-    public long Id  { get; set; }
+    public int Id  { get; set; }
     /// 测试1
     public int Test1  { get; set; }
     /// 测试2
@@ -14,23 +14,24 @@ public class TestModel : ITableModel
     public int[][] Test4  { get; set; }
     /// 测试5
     public string Test5  { get; set; }
+
     public object Key()
     {
         return Id;
     }
 }
 
-public class TestModelMgr : TableManager<TestModel, TestModelMgr>
+public class TestModelMgr : TableManager<TestModel>
 {
     public override string TableName()
     {
-        return "Test";
+        return "Test.csv";
     }
     public override void InitModel(TestModel model, Dictionary<string, string> cellMap)
     {
         /// id;
         if (cellMap["Id"] != null)
-            model.Id = FieldParser.LongParser(cellMap["Id"]);
+            model.Id = FieldParser.IntParser(cellMap["Id"]);
         /// 测试1;
         if (cellMap["Test1"] != null)
             model.Test1 = FieldParser.IntParser(cellMap["Test1"]);

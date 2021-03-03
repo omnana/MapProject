@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using AssetBundles;
 
 public class Code : MonoBehaviour
 {
@@ -13,6 +14,10 @@ public class Code : MonoBehaviour
     private PrefabLoadMgr prefabLoadMgr;
 
     private DownloadMgr downloadMgr;
+
+    private HotfixMgr hotfixMgr;
+
+    private AssetBundleMgr assetBundleMgr;
 
     private void Awake()
     {
@@ -29,10 +34,30 @@ public class Code : MonoBehaviour
         prefabLoadMgr = ServiceLocator.Resolve<PrefabLoadMgr>();
 
         downloadMgr = ServiceLocator.Resolve<DownloadMgr>();
+
+        hotfixMgr = ServiceLocator.Resolve<HotfixMgr>();
+
+        assetBundleMgr = ServiceLocator.Resolve<AssetBundleMgr>();
+
+        // 热更完毕或者已下载
+        hotfixMgr.RegisterRequsetCallback((state, sgm, isComplete) =>
+        {
+            assetBundleMgr.LoadMainfest();
+
+            TableMgrLoader.StartLoad();
+
+            TableMgrLoader.DownloadFinishCallabck = () =>
+            {
+                MessageAggregator<object>.Instance.Publish("DownloadFinish", this, null);
+            };
+        });
     }
 
     private void Start()
     {
+        hotfixMgr.Start();
+
+        hotfixMgr.CheckCDNVersion();
     }
 
     private void Update()

@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3445705284
+CRC: 2158790573
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 0ca86aaaeb9868a17a4ef51a4a8c22fb
+    Hash: 7670ddbfa3217e10421b1545d0a165f0
   TypeTreeHash:
     serializedVersion: 2
     Hash: 5ad585dd02dfb5016c0dad519eab8f49
@@ -12,5 +12,5 @@ ClassTypes:
 - Class: 49
   Script: {instanceID: 0}
 Assets:
-- Assets/Art/Csv/Test.csv
+- Assets/Art/Csv/Test.csv.csv
 Dependencies: []

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 public delegate void MessageHandler<T>(object sender, MessageArgs<T> args);
+
 public class MessageAggregator<T>
 {
     private readonly Dictionary<string, MessageHandler<T>> messages = new Dictionary<string, MessageHandler<T>>();
@@ -32,5 +33,11 @@ public class MessageAggregator<T>
             //转发
             messages[name](sender, args);
         }
+    }
+
+
+    public void Remove(string name)
+    {
+        messages.Remove(name);
     }
 }

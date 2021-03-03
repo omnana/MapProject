@@ -26,7 +26,7 @@ public class FieldParser
 
     public static int[] IntArrayParser(string obj)
     {
-        var orignArr = obj.Split(',');
+        var orignArr = obj.Split('|');
 
         var arr = new int[orignArr.Length];
 
@@ -46,12 +46,7 @@ public class FieldParser
 
         for (var i = 0; i < orignArr.Length; i++)
         {
-            arrs[i] = new int[orignArr[i].Length];
-
-            for (var j = 0; j < orignArr[i].Length; j++)
-            {
-                arrs[i][j] = IntParser(orignArr[i]);
-            }
+            arrs[i] = IntArrayParser(orignArr[i]);
         }
 
         return arrs;
@@ -59,7 +54,7 @@ public class FieldParser
 
     public static float[] FloatArrayParser(string obj)
     {
-        var orignArr = obj.Split(',');
+        var orignArr = obj.Split('|');
 
         var arr = new float[orignArr.Length];
 
@@ -79,12 +74,7 @@ public class FieldParser
 
         for (var i = 0; i < orignArr.Length; i++)
         {
-            arrs[i] = new float[orignArr[i].Length];
-
-            for (var j = 0; j < orignArr[i].Length; j++)
-            {
-                arrs[i][j] = FloatParser(orignArr[i]);
-            }
+            arrs[i] = FloatArrayParser(orignArr[i]);
         }
 
         return arrs;
@@ -92,7 +82,7 @@ public class FieldParser
 
     public static long[] LongArrayParser(string obj)
     {
-        var orignArr = obj.Split(',');
+        var orignArr = obj.Split('|');
 
         var arr = new long[orignArr.Length];
 
@@ -112,12 +102,7 @@ public class FieldParser
 
         for (var i = 0; i < orignArr.Length; i++)
         {
-            arrs[i] = new long[orignArr[i].Length];
-
-            for (var j = 0; j < orignArr[i].Length; j++)
-            {
-                arrs[i][j] = LongParser(orignArr[i]);
-            }
+            arrs[i] = LongArrayParser(orignArr[i]);
         }
 
         return arrs;
@@ -125,7 +110,7 @@ public class FieldParser
 
     public static double[] DoubleArrayParser(string obj)
     {
-        var orignArr = obj.Split(',');
+        var orignArr = obj.Split('|');
 
         var arr = new double[orignArr.Length];
 
@@ -145,12 +130,7 @@ public class FieldParser
 
         for (var i = 0; i < orignArr.Length; i++)
         {
-            arrs[i] = new double[orignArr[i].Length];
-
-            for (var j = 0; j < orignArr[i].Length; j++)
-            {
-                arrs[i][j] = DoubleParser(orignArr[i]);
-            }
+            arrs[i] = DoubleArrayParser(orignArr[i]);
         }
 
         return arrs;

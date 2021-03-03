@@ -2,12 +2,9 @@
 using UnityEngine;
 using System.IO;
 using System;
-using System.Collections;
-using Newtonsoft.Json;
+
 public class TableParser
 {
-    private static readonly List<string> TableHeaders = new List<string>();
-
     /// <summary>
     /// 第一行为表头
     /// 第二行为字段类型
@@ -23,37 +20,38 @@ public class TableParser
     {
         T[] list = null;
 
-        var txt = ServiceContainer.Resolve<ResourceService>().LoadTxtSync(tableName).text;
-
-        var content = txt.Replace("\r\n", "*");
-
-        var datas = content.Split('*');
-
-        var count = datas.Length - 3;
-
-        list = new T[count];
-
-        var headers = datas[0].Split(',');
-
-        for (var i = 0; i < count; i++)
+        ServiceContainer.Resolve<ResourceService>().LoadTxtAsync(tableName, txt =>
         {
-            var d = datas[i + 3].Split(',');
+            var content = txt.Replace("\r\n", "*");
 
-            var m = Activator.CreateInstance<T>();
+            var datas = content.Split('*');
 
-            var dic = new Dictionary<string, string>();
+            var count = datas.Length - 3;
 
-            for (var j = 0; j < headers.Length; i++)
+            list = new T[count];
+
+            var headers = datas[0].Split(',');
+
+            for (var i = 0; i < count; i++)
             {
-                dic.Add(headers[j], d[j]);
+                var d = datas[i + 3].Split(',');
+
+                var m = Activator.CreateInstance<T>();
+
+                var dic = new Dictionary<string, string>();
+
+                for (var j = 0; j < headers.Length; j++)
+                {
+                    dic.Add(headers[j], d[j]);
+                }
+
+                initModel.Invoke(m, dic);
+
+                list[i] = m;
             }
 
-            initModel.Invoke(m, dic);
-
-            list[i] = m;
-        }
-
-        callback?.Invoke(list);
+            callback?.Invoke(list);
+        });
     }
 
     #region 给编辑器用
