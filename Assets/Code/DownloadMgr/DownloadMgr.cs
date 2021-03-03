@@ -360,7 +360,6 @@ public class DownloadMgr
         //线程数量不足，创建
         if (runningList.Count >= MAX_THREAD_COUNT) return;
 
-
         if(readyList.Count > 0)
         {
             var thread = new Thread(ThreadLoop);

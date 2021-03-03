@@ -232,20 +232,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2736494689229211352, guid: 65cdb7652fcc17647a114282739e5833,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3323582765226835722, guid: 65cdb7652fcc17647a114282739e5833,
         type: 3}
       propertyPath: m_Name
       value: LoadingGui
-      objectReference: {fileID: 0}
-    - target: {fileID: 3323582765226835722, guid: 65cdb7652fcc17647a114282739e5833,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7853534420770957328, guid: 65cdb7652fcc17647a114282739e5833,
         type: 3}

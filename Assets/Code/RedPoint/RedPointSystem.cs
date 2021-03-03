@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+//using Newtonsoft.Json;
 using UnityEngine;
 using System;
 
 public class RedPointSystem
 {
-    public static string RedPointEnumScriptOutputPath = Application.dataPath + "/RedPoint/Code";
+    public static string RedPointEnumScriptOutputPath = Application.dataPath + "/Code/RedPoint";
 
-    public static string RedPointConfigOutputPath = Application.dataPath + "/RedPoint/Plugins/RedPointConfig.txt";
+    public static string RedPointConfigOutputPath = Application.dataPath + "/Art/Txt/RedPointConfig.txt.txt";
+
+    private const string RedPointConfigName = "RedPointConfig.txt";
 
     private static RedPointSystem inst;
 
@@ -51,11 +53,11 @@ public class RedPointSystem
     /// </summary>
     public void LoadConfigData()
     {
-        var configDataStr = FileUtil.ReadTxt(RedPointConfigOutputPath);
+        var configDataStr = ServiceContainer.Resolve<ResourceService>().LoadTxtSync(RedPointConfigName).text;
 
         if (!string.IsNullOrEmpty(configDataStr))
         {
-            var configData = JsonConvert.DeserializeObject<RedPointConfigData>(configDataStr);
+            var configData = JsonUtility.FromJson<RedPointConfigData>(configDataStr);
 
             childsDic = configData.ChildsDic;
 

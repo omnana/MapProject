@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class FileUtil
 {
@@ -69,5 +70,35 @@ public class FileUtil
         }
 
         return new string(arrContent);
+    }
+
+    ///序列化
+    public static byte[] Serialize(object obj)
+    {
+        BinaryFormatter bf = new BinaryFormatter();
+
+        MemoryStream stream = new MemoryStream();
+
+        bf.Serialize(stream, obj);
+
+        byte[] datas = stream.ToArray();
+
+        stream.Dispose();
+
+        return datas;
+    }
+
+    /// 反序列化
+    public static object Deserialize(byte[] datas)
+    {
+        BinaryFormatter bf = new BinaryFormatter();
+
+        MemoryStream stream = new MemoryStream(datas, 0, datas.Length);
+
+        object obj = bf.Deserialize(stream);
+
+        stream.Dispose();
+
+        return obj;
     }
 }

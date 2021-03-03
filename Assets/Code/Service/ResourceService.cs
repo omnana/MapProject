@@ -77,6 +77,42 @@ public class ResourceService : ServiceBase
     /// </summary>
     /// <param name="configName"></param>
     /// <returns></returns>
+    public TextAsset LoadCsvSync(string csvName)
+    {
+        if (string.IsNullOrEmpty(csvName)) return null;
+
+        var obj = assetLoadMgr.LoadSync(csvName);
+
+        if (obj != null)
+        {
+            return obj as TextAsset;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="configName"></param>
+    /// <param name="callback"></param>
+    public void LoadCsvAsync(string csvName, Action<string> callback)
+    {
+        if (string.IsNullOrEmpty(csvName)) return;
+
+        assetLoadMgr.LoadAsync(csvName, (name, obj) =>
+        {
+            callback?.Invoke(obj.ToString());
+
+            assetLoadMgr.Unload(obj);
+        });
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="configName"></param>
+    /// <returns></returns>
     public TextAsset LoadTxtSync(string configName)
     {
         if (string.IsNullOrEmpty(configName)) return null;

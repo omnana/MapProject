@@ -7,7 +7,7 @@ public class LoadingGui : BaseGui
 
     private HotfixMgr hotfixMgr;
 
-    private void Start()
+    private void Awake()
     {
         hotfixMgr = ServiceLocator.Resolve<HotfixMgr>();
 
@@ -16,9 +16,10 @@ public class LoadingGui : BaseGui
 
     private void DownloadFinish(object sender, MessageArgs<object> args)
     {
-        GuiManager.Instance.OpenAsync<TestGui>();
 
-        Destroy(gameObject);
+        //GuiManager.Instance.OpenAsync<TestGui>();
+
+        //Destroy(gameObject);
     }
 
     private void Update()

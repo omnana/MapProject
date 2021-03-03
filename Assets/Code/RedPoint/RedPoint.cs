@@ -52,7 +52,11 @@ public enum RedPoint
     /// </summary>
     Main_Tow_One = 6,
     /// <summary>
-    /// 
+    /// 厕
     /// </summary>
     Main_Tow_Tow = 7,
+    /// <summary>
+    /// 
+    /// </summary>
+    Main_Tow_Tow_One = 13,
 }

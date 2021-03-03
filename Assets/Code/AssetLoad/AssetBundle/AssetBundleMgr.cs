@@ -288,6 +288,11 @@ namespace AssetBundles
                                 if (obj.DependLoadingCount <= 0) return;
 
                                 obj.DependLoadingCount--;
+
+                                if(obj.DependLoadingCount == 0 && obj.Request != null && obj.Request.isDone) // 立即执行
+                                {
+                                    DoLoadedCallFun(obj);
+                                }
                             });
                         }
 

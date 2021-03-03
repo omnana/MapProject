@@ -322,7 +322,7 @@ public class TreeNodeDataCtrl
 
         string codeFullName = scriptFoldPath + "/RedPoint.cs";
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.AppendLine("/// <summary>");
         sb.AppendLine("/// 红点枚举");
         sb.AppendLine("/// </summary>");

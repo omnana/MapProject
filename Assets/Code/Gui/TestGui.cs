@@ -72,29 +72,10 @@ public class TestGui : BaseGui
 
     private void OnClick()
     {
-        //var prefab = ServiceLocator.Resolve<ResourceService>().LoadModelSync(TestView.TestInput.text);
-
-        // if (prefab != null)
-        // {
-        //     var obj1 = Instantiate(prefab);
-
-        //     objQueue.Enqueue(obj1);
-        // }
-
         ServiceLocator.Resolve<PrefabLoadMgr>().LoadAsync(TestView.TestInput.text, (assetName, obj) =>
         {
             objQueue.Enqueue(obj);
         }, transform);
-
-       //ServiceLocator.Resolve<ResourceService>().LoadModelAsync(TestView.TestInput.text, (obj) =>
-       //{
-       //    if (obj != null)
-       //    {
-       //        var obj1 = Instantiate(obj);
-
-       //        objQueue.Enqueue(obj1);
-       //    }
-       //});
     }
 
     private void UnLoad_OnClick()
