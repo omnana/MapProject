@@ -10,18 +10,34 @@ using System.IO;
 /// </summary>
 public class DownloadTest : MonoBehaviour
 {
+    private byte[] serverFile;
+
     // 第一步：将本地资源转化为字节
     // 第二步：模拟断电续传
-    private void Start()
+    private void Awake()
     {
-        var bytes = GetFile();
+        var serverPath = Application.streamingAssetsPath + "/Windows/cube_a.ab.manifest";
+
+        var savePath = Application.dataPath + "/DownloadTest/downloadFile.ab.manifest";
+
+        serverFile = File.ReadAllBytes(serverPath);
+
+        var fs = new FileStream(savePath, FileMode.Create);
+
+        fs.Write(serverFile, 0, serverFile.Length);
+
+        fs.Flush();
+
+        fs.Close();
     }
 
-    private byte[] GetFile()
+    public int GetFileSize()
     {
-        var obj = Resources.Load("Version.txt");
+        return serverFile.Length;
+    }
 
-        return FileUtil.Serialize(obj);
+    private void Read(byte[] buffer, int offset, int count)
+    {
 
-    } 
+    }
 }
