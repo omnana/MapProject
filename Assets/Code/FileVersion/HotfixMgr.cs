@@ -327,8 +327,17 @@ public class HotfixMgr
             downloadUnit.ProgressFun = (DownloadUnit downUnit, int curSize, int allSize) =>
             {
                 curDownloadArray[downloadMaxCount - downloadCount] = curSize;
-                downloadedFileSizes += curSize - downloadSizeList[downUnit.Name];
-                downloadSizeList[downUnit.Name] = curSize;
+
+                if (downloadSizeList.ContainsKey(downUnit.Name))
+                {
+                    downloadedFileSizes += curSize - downloadSizeList[downUnit.Name];
+
+                    downloadSizeList[downUnit.Name] = curSize;
+                }
+                else
+                {
+                    Debug.LogError("downUnit 不存在 = " + downUnit.Name);
+                }
                 //Debug.LogFormat("正在下载资源：{0}，已下载大小：{1}，总大小：{2}", downUnit.Name, curSize, allSize);
             };
 

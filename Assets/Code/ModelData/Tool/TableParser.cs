@@ -20,9 +20,9 @@ public class TableParser
     {
         T[] list = null;
 
-        ServiceContainer.Resolve<ResourceService>().LoadCsvAsync(tableName, txt =>
+        ServiceContainer.Resolve<ResourceService>().LoadCsvAsync(tableName, text =>
         {
-            var content = txt.Replace("\r\n", "*");
+            var content = text.Replace("\r\n", "*");
 
             var datas = content.Split('*');
 

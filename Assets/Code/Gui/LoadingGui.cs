@@ -16,10 +16,9 @@ public class LoadingGui : BaseGui
 
     private void DownloadFinish(object sender, MessageArgs<object> args)
     {
+        GuiManager.Instance.OpenAsync<TestGui>();
 
-        //GuiManager.Instance.OpenAsync<TestGui>();
-
-        //Destroy(gameObject);
+        Destroy(gameObject);
     }
 
     private void Update()

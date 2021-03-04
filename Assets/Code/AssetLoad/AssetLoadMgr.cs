@@ -307,7 +307,7 @@ public class AssetLoadMgr
             return;
         }
 
-        var assetObj =goInstanceIDList[instanceID];
+        var assetObj = goInstanceIDList[instanceID];
 
         if (assetObj.InstanceID == instanceID) // obj不是GameObject，不销毁
         {

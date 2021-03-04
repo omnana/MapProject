@@ -77,7 +77,7 @@ public class ResourceService : ServiceBase
     /// </summary>
     /// <param name="configName"></param>
     /// <returns></returns>
-    public TextAsset LoadCsvSync(string csvName)
+    public string LoadCsvSync(string csvName)
     {
         if (string.IsNullOrEmpty(csvName)) return null;
 
@@ -85,7 +85,11 @@ public class ResourceService : ServiceBase
 
         if (obj != null)
         {
-            return obj as TextAsset;
+            var content = obj.ToString();
+
+            assetLoadMgr.Unload(obj);
+
+            return content;
         }
 
         return null;

@@ -136,7 +136,13 @@ public class DownloadFileMac
 
             if (startPos == DownUnit.Size) // 文件已经下载完，没改名字，结束
             {
-                WriteEnd(fs, tempFile);
+                fs.Flush();
+
+                fs.Close();
+
+                fs = null;
+
+                SaveTempFile(fs, tempFile);
 
                 CurSize = (int)startPos;
 
@@ -183,7 +189,13 @@ public class DownloadFileMac
 
             if(curSize == totalSize)
             {
-                WriteEnd(fs, tempFile);
+                fs.Flush();
+
+                fs.Close();
+
+                fs = null;
+
+                SaveTempFile(fs, tempFile);
 
                 CurSize = (int)startPos;
             }
@@ -203,7 +215,13 @@ public class DownloadFileMac
                     // 下载完成将temp文件，改成正式文件
                     if (curSize == totalSize)
                     {
-                        WriteEnd(fs, tempFile);
+                        fs.Flush();
+
+                        fs.Close();
+
+                        fs = null;
+
+                        SaveTempFile(fs, tempFile);
                     }
 
                     // 回调一下
@@ -248,14 +266,8 @@ public class DownloadFileMac
     }
 
 
-    private void WriteEnd(FileStream fs, string tempFile)
+    private void SaveTempFile(FileStream fs, string tempFile)
     {
-        fs.Flush();
-
-        fs.Close();
-
-        fs = null;
-
         if (File.Exists(DownUnit.SavePath)) File.Delete(DownUnit.SavePath);
 
         File.Move(tempFile, DownUnit.SavePath);

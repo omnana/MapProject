@@ -23,5 +23,6 @@ public class GPath
     /// <summary>
     /// 资源服务器路径
     /// </summary>
-    public static string CDNUrl = "http://192.168.1.191:80/Test/" + Utility.GetPlatformName() + "/";
+    //public static string CDNUrl = "http://192.168.1.192:80/Test/" + Utility.GetPlatformName() + "/";
+    public static string CDNUrl = "http://192.168.31.219:80/Test/" + Utility.GetPlatformName() + "/";
 }
