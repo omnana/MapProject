@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 1954836718
+CRC: 1801782232
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -36,5 +36,8 @@ AssetBundleManifest:
       Name: testshader.ab
       Dependencies: {}
     Info_10:
+      Name: redpointconfig.txt.ab
+      Dependencies: {}
+    Info_11:
       Name: testgui.ab
       Dependencies: {}

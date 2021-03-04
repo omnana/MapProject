@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+﻿using UnityEngine;
 using System.Net;
-using UnityEngine;
+using System.IO;
+using System;
 
 public enum DownloadMacState
 {
@@ -115,7 +113,7 @@ public class DownloadFileMac
 
     private bool DownLoad()
     {
-        //打开上次下载的文件
+        // 打开上次下载的文件
         long startPos = 0;
 
         var tempFile = DownUnit.SavePath + ".temp";
@@ -138,15 +136,7 @@ public class DownloadFileMac
 
             if (startPos == DownUnit.Size) // 文件已经下载完，没改名字，结束
             {
-                fs.Flush();
-
-                fs.Close();
-
-                fs = null;
-                
-                if (File.Exists(DownUnit.SavePath)) File.Delete(DownUnit.SavePath);
-
-                File.Move(tempFile, DownUnit.SavePath);
+                WriteEnd(fs, tempFile);
 
                 CurSize = (int)startPos;
 
@@ -178,7 +168,7 @@ public class DownloadFileMac
 
             request.Timeout = TimeOutWait;
 
-            // 向服务器请求，获得服务器回应数据流
+            // 断点续传
             if (startPos > 0) request.AddRange((int)startPos); // 设置Range值，断点续传
 
             respone = (HttpWebResponse)request.GetResponse();
@@ -193,13 +183,7 @@ public class DownloadFileMac
 
             if(curSize == totalSize)
             {
-                fs.Flush();
-
-                fs.Close();
-
-                if (File.Exists(DownUnit.SavePath)) File.Delete(DownUnit.SavePath);
-
-                File.Move(tempFile, DownUnit.SavePath);
+                WriteEnd(fs, tempFile);
 
                 CurSize = (int)startPos;
             }
@@ -219,15 +203,7 @@ public class DownloadFileMac
                     // 下载完成将temp文件，改成正式文件
                     if (curSize == totalSize)
                     {
-                        fs.Flush();
-
-                        fs.Close();
-
-                        fs = null;
-
-                        if (File.Exists(DownUnit.SavePath)) File.Delete(DownUnit.SavePath);
-
-                        File.Move(tempFile, DownUnit.SavePath);
+                        WriteEnd(fs, tempFile);
                     }
 
                     // 回调一下
@@ -269,6 +245,20 @@ public class DownloadFileMac
         if (State == DownloadMacState.Error) return false;
 
         return true;
+    }
+
+
+    private void WriteEnd(FileStream fs, string tempFile)
+    {
+        fs.Flush();
+
+        fs.Close();
+
+        fs = null;
+
+        if (File.Exists(DownUnit.SavePath)) File.Delete(DownUnit.SavePath);
+
+        File.Move(tempFile, DownUnit.SavePath);
     }
 
     private int GetWebFileSize(string url)
