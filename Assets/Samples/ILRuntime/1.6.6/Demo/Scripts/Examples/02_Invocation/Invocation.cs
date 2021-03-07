@@ -30,12 +30,12 @@ public class Invocation : MonoBehaviour
         //正式发布的时候需要大家自行从其他地方读取dll
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //这个DLL文件是直接编译HotFix_Project.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
-        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFix_Project~
+        //这个DLL文件是直接编译HotFix.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
+        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFix~
 #if UNITY_ANDROID
-        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.dll");
+        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix.dll");
 #else
-        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.dll");
+        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix.dll");
 #endif
         while (!www.isDone)
             yield return null;
@@ -46,9 +46,9 @@ public class Invocation : MonoBehaviour
 
         //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
-        www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.pdb");
+        www = new WWW(Application.streamingAssetsPath + "/HotFix.pdb");
 #else
-        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.pdb");
+        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix.pdb");
 #endif
         while (!www.isDone)
             yield return null;
@@ -63,7 +63,7 @@ public class Invocation : MonoBehaviour
         }
         catch
         {
-            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix/HotFix.sln编译过热更DLL");
         }
 
 
@@ -84,15 +84,15 @@ public class Invocation : MonoBehaviour
     {
         Debug.Log("调用无参数静态方法");
         //调用无参数静态方法，appdomain.Invoke("类名", "方法名", 对象引用, 参数列表);
-        appdomain.Invoke("HotFix_Project.InstanceClass", "StaticFunTest", null, null);
+        appdomain.Invoke("HotFix.InstanceClass", "StaticFunTest", null, null);
         //调用带参数的静态方法
         Debug.Log("调用带参数的静态方法");
-        appdomain.Invoke("HotFix_Project.InstanceClass", "StaticFunTest2", null, 123);
+        appdomain.Invoke("HotFix.InstanceClass", "StaticFunTest2", null, 123);
 
 
         Debug.Log("通过IMethod调用方法");
         //预先获得IMethod，可以减低每次调用查找方法耗用的时间
-        IType type = appdomain.LoadedTypes["HotFix_Project.InstanceClass"];
+        IType type = appdomain.LoadedTypes["HotFix.InstanceClass"];
         //根据方法名称和参数个数获取方法
         IMethod method = type.GetMethod("StaticFunTest2", 1);
 
@@ -115,7 +115,7 @@ public class Invocation : MonoBehaviour
         appdomain.Invoke(method, null, 456);
 
         Debug.Log("实例化热更里的类");
-        object obj = appdomain.Instantiate("HotFix_Project.InstanceClass", new object[] { 233 });
+        object obj = appdomain.Instantiate("HotFix.InstanceClass", new object[] { 233 });
         //第二种方式
         object obj2 = ((ILType)type).Instantiate();
 
@@ -126,7 +126,7 @@ public class Invocation : MonoBehaviour
             ctx.PushObject(obj);
             ctx.Invoke();
             int id = ctx.ReadInteger();
-            Debug.Log("!! HotFix_Project.InstanceClass.ID = " + id);
+            Debug.Log("!! HotFix.InstanceClass.ID = " + id);
         }
 
         using (var ctx = appdomain.BeginInvoke(method))
@@ -134,13 +134,13 @@ public class Invocation : MonoBehaviour
             ctx.PushObject(obj2);
             ctx.Invoke();
             int id = ctx.ReadInteger();
-            Debug.Log("!! HotFix_Project.InstanceClass.ID = " + id);
+            Debug.Log("!! HotFix.InstanceClass.ID = " + id);
         }
         
         Debug.Log("调用泛型方法");
         IType stringType = appdomain.GetType(typeof(string));
         IType[] genericArguments = new IType[] { stringType };
-        appdomain.InvokeGenericMethod("HotFix_Project.InstanceClass", "GenericMethod", genericArguments, null, "TestString");
+        appdomain.InvokeGenericMethod("HotFix.InstanceClass", "GenericMethod", genericArguments, null, "TestString");
 
         Debug.Log("获取泛型方法的IMethod");
         paramList.Clear();

@@ -2,6 +2,8 @@
 using System.Collections;
 using System.IO;
 using ILRuntime.Runtime.Enviorment;
+using System.Collections.Generic;
+
 //下面这行为了取消使用WWW的警告，Unity2018以后推荐使用UnityWebRequest，处于兼容性考虑Demo依然使用WWW
 #pragma warning disable CS0618
 public class HelloWorld : MonoBehaviour
@@ -25,13 +27,13 @@ public class HelloWorld : MonoBehaviour
         //正式发布的时候需要大家自行从其他地方读取dll
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //这个DLL文件是直接编译HotFix_Project.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
-        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFix_Project~
+        //这个DLL文件是直接编译HotFix.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
+        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFix~
         //以下加载写法只为演示，并没有处理在编辑器切换到Android平台的读取，需要自行修改
 #if UNITY_ANDROID
-        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.dll");
+        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix.dll");
 #else
-        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.dll");
+        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix.dll");
 #endif
         while (!www.isDone)
             yield return null;
@@ -42,9 +44,9 @@ public class HelloWorld : MonoBehaviour
 
         //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
-        www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.pdb");
+        www = new WWW(Application.streamingAssetsPath + "/HotFix.pdb");
 #else
-        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.pdb");
+        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix.pdb");
 #endif
         while (!www.isDone)
             yield return null;
@@ -59,7 +61,7 @@ public class HelloWorld : MonoBehaviour
         }
         catch
         {
-            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix/HotFix.sln编译过热更DLL");
         }
 
         InitializeILRuntime();
@@ -78,9 +80,22 @@ public class HelloWorld : MonoBehaviour
     void OnHotFixLoaded()
     {
         //HelloWorld，第一次方法调用
-        appdomain.Invoke("HotFix_Project.InstanceClass", "StaticFunTest", null, null);
+        //appdomain.Invoke("HotFix.InstanceClass", "StaticFunTest", null, null);
+        //appdomain.Invoke("HotFix.InstanceClass", "StaticFunTest2", null, 111);
 
+        appdomain.Invoke("HotFix.InstanceClass", "GenericMethod", null, gameObject);
+
+        var testInstanceClass = appdomain.Instantiate("HotFix.InstanceClass", new object[] { 111 });
+
+        //List<int> list = null;
+
+        //var param = new object[] {1, list , 2};
+
+        //appdomain.Invoke("HotFix.InstanceClass", "RefOutMethod", testInstanceClass, param);
+
+        appdomain.Invoke("HotFix.InstanceClass", "Test", testInstanceClass, null);
     }
+
 
     private void OnDestroy()
     {

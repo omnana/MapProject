@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace VoiceChat.Behaviour
 {
-    public class VoiceChatRecorder : ServiceBase
+    public class VoiceChatRecorder : BaseCtrl
     {
         public AudioClip audioClip
         {
@@ -95,7 +95,6 @@ namespace VoiceChat.Behaviour
             {
                 Device = Microphone.devices[0];
             }
-
         }
 
 

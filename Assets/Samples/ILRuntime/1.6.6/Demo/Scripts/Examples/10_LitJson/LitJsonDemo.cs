@@ -29,11 +29,11 @@ public class LitJsonDemo : MonoBehaviour
         //正式发布的时候需要大家自行从其他地方读取dll
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //这个DLL文件是直接编译HotFix_Project.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
+        //这个DLL文件是直接编译HotFix.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
 #if UNITY_ANDROID
-        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.dll");
+        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix.dll");
 #else
-        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.dll");
+        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix.dll");
 #endif
         while (!www.isDone)
             yield return null;
@@ -44,9 +44,9 @@ public class LitJsonDemo : MonoBehaviour
 
         //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
-        www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.pdb");
+        www = new WWW(Application.streamingAssetsPath + "/HotFix.pdb");
 #else
-        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.pdb");
+        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix.pdb");
 #endif
         while (!www.isDone)
             yield return null;
@@ -61,7 +61,7 @@ public class LitJsonDemo : MonoBehaviour
         }
         catch
         {
-            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix/HotFix.sln编译过热更DLL");
         }
 
         InitializeILRuntime();
@@ -84,7 +84,7 @@ public class LitJsonDemo : MonoBehaviour
         Debug.Log("LitJson的使用很简单，JsonMapper类里面提供了对象到Json以及Json到对象的转换方法");
         Debug.Log("具体使用方法请看热更项目中的代码");
         //调用无参数静态方法，appdomain.Invoke("类名", "方法名", 对象引用, 参数列表);
-        appdomain.Invoke("HotFix_Project.TestJson", "RunTest", null, null);
+        appdomain.Invoke("HotFix.TestJson", "RunTest", null, null);
     }
 
     private void OnDestroy()

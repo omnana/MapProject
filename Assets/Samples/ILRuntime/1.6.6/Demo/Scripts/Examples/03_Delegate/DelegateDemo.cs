@@ -38,12 +38,12 @@ public class DelegateDemo : MonoBehaviour
         //正式发布的时候需要大家自行从其他地方读取dll
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //这个DLL文件是直接编译HotFix_Project.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
-        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFix_Project~
+        //这个DLL文件是直接编译HotFix.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
+        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFix~
 #if UNITY_ANDROID
-        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.dll");
+        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix.dll");
 #else
-        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.dll");
+        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix.dll");
 #endif
         while (!www.isDone)
             yield return null;
@@ -54,9 +54,9 @@ public class DelegateDemo : MonoBehaviour
 
         //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
-        www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.pdb");
+        www = new WWW(Application.streamingAssetsPath + "/HotFix.pdb");
 #else
-        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.pdb");
+        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix.pdb");
 #endif
         while (!www.isDone)
             yield return null;
@@ -71,7 +71,7 @@ public class DelegateDemo : MonoBehaviour
         }
         catch
         {
-            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix/HotFix.sln编译过热更DLL");
         }
 
         InitializeILRuntime();
@@ -130,8 +130,8 @@ public class DelegateDemo : MonoBehaviour
         Debug.Log("如果需要跨域调用委托（将热更DLL里面的委托实例传到Unity主工程用）, 就需要注册适配器");
         Debug.Log("这是因为iOS的IL2CPP模式下，不能动态生成类型，为了避免出现不可预知的问题，我们没有通过反射的方式创建委托实例，因此需要手动进行一些注册");
         Debug.Log("如果没有注册委托适配器，运行时会报错并提示需要的注册代码，直接复制粘贴到ILRuntime初始化的地方");
-        appdomain.Invoke("HotFix_Project.TestDelegate", "Initialize2", null, null);
-        appdomain.Invoke("HotFix_Project.TestDelegate", "RunTest2", null, null);
+        appdomain.Invoke("HotFix.TestDelegate", "Initialize2", null, null);
+        appdomain.Invoke("HotFix.TestDelegate", "RunTest2", null, null);
         Debug.Log("运行成功，我们可以看见，用Action或者Func当作委托类型的话，可以避免写转换器，所以项目中在不必要的情况下尽量只用Action和Func");
         Debug.Log("另外应该尽量减少不必要的跨域委托调用，如果委托只在热更DLL中用，是不需要进行任何注册的");
         Debug.Log("---------");

@@ -51,12 +51,12 @@ public class Inheritance : MonoBehaviour
         //正式发布的时候需要大家自行从其他地方读取dll
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //这个DLL文件是直接编译HotFix_Project.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
-        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFix_Project~
+        //这个DLL文件是直接编译HotFix.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
+        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFix~
 #if UNITY_ANDROID
-        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.dll");
+        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix.dll");
 #else
-        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.dll");
+        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix.dll");
 #endif
         while (!www.isDone)
             yield return null;
@@ -67,9 +67,9 @@ public class Inheritance : MonoBehaviour
 
         //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
-        www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.pdb");
+        www = new WWW(Application.streamingAssetsPath + "/HotFix.pdb");
 #else
-        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.pdb");
+        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix.pdb");
 #endif
         while (!www.isDone)
             yield return null;
@@ -84,7 +84,7 @@ public class Inheritance : MonoBehaviour
         }
         catch
         {
-            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix/HotFix.sln编译过热更DLL");
         }
 
 
@@ -108,7 +108,7 @@ public class Inheritance : MonoBehaviour
         Debug.Log("现在我们来注册适配器, 该适配器由ILRuntime/Generate Cross Binding Adapter菜单命令自动生成");
         appdomain.RegisterCrossBindingAdaptor(new TestClassBaseAdapter());
         Debug.Log("现在再来尝试创建一个实例");
-        obj = appdomain.Instantiate<TestClassBase>("HotFix_Project.TestInheritance");
+        obj = appdomain.Instantiate<TestClassBase>("HotFix.TestInheritance");
         Debug.Log("现在来调用成员方法");
         obj.TestAbstract(123);
         obj.TestVirtual("Hello");
@@ -117,7 +117,7 @@ public class Inheritance : MonoBehaviour
 
 
         Debug.Log("现在换个方式创建实例");
-        obj = appdomain.Invoke("HotFix_Project.TestInheritance", "NewObject", null, null) as TestClassBase;
+        obj = appdomain.Invoke("HotFix.TestInheritance", "NewObject", null, null) as TestClassBase;
         obj.TestAbstract(456);
         obj.TestVirtual("Foobar");
         obj.Value = 2333333;
