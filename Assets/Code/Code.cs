@@ -15,7 +15,7 @@ public class Code : MonoBehaviour
 
     private DownloadMgr downloadMgr;
 
-    private HotfixMgr hotfixMgr;
+    private HotFixProjectMgr HotFixProjectMgr;
 
     private AssetBundleMgr assetBundleMgr;
 
@@ -35,12 +35,12 @@ public class Code : MonoBehaviour
 
         downloadMgr = ServiceLocator.Resolve<DownloadMgr>();
 
-        hotfixMgr = ServiceLocator.Resolve<HotfixMgr>();
+        HotFixProjectMgr = ServiceLocator.Resolve<HotFixProjectMgr>();
 
         assetBundleMgr = ServiceLocator.Resolve<AssetBundleMgr>();
 
         // 热更完毕或者已下载
-        hotfixMgr.RegisterRequsetCallback((state, sgm, isComplete) =>
+        HotFixProjectMgr.RegisterRequsetCallback((state, sgm, isComplete) =>
         {
             assetBundleMgr.LoadMainfest();
 
@@ -55,9 +55,9 @@ public class Code : MonoBehaviour
 
     private void Start()
     {
-        hotfixMgr.Start();
+        HotFixProjectMgr.Start();
 
-        hotfixMgr.CheckCDNVersion();
+        HotFixProjectMgr.CheckCDNVersion();
     }
 
     private void Update()

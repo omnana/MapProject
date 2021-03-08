@@ -40,10 +40,10 @@ public class Inheritance : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(LoadHotFixAssembly());
+        StartCoroutine(LoadHotFixProjectAssembly());
     }
 
-    IEnumerator LoadHotFixAssembly()
+    IEnumerator LoadHotFixProjectAssembly()
     {
         //首先实例化ILRuntime的AppDomain，AppDomain是一个应用程序域，每个AppDomain都是一个独立的沙盒
         appdomain = new ILRuntime.Runtime.Enviorment.AppDomain();
@@ -51,12 +51,12 @@ public class Inheritance : MonoBehaviour
         //正式发布的时候需要大家自行从其他地方读取dll
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //这个DLL文件是直接编译HotFix.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
-        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFix~
+        //这个DLL文件是直接编译HotFixProject.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
+        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFixProject~
 #if UNITY_ANDROID
-        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix.dll");
+        WWW www = new WWW(Application.streamingAssetsPath + "/HotFixProject.dll");
 #else
-        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix.dll");
+        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.dll");
 #endif
         while (!www.isDone)
             yield return null;
@@ -67,9 +67,9 @@ public class Inheritance : MonoBehaviour
 
         //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
-        www = new WWW(Application.streamingAssetsPath + "/HotFix.pdb");
+        www = new WWW(Application.streamingAssetsPath + "/HotFixProject.pdb");
 #else
-        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix.pdb");
+        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.pdb");
 #endif
         while (!www.isDone)
             yield return null;
@@ -84,12 +84,12 @@ public class Inheritance : MonoBehaviour
         }
         catch
         {
-            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix/HotFix.sln编译过热更DLL");
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFixProject/HotFixProject.sln编译过热更DLL");
         }
 
 
         InitializeILRuntime();
-        OnHotFixLoaded();
+        OnHotFixProjectLoaded();
     }
 
     void InitializeILRuntime()
@@ -98,17 +98,17 @@ public class Inheritance : MonoBehaviour
         //由于Unity的Profiler接口只允许在主线程使用，为了避免出异常，需要告诉ILRuntime主线程的线程ID才能正确将函数运行耗时报告给Profiler
         appdomain.UnityMainThreadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
 #endif
-        //这里做一些ILRuntime的注册，这里应该写继承适配器的注册，为了演示方便，这个例子写在OnHotFixLoaded了
+        //这里做一些ILRuntime的注册，这里应该写继承适配器的注册，为了演示方便，这个例子写在OnHotFixProjectLoaded了
     }
 
-    void OnHotFixLoaded()
+    void OnHotFixProjectLoaded()
     {
         Debug.Log("首先我们来创建热更里的类实例");
         TestClassBase obj;
         Debug.Log("现在我们来注册适配器, 该适配器由ILRuntime/Generate Cross Binding Adapter菜单命令自动生成");
         appdomain.RegisterCrossBindingAdaptor(new TestClassBaseAdapter());
         Debug.Log("现在再来尝试创建一个实例");
-        obj = appdomain.Instantiate<TestClassBase>("HotFix.TestInheritance");
+        obj = appdomain.Instantiate<TestClassBase>("HotFixProject.TestInheritance");
         Debug.Log("现在来调用成员方法");
         obj.TestAbstract(123);
         obj.TestVirtual("Hello");
@@ -117,7 +117,7 @@ public class Inheritance : MonoBehaviour
 
 
         Debug.Log("现在换个方式创建实例");
-        obj = appdomain.Invoke("HotFix.TestInheritance", "NewObject", null, null) as TestClassBase;
+        obj = appdomain.Invoke("HotFixProject.TestInheritance", "NewObject", null, null) as TestClassBase;
         obj.TestAbstract(456);
         obj.TestVirtual("Foobar");
         obj.Value = 2333333;

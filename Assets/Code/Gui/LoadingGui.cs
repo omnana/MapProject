@@ -5,11 +5,11 @@ public class LoadingGui : BaseGui
 {
     public Slider Slider;
 
-    private HotfixMgr hotfixMgr;
+    private HotFixProjectMgr HotFixProjectMgr;
 
     private void Awake()
     {
-        hotfixMgr = ServiceLocator.Resolve<HotfixMgr>();
+        HotFixProjectMgr = ServiceLocator.Resolve<HotFixProjectMgr>();
 
         MessageAggregator<object>.Instance.Subscribe("DownloadFinish", DownloadFinish);
     }
@@ -23,6 +23,7 @@ public class LoadingGui : BaseGui
 
     private void Update()
     {
-        Slider.value = hotfixMgr.DownloadProgress;
+        if(HotFixProjectMgr != null)
+            Slider.value = HotFixProjectMgr.DownloadProgress;
     }
 }

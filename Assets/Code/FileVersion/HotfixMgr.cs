@@ -6,9 +6,9 @@ using System;
 /// <summary>
 /// 热更管理器
 /// </summary>
-public class HotfixMgr
+public class HotFixProjectMgr
 {
-    public enum HotfixState
+    public enum HotFixProjectState
     {
         None,  //正在为您初始化资源包
         ReadLocalVersion, //读取本地版本
@@ -24,7 +24,7 @@ public class HotfixMgr
         RequestErrorRestart, // error重新开始下载
     }
 
-    public delegate void HotfixCallback(HotfixState state, string msg, Action<bool> callback);
+    public delegate void HotFixProjectCallback(HotFixProjectState state, string msg, Action<bool> callback);
 
     /// <summary>
     /// 下载进度
@@ -64,15 +64,15 @@ public class HotfixMgr
 
     private DownloadMgr downloadMgr;
 
-    private HotfixState currentState;
+    private HotFixProjectState currentState;
 
-    private HotfixCallback hotfixCallback;
+    private HotFixProjectCallback HotFixProjectCallback;
 
     private VersionCode clientVersion;
 
     private VersionCode serverVersion;
 
-    public HotfixState CurrentState
+    public HotFixProjectState CurrentState
     {
         get { return currentState; }
     }
@@ -82,9 +82,9 @@ public class HotfixMgr
         get { return clientVersion; }
     }
 
-    public void RegisterRequsetCallback(HotfixCallback callback)
+    public void RegisterRequsetCallback(HotFixProjectCallback callback)
     {
-        hotfixCallback = callback;
+        HotFixProjectCallback = callback;
     }
 
     //启动前，请先调用RegisterRequsetCallback注册回调
@@ -96,7 +96,7 @@ public class HotfixMgr
 
         fileVersionMgr.Init();
 
-        if (hotfixCallback == null)
+        if (HotFixProjectCallback == null)
         {
             Debug.LogError("Null Error is _currentState");
             return;
@@ -119,7 +119,7 @@ public class HotfixMgr
     /// </summary>
     private void ReadLocalVersion()
     {
-        currentState = HotfixState.ReadLocalVersion;
+        currentState = HotFixProjectState.ReadLocalVersion;
 
         var versionPath = GPath.PersistentAssetsPath + GPath.VersionFileName;
 
@@ -144,7 +144,7 @@ public class HotfixMgr
     {
         downloadMgr.ClearAllDownloads();
 
-        currentState = HotfixState.CheckCDNVersion;
+        currentState = HotFixProjectState.CheckCDNVersion;
 
         string versionServerFile = GPath.PersistentAssetsPath + "versionServer.txt";
 
@@ -191,7 +191,7 @@ public class HotfixMgr
             }
             else if (serverVersion.MidVer > clientVersion.MidVer) // 换包
             {
-                hotfixCallback(HotfixState.RequestErrorRestart, "", (run) =>
+                HotFixProjectCallback(HotFixProjectState.RequestErrorRestart, "", (run) =>
                 {
 
                 });
@@ -213,7 +213,7 @@ public class HotfixMgr
     {
         allDownloadSize = 0;
 
-        currentState = HotfixState.DownloadVersionFile;
+        currentState = HotFixProjectState.DownloadVersionFile;
 
         var versionListServerFile = GPath.PersistentAssetsPath + serverVersion.ToString() + ".txt";
 
@@ -265,7 +265,7 @@ public class HotfixMgr
     /// <param name="updateList"></param>
     private void StartDownloadList(List<FileVersionData> updateList)
     {
-        currentState = HotfixState.CompareAssetVersion;
+        currentState = HotFixProjectState.CompareAssetVersion;
 
         var saveRootPath = GPath.StreamingAssetsPath;
         var urlRootPath = GPath.CDNUrl;
@@ -351,7 +351,7 @@ public class HotfixMgr
                 {
                     SaveVersion();
 
-                    hotfixCallback(HotfixState.Finished, "下载完成", null);
+                    HotFixProjectCallback(HotFixProjectState.Finished, "下载完成", null);
                 }
             };
 
@@ -372,7 +372,7 @@ public class HotfixMgr
 
         Action downloadFun = () =>
         {
-            currentState = HotfixState.DownloadFiles;
+            currentState = HotFixProjectState.DownloadFiles;
             foreach (var downUnit in downloadList)
             {
                 downloadMgr.DownloadAsync(downUnit);
@@ -385,7 +385,7 @@ public class HotfixMgr
         }
         else
         {
-            hotfixCallback(HotfixState.RequestDownloadFiles, "游戏需要更新部分资源(" +
+            HotFixProjectCallback(HotFixProjectState.RequestDownloadFiles, "游戏需要更新部分资源(" +
                 (totalAllSize / 1024 / 1024) + "M),建议您在无线局域网环境下更新", (run) =>
                 {
                     if (run == true) downloadFun();
@@ -396,7 +396,7 @@ public class HotfixMgr
 
     private void SaveVersion()
     {
-        currentState = HotfixState.SaveVersion;
+        currentState = HotFixProjectState.SaveVersion;
 
         clientVersion.Version = serverVersion.Version + 1;
 
@@ -407,14 +407,14 @@ public class HotfixMgr
 
     public void Finished()
     {
-        currentState = HotfixState.Finished;
+        currentState = HotFixProjectState.Finished;
 
-        hotfixCallback(HotfixState.Finished, "", null);
+        HotFixProjectCallback(HotFixProjectState.Finished, "", null);
     }
 
     private void UpdateError(string msg = "")
     {
-        hotfixCallback(HotfixState.RequestErrorRestart, msg, (run) =>
+        HotFixProjectCallback(HotFixProjectState.RequestErrorRestart, msg, (run) =>
         {
             if (run) Start();
         });
