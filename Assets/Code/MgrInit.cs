@@ -16,6 +16,6 @@ public class MgrInit : MonoBehaviour
         ServiceLocator.RegisterSingleton<PrefabLoadMgr>();
         ServiceLocator.RegisterSingleton<DownloadMgr>();
         ServiceLocator.RegisterSingleton<FileVersionMgr>();
-        ServiceLocator.RegisterSingleton<HotFixProjectMgr>();
+        ServiceLocator.RegisterSingleton<HotFix_ProjectMgr>();
     }
 }

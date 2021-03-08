@@ -18,10 +18,10 @@ public class LitJsonDemo : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(LoadHotFixProjectAssembly());
+        StartCoroutine(LoadHotFix_ProjectAssembly());
     }
 
-    IEnumerator LoadHotFixProjectAssembly()
+    IEnumerator LoadHotFix_ProjectAssembly()
     {
         //首先实例化ILRuntime的AppDomain，AppDomain是一个应用程序域，每个AppDomain都是一个独立的沙盒
         appdomain = new ILRuntime.Runtime.Enviorment.AppDomain();
@@ -29,11 +29,11 @@ public class LitJsonDemo : MonoBehaviour
         //正式发布的时候需要大家自行从其他地方读取dll
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //这个DLL文件是直接编译HotFixProject.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
+        //这个DLL文件是直接编译HotFix_Project.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
 #if UNITY_ANDROID
-        WWW www = new WWW(Application.streamingAssetsPath + "/HotFixProject.dll");
+        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.dll");
 #else
-        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.dll");
+        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.dll");
 #endif
         while (!www.isDone)
             yield return null;
@@ -44,9 +44,9 @@ public class LitJsonDemo : MonoBehaviour
 
         //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
-        www = new WWW(Application.streamingAssetsPath + "/HotFixProject.pdb");
+        www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.pdb");
 #else
-        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.pdb");
+        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.pdb");
 #endif
         while (!www.isDone)
             yield return null;
@@ -61,11 +61,11 @@ public class LitJsonDemo : MonoBehaviour
         }
         catch
         {
-            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFixProject/HotFixProject.sln编译过热更DLL");
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
         }
 
         InitializeILRuntime();
-        OnHotFixProjectLoaded();
+        OnHotFix_ProjectLoaded();
     }
 
     void InitializeILRuntime()
@@ -78,13 +78,13 @@ public class LitJsonDemo : MonoBehaviour
         LitJson.JsonMapper.RegisterILRuntimeCLRRedirection(appdomain);
     }
 
-    void OnHotFixProjectLoaded()
+    void OnHotFix_ProjectLoaded()
     {
         Debug.Log("LitJson在使用前需要初始化，请看InitliazeILRuntime方法中的初始化");
         Debug.Log("LitJson的使用很简单，JsonMapper类里面提供了对象到Json以及Json到对象的转换方法");
         Debug.Log("具体使用方法请看热更项目中的代码");
         //调用无参数静态方法，appdomain.Invoke("类名", "方法名", 对象引用, 参数列表);
-        appdomain.Invoke("HotFixProject.TestJson", "RunTest", null, null);
+        appdomain.Invoke("HotFix_Project.TestJson", "RunTest", null, null);
     }
 
     private void OnDestroy()

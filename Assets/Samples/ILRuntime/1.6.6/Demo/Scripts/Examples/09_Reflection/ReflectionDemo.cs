@@ -19,10 +19,10 @@ public class ReflectionDemo : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(LoadHotFixProjectAssembly());
+        StartCoroutine(LoadHotFix_ProjectAssembly());
     }
 
-    IEnumerator LoadHotFixProjectAssembly()
+    IEnumerator LoadHotFix_ProjectAssembly()
     {
         //首先实例化ILRuntime的AppDomain，AppDomain是一个应用程序域，每个AppDomain都是一个独立的沙盒
         appdomain = new ILRuntime.Runtime.Enviorment.AppDomain();
@@ -30,11 +30,11 @@ public class ReflectionDemo : MonoBehaviour
         //正式发布的时候需要大家自行从其他地方读取dll
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //这个DLL文件是直接编译HotFixProject.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
+        //这个DLL文件是直接编译HotFix_Project.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
 #if UNITY_ANDROID
-        WWW www = new WWW(Application.streamingAssetsPath + "/HotFixProject.dll");
+        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.dll");
 #else
-        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.dll");
+        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.dll");
 #endif
         while (!www.isDone)
             yield return null;
@@ -45,9 +45,9 @@ public class ReflectionDemo : MonoBehaviour
 
         //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
-        www = new WWW(Application.streamingAssetsPath + "/HotFixProject.pdb");
+        www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.pdb");
 #else
-        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.pdb");
+        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.pdb");
 #endif
         while (!www.isDone)
             yield return null;
@@ -62,11 +62,11 @@ public class ReflectionDemo : MonoBehaviour
         }
         catch
         {
-            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFixProject/HotFixProject.sln编译过热更DLL");
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
         }
 
         InitializeILRuntime();
-        OnHotFixProjectLoaded();
+        OnHotFix_ProjectLoaded();
     }
 
     void InitializeILRuntime()
@@ -75,18 +75,18 @@ public class ReflectionDemo : MonoBehaviour
         //由于Unity的Profiler接口只允许在主线程使用，为了避免出异常，需要告诉ILRuntime主线程的线程ID才能正确将函数运行耗时报告给Profiler
         appdomain.UnityMainThreadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
 #endif
-        //这里做一些ILRuntime的注册，比如委托的适配器，但是为了演示不些适配器的报错，注册写在了OnHotFixProjectLoaded里
+        //这里做一些ILRuntime的注册，比如委托的适配器，但是为了演示不些适配器的报错，注册写在了OnHotFix_ProjectLoaded里
 
     }
 
-    void OnHotFixProjectLoaded()
+    void OnHotFix_ProjectLoaded()
     {
         Debug.Log("C#工程中反射是一个非常经常用到功能，ILRuntime也对反射进行了支持，在热更DLL中使用反射跟原生C#没有任何区别，故不做介绍");
         Debug.Log("这个Demo主要是介绍如何在主工程中反射热更DLL中的类型");
-        Debug.Log("假设我们要通过反射创建HotFixProject.InstanceClass的实例");
-        Debug.Log("显然我们通过Activator或者Type.GetType(\"HotFixProject.InstanceClass\")是无法取到类型信息的");
+        Debug.Log("假设我们要通过反射创建HotFix_Project.InstanceClass的实例");
+        Debug.Log("显然我们通过Activator或者Type.GetType(\"HotFix_Project.InstanceClass\")是无法取到类型信息的");
         Debug.Log("热更DLL中的类型我们均需要通过AppDomain取得");
-        var it = appdomain.LoadedTypes["HotFixProject.InstanceClass"];
+        var it = appdomain.LoadedTypes["HotFix_Project.InstanceClass"];
         Debug.Log("LoadedTypes返回的是IType类型，但是我们需要获得对应的System.Type才能继续使用反射接口");
         var type = it.ReflectionType;
         Debug.Log("取得Type之后就可以按照我们熟悉的方式来反射调用了");

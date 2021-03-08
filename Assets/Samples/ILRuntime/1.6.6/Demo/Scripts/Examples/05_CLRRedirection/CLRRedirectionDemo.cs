@@ -21,10 +21,10 @@ public class CLRRedirectionDemo : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(LoadHotFixProjectAssembly());
+        StartCoroutine(LoadHotFix_ProjectAssembly());
     }
 
-    IEnumerator LoadHotFixProjectAssembly()
+    IEnumerator LoadHotFix_ProjectAssembly()
     {
         //首先实例化ILRuntime的AppDomain，AppDomain是一个应用程序域，每个AppDomain都是一个独立的沙盒
         appdomain = new ILRuntime.Runtime.Enviorment.AppDomain();
@@ -32,12 +32,12 @@ public class CLRRedirectionDemo : MonoBehaviour
         //正式发布的时候需要大家自行从其他地方读取dll
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //这个DLL文件是直接编译HotFixProject.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
-        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFixProject~
+        //这个DLL文件是直接编译HotFix_Project.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
+        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFix_Project~
 #if UNITY_ANDROID
-        WWW www = new WWW(Application.streamingAssetsPath + "/HotFixProject.dll");
+        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.dll");
 #else
-        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.dll");
+        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.dll");
 #endif
         while (!www.isDone)
             yield return null;
@@ -48,9 +48,9 @@ public class CLRRedirectionDemo : MonoBehaviour
 
         //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
-        www = new WWW(Application.streamingAssetsPath + "/HotFixProject.pdb");
+        www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.pdb");
 #else
-        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.pdb");
+        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.pdb");
 #endif
         while (!www.isDone)
             yield return null;
@@ -65,12 +65,12 @@ public class CLRRedirectionDemo : MonoBehaviour
         }
         catch
         {
-            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFixProject/HotFixProject.sln编译过热更DLL");
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
         }
 
 
         InitializeILRuntime();
-        OnHotFixProjectLoaded();
+        OnHotFix_ProjectLoaded();
     }
 
     unsafe void InitializeILRuntime()
@@ -84,7 +84,7 @@ public class CLRRedirectionDemo : MonoBehaviour
         appdomain.RegisterCLRMethodRedirection(mi, Log_11);
     }
 
-    unsafe void OnHotFixProjectLoaded()
+    unsafe void OnHotFix_ProjectLoaded()
     {
         Debug.Log("什么时候需要CLR重定向呢，当我们需要挟持原方法实现，添加一些热更DLL中的特殊处理的时候，就需要CLR重定向了");
         Debug.Log("详细文档请参见Github主页的相关文档");
@@ -95,7 +95,7 @@ public class CLRRedirectionDemo : MonoBehaviour
         Debug.Log("但是经过CLR重定向之后可以做到输出DLL内堆栈，接下来进行CLR重定向注册");
 
         Debug.Log("请注释和解除InitializeILRuntime方法里的重定向注册，对比下一行日志的变化");
-        appdomain.Invoke("HotFixProject.TestCLRRedirection", "RunTest", null, null);
+        appdomain.Invoke("HotFix_Project.TestCLRRedirection", "RunTest", null, null);
     }
 
     //编写重定向方法对于刚接触ILRuntime的朋友可能比较困难，比较简单的方式是通过CLR绑定生成绑定代码，然后在这个基础上改，比如下面这个代码是从UnityEngine_Debug_Binding里面复制来改的

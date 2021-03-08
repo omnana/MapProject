@@ -16,10 +16,10 @@ public class HelloWorld : MonoBehaviour
     System.IO.MemoryStream p;
     void Start()
     {
-        StartCoroutine(LoadHotFixProjectAssembly());
+        StartCoroutine(LoadHotFix_ProjectAssembly());
     }
 
-    IEnumerator LoadHotFixProjectAssembly()
+    IEnumerator LoadHotFix_ProjectAssembly()
     {
         //首先实例化ILRuntime的AppDomain，AppDomain是一个应用程序域，每个AppDomain都是一个独立的沙盒
         appdomain = new ILRuntime.Runtime.Enviorment.AppDomain();
@@ -27,13 +27,13 @@ public class HelloWorld : MonoBehaviour
         //正式发布的时候需要大家自行从其他地方读取dll
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //这个DLL文件是直接编译HotFixProject.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
-        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFixProject~
+        //这个DLL文件是直接编译HotFix_Project.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
+        //工程目录在Assets\Samples\ILRuntime\1.6\Demo\HotFix_Project~
         //以下加载写法只为演示，并没有处理在编辑器切换到Android平台的读取，需要自行修改
 #if UNITY_ANDROID
-        WWW www = new WWW(Application.streamingAssetsPath + "/HotFixProject.dll");
+        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.dll");
 #else
-        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.dll");
+        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.dll");
 #endif
         while (!www.isDone)
             yield return null;
@@ -44,9 +44,9 @@ public class HelloWorld : MonoBehaviour
 
         //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
-        www = new WWW(Application.streamingAssetsPath + "/HotFixProject.pdb");
+        www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.pdb");
 #else
-        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.pdb");
+        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.pdb");
 #endif
         while (!www.isDone)
             yield return null;
@@ -61,11 +61,11 @@ public class HelloWorld : MonoBehaviour
         }
         catch
         {
-            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFixProject/HotFixProject.sln编译过热更DLL");
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
         }
 
         InitializeILRuntime();
-        OnHotFixProjectLoaded();
+        OnHotFix_ProjectLoaded();
     }
 
     void InitializeILRuntime()
@@ -77,23 +77,23 @@ public class HelloWorld : MonoBehaviour
         //这里做一些ILRuntime的注册，HelloWorld示例暂时没有需要注册的
     }
 
-    void OnHotFixProjectLoaded()
+    void OnHotFix_ProjectLoaded()
     {
         //HelloWorld，第一次方法调用
-        //appdomain.Invoke("HotFixProject.InstanceClass", "StaticFunTest", null, null);
-        //appdomain.Invoke("HotFixProject.InstanceClass", "StaticFunTest2", null, 111);
+        //appdomain.Invoke("HotFix_Project.InstanceClass", "StaticFunTest", null, null);
+        //appdomain.Invoke("HotFix_Project.InstanceClass", "StaticFunTest2", null, 111);
 
-        appdomain.Invoke("HotFixProject.InstanceClass", "GenericMethod", null, gameObject);
+        //appdomain.Invoke("HotFix_Project.InstanceClass", "GenericMethod", null, gameObject);
 
-        var testInstanceClass = appdomain.Instantiate("HotFixProject.InstanceClass", new object[] { 111 });
+        var testInstanceClass = appdomain.Instantiate("HotFix_Project.InstanceClass", new object[] { 111 });
 
         //List<int> list = null;
 
         //var param = new object[] {1, list , 2};
 
-        //appdomain.Invoke("HotFixProject.InstanceClass", "RefOutMethod", testInstanceClass, param);
+        //appdomain.Invoke("HotFix_Project.InstanceClass", "RefOutMethod", testInstanceClass, param);
 
-        appdomain.Invoke("HotFixProject.InstanceClass", "Test", testInstanceClass, null);
+        appdomain.Invoke("HotFix_Project.InstanceClass", "Test", testInstanceClass, null);
     }
 
 

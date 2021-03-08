@@ -27,10 +27,10 @@ public class CoroutineDemo : MonoBehaviour
     void Start()
     {
         instance = this;
-        StartCoroutine(LoadHotFixProjectAssembly());
+        StartCoroutine(LoadHotFix_ProjectAssembly());
     }
 
-    IEnumerator LoadHotFixProjectAssembly()
+    IEnumerator LoadHotFix_ProjectAssembly()
     {
         //首先实例化ILRuntime的AppDomain，AppDomain是一个应用程序域，每个AppDomain都是一个独立的沙盒
         appdomain = new ILRuntime.Runtime.Enviorment.AppDomain();
@@ -38,11 +38,11 @@ public class CoroutineDemo : MonoBehaviour
         //正式发布的时候需要大家自行从其他地方读取dll
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //这个DLL文件是直接编译HotFixProject.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
+        //这个DLL文件是直接编译HotFix_Project.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
 #if UNITY_ANDROID
-        WWW www = new WWW(Application.streamingAssetsPath + "/HotFixProject.dll");
+        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.dll");
 #else
-        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.dll");
+        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.dll");
 #endif
         while (!www.isDone)
             yield return null;
@@ -53,9 +53,9 @@ public class CoroutineDemo : MonoBehaviour
 
         //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
-        www = new WWW(Application.streamingAssetsPath + "/HotFixProject.pdb");
+        www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.pdb");
 #else
-        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.pdb");
+        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.pdb");
 #endif
         while (!www.isDone)
             yield return null;
@@ -70,12 +70,12 @@ public class CoroutineDemo : MonoBehaviour
         }
         catch
         {
-            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFixProject/HotFixProject.sln编译过热更DLL");
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
         }
 
 
         InitializeILRuntime();
-        OnHotFixProjectLoaded();
+        OnHotFix_ProjectLoaded();
     }
 
     void InitializeILRuntime()
@@ -90,9 +90,9 @@ public class CoroutineDemo : MonoBehaviour
         appdomain.DebugService.StartDebugService(56000);
     }
 
-    unsafe void OnHotFixProjectLoaded()
+    unsafe void OnHotFix_ProjectLoaded()
     {
-        appdomain.Invoke("HotFixProject.TestCoroutine", "RunTest", null, null);
+        appdomain.Invoke("HotFix_Project.TestCoroutine", "RunTest", null, null);
     }
 
     public void DoCoroutine(IEnumerator coroutine)

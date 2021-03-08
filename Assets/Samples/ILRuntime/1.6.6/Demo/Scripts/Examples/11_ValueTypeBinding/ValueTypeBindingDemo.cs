@@ -18,10 +18,10 @@ public class ValueTypeBindingDemo : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(LoadHotFixProjectAssembly());
+        StartCoroutine(LoadHotFix_ProjectAssembly());
     }
 
-    IEnumerator LoadHotFixProjectAssembly()
+    IEnumerator LoadHotFix_ProjectAssembly()
     {
         //首先实例化ILRuntime的AppDomain，AppDomain是一个应用程序域，每个AppDomain都是一个独立的沙盒
         appdomain = new ILRuntime.Runtime.Enviorment.AppDomain();
@@ -29,11 +29,11 @@ public class ValueTypeBindingDemo : MonoBehaviour
         //正式发布的时候需要大家自行从其他地方读取dll
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //这个DLL文件是直接编译HotFixProject.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
+        //这个DLL文件是直接编译HotFix_Project.sln生成的，已经在项目中设置好输出目录为StreamingAssets，在VS里直接编译即可生成到对应目录，无需手动拷贝
 #if UNITY_ANDROID
-        WWW www = new WWW(Application.streamingAssetsPath + "/HotFixProject.dll");
+        WWW www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.dll");
 #else
-        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.dll");
+        WWW www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.dll");
 #endif
         while (!www.isDone)
             yield return null;
@@ -44,9 +44,9 @@ public class ValueTypeBindingDemo : MonoBehaviour
 
         //PDB文件是调试数据库，如需要在日志中显示报错的行号，则必须提供PDB文件，不过由于会额外耗用内存，正式发布时请将PDB去掉，下面LoadAssembly的时候pdb传null即可
 #if UNITY_ANDROID
-        www = new WWW(Application.streamingAssetsPath + "/HotFixProject.pdb");
+        www = new WWW(Application.streamingAssetsPath + "/HotFix_Project.pdb");
 #else
-        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFixProject.pdb");
+        www = new WWW("file:///" + Application.streamingAssetsPath + "/HotFix_Project.pdb");
 #endif
         while (!www.isDone)
             yield return null;
@@ -61,7 +61,7 @@ public class ValueTypeBindingDemo : MonoBehaviour
         }
         catch
         {
-            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFixProject/HotFixProject.sln编译过热更DLL");
+            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
         }
 
         InitializeILRuntime();
@@ -91,7 +91,7 @@ public class ValueTypeBindingDemo : MonoBehaviour
         Debug.Log("我们通过值类型绑定可以解决这个问题，只有Unity主工程的值类型才需要此处理，热更DLL内定义的值类型不需要任何处理");        
         Debug.Log("请注释或者解注InitializeILRuntime里的代码来对比进行值类型绑定前后的性能差别");
         //调用无参数静态方法，appdomain.Invoke("类名", "方法名", 对象引用, 参数列表);
-        appdomain.Invoke("HotFixProject.TestValueType", "RunTest", null, null);
+        appdomain.Invoke("HotFix_Project.TestValueType", "RunTest", null, null);
     }
 
     void RunTest2()
@@ -99,7 +99,7 @@ public class ValueTypeBindingDemo : MonoBehaviour
         Debug.Log("=======================================");
         Debug.Log("Quaternion测试");
         //调用无参数静态方法，appdomain.Invoke("类名", "方法名", 对象引用, 参数列表);
-        appdomain.Invoke("HotFixProject.TestValueType", "RunTest2", null, null);
+        appdomain.Invoke("HotFix_Project.TestValueType", "RunTest2", null, null);
     }
 
     void RunTest3()
@@ -107,7 +107,7 @@ public class ValueTypeBindingDemo : MonoBehaviour
         Debug.Log("=======================================");
         Debug.Log("Vector2测试");
         //调用无参数静态方法，appdomain.Invoke("类名", "方法名", 对象引用, 参数列表);
-        appdomain.Invoke("HotFixProject.TestValueType", "RunTest3", null, null);
+        appdomain.Invoke("HotFix_Project.TestValueType", "RunTest3", null, null);
     }
 
     private void OnDestroy()
