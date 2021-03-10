@@ -1,21 +1,33 @@
 ManifestFileVersion: 0
-CRC: 1631337763
+CRC: 1115002200
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: ae87f88613e82ebb2b6f74af2b008d17
+    Hash: d674e616ea609252f1da873a253c7063
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 93f9b539e6321996a229ab52e72c1038
+    Hash: c10040d7f545321a2c4d1596ac629bf1
 HashAppended: 0
 ClassTypes:
 - Class: 1
   Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
 - Class: 21
+  Script: {instanceID: 0}
+- Class: 23
   Script: {instanceID: 0}
 - Class: 28
   Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
 - Class: 48
+  Script: {instanceID: 0}
+- Class: 49
+  Script: {instanceID: 0}
+- Class: 65
   Script: {instanceID: 0}
 - Class: 114
   Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
@@ -46,5 +58,16 @@ ClassTypes:
 - Class: 687078895
   Script: {instanceID: 0}
 Assets:
+- Assets/Art/Txt/RedPointConfig.txt.txt
+- Assets/Art/Shader/PolygonMask.shader
+- Assets/Art/Textures/lu_qi_10.png
+- Assets/Art/Atlas/Common.spriteatlas
+- Assets/Art/Shader/TestShader.shader
+- Assets/Art/Materials/M1.mat
+- Assets/Art/Model/Cube_C.prefab
+- Assets/Art/Model/Cube_B.prefab
+- Assets/Art/Csv/Test.csv.csv
+- Assets/Art/Model/Model_01/Cube_D.prefab
 - Assets/Art/UI/TestGui.prefab
+- Assets/Art/Model/Cube_A.prefab
 Dependencies: []

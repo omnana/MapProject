@@ -3,7 +3,7 @@ CRC: 1954686412
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 709b866c866a6b52c20385e3414073ee
+    Hash: 3b88661230d7a2ff284c2356756943a7
   TypeTreeHash:
     serializedVersion: 2
     Hash: 7652f69dff3dcd0741269161f69220a7
@@ -26,4 +26,4 @@ ClassTypes:
 Assets:
 - Assets/Art/Model/Cube_A.prefab
 Dependencies:
-- D:/UnityProject/MapProject/Assets/StreamingAssets/Windows/m1.ab
+- E:/Project/MapProject/Assets/StreamingAssets/Windows/m1.ab

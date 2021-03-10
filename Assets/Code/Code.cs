@@ -48,6 +48,8 @@ public class Code : MonoBehaviour
 
             TableMgrLoader.DownloadFinishCallabck = () =>
             {
+                StartCoroutine(ILRuntimeHelper.LoadHotFix_ProjectAssembly(() => { }));
+
                 MessageAggregator<object>.Instance.Publish("DownloadFinish", this, null);
             };
         });

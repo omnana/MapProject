@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GuiManager : MonoBehaviour
 {
@@ -37,9 +34,9 @@ public class GuiManager : MonoBehaviour
         {
             gui = uiObj.GetComponent<BaseGui>();
 
-            gui.Init();
-
             uiObj.SetActive(true);
+
+            gui.Init();
         }
 
         if (gui != null) gui.Open();
@@ -63,25 +60,35 @@ public class GuiManager : MonoBehaviour
 
             if (obj != null)
             {
-                var uiObj = Instantiate(obj);
+                obj.transform.SetParent(UiRoot, false);
 
-                uiObj.transform.SetParent(UiRoot, false);
+                var typeName = string.Format("HotFix_Project.Gui.{0}", uiName);
 
-                gui = uiObj.GetComponent<BaseGui>();
+                Debug.Log("typeName = " + typeName);
+
+                var appdomain = ILRuntimeHelper.Appdomain;
+
+                gui = obj.GetComponent<BaseGui>();
+
+                obj.SetActive(true);
+
+                if (appdomain.LoadedTypes.ContainsKey(typeName))
+                {
+                    gui.LlRContent = appdomain.Instantiate<IlRuntimeBaseGui>(typeName);
+                }
 
                 gui.Init();
-
-                uiObj.SetActive(true);
             }
 
-            if (gui != null)
-                gui.Open();
+            if (gui != null) gui.Open();
 
         }, UiRoot);
     }
 
     public void Close(BaseGui gui)
     {
+        gui.OnClose();
+
         prefabLoadMgr.Destroy(gui.gameObject);
     }
 }

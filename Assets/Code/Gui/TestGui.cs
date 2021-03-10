@@ -16,9 +16,9 @@ public class TestGui : BaseGui
 
     private Queue<GameObject> objQueue = new Queue<GameObject>();
 
-    public override void Init()
+    public override void OnInit()
     {
-        base.Init();
+        base.OnInit();
 
         TestView.BindingContext = new TestViewModel();
 
@@ -32,37 +32,39 @@ public class TestGui : BaseGui
 
         HttpGetBtn.onClick.AddListener(HttpGetBtn_OnClick);
 
-        var tree = new BSTTree();
-        //tree.Add(8);
-        tree.Add(3);
-        tree.Add(1);
-        tree.Add(4);
-        //tree.Add(5);
-        //tree.Add(15);
-        //tree.Add(9);
-        //tree.Add(2);
+        //var tree = new BSTTree();
+        ////tree.Add(8);
+        //tree.Add(3);
+        //tree.Add(1);
+        //tree.Add(4);
+        ////tree.Add(5);
+        ////tree.Add(15);
+        ////tree.Add(9);
+        ////tree.Add(2);
 
-        tree.MiddleOrderTraversal();
-        tree.Remove(1);
-        tree.Remove(3);
-        tree.Remove(4);
-        //tree.Remove(5);
-        //tree.Remove(4);
-        //tree.Remove(15);
-        //tree.Remove(9);
+        //tree.MiddleOrderTraversal();
+        //tree.Remove(1);
         //tree.Remove(3);
-        //tree.Remove(8);
-        Debug.Log("-------------");
-        tree.MiddleOrderTraversal();
+        //tree.Remove(4);
+        ////tree.Remove(5);
+        ////tree.Remove(4);
+        ////tree.Remove(15);
+        ////tree.Remove(9);
+        ////tree.Remove(3);
+        ////tree.Remove(8);
+        //Debug.Log("-------------");
+        //tree.MiddleOrderTraversal();
     }
 
-    public override void Open()
+    public override void OnOpen()
     {
-        base.Open();
+        base.OnOpen();
+
+        Debug.Log("123123");
 
         var data = TableMgrContainer.Resolve<TestModelMgr>().GetTableById(0);
 
-        Debug.Log(data.Test1);
+        //Debug.Log(data.Test1);
 
         image.sprite = ServiceContainer.Resolve<ResourceService>().LoadSpriteFromAtlasSync("RedPoint1");
 

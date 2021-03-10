@@ -115,7 +115,6 @@ public class Inheritance : MonoBehaviour
         obj.Value = 233;
         Debug.LogFormat("obj.Value={0}", obj.Value);
 
-
         Debug.Log("现在换个方式创建实例");
         obj = appdomain.Invoke("HotFix_Project.TestInheritance", "NewObject", null, null) as TestClassBase;
         obj.TestAbstract(456);

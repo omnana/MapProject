@@ -89,15 +89,15 @@ public class Invocation : MonoBehaviour
         Debug.Log("调用带参数的静态方法");
         appdomain.Invoke("HotFix_Project.InstanceClass", "StaticFunTest2", null, 123);
 
-
         Debug.Log("通过IMethod调用方法");
         //预先获得IMethod，可以减低每次调用查找方法耗用的时间
         IType type = appdomain.LoadedTypes["HotFix_Project.InstanceClass"];
         //根据方法名称和参数个数获取方法
         IMethod method = type.GetMethod("StaticFunTest2", 1);
 
+        // <1>
         appdomain.Invoke(method, null, 123);
-
+        // <2>
         Debug.Log("通过无GC Alloc方式调用方法");
         using (var ctx = appdomain.BeginInvoke(method))
         {
@@ -116,6 +116,7 @@ public class Invocation : MonoBehaviour
 
         Debug.Log("实例化热更里的类");
         object obj = appdomain.Instantiate("HotFix_Project.InstanceClass", new object[] { 233 });
+
         //第二种方式
         object obj2 = ((ILType)type).Instantiate();
 

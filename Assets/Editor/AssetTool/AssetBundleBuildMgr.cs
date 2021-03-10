@@ -13,6 +13,8 @@ namespace AssetBundles
 
         private Dictionary<string, ABNode> abNodeDic = new Dictionary<string, ABNode>();
 
+        public List<string> DllFileList = new List<string>();
+
         /// <summary>
         /// 
         /// </summary>
@@ -56,8 +58,8 @@ namespace AssetBundles
 
             if (filePath.EndsWith(".meta")) return false;
             if (filePath.EndsWith(".cs")) return false;
-            if (filePath.EndsWith(".dll")) return false;
             if (filePath.Contains("arteditor")) return false;
+            if (filePath.EndsWith(".dll")) return false;
 
             return true;
         }
@@ -310,6 +312,8 @@ namespace AssetBundles
         public void Clear()
         {
             abNodeDic.Clear();
+
+            DllFileList.Clear();
         }
     } 
 }

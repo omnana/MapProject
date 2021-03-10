@@ -63,7 +63,7 @@ public class HelloWorld : MonoBehaviour
         {
             Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
         }
-
+        appdomain.DebugService.StartDebugService(56000);
         InitializeILRuntime();
         OnHotFix_ProjectLoaded();
     }
@@ -81,7 +81,7 @@ public class HelloWorld : MonoBehaviour
     {
         //HelloWorld，第一次方法调用
         //appdomain.Invoke("HotFix_Project.InstanceClass", "StaticFunTest", null, null);
-        //appdomain.Invoke("HotFix_Project.InstanceClass", "StaticFunTest2", null, 111);
+
 
         //appdomain.Invoke("HotFix_Project.InstanceClass", "GenericMethod", null, gameObject);
 
@@ -109,6 +109,6 @@ public class HelloWorld : MonoBehaviour
 
     void Update()
     {
-
+        appdomain.Invoke("HotFix_Project.InstanceClass", "StaticFunTest2", null, 111);
     }
 }

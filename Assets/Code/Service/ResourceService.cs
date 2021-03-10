@@ -149,6 +149,23 @@ public class ResourceService : ServiceBase
     }
 
     /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="assetName"></param>
+    /// <param name="callback"></param>
+    public void LoadAssetBytesAsync(string assetName, Action<byte[]> callback)
+    {
+        if (string.IsNullOrEmpty(assetName)) return;
+
+        assetLoadMgr.LoadAsync(assetName, (name, obj) =>
+        {
+            //callback?.Invoke();
+
+            assetLoadMgr.Unload(obj);
+        });
+    }
+
+    /// <summary>
     /// 同步加载资源
     /// </summary>
     /// <typeparam name="T"></typeparam>
