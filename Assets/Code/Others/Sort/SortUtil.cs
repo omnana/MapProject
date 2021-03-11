@@ -119,6 +119,7 @@ public class SortUtil
     /// <param name="arr"></param>
     public static void HeapSort(int[] arr)
     {
+        // 第一个非叶子节点 arr.Length / 2 - 1
         for (var i = arr.Length / 2 - 1; i >= 0; i--)
         {
             MaxHeapify(arr, i, arr.Length - 1);

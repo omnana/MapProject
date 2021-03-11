@@ -7,7 +7,7 @@ namespace AssetBundles
     public delegate void AssetBundleLoadCallBack(AssetBundle ab);
 
     /// <summary>
-    /// ab资源
+    /// ab资源包
     /// </summary>
     public class AssetBundleObject
     {
@@ -19,7 +19,7 @@ namespace AssetBundles
 
         public AssetBundleCreateRequest Request; // 异步加载请求
 
-        public AssetBundle Main; // 加载到的ab
+        public AssetBundle AssetBundle; // 加载到的ab
 
         public int DependLoadingCount; // 依赖计数
    

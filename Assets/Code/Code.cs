@@ -44,6 +44,8 @@ public class Code : MonoBehaviour
         {
             assetBundleMgr.LoadMainfest();
 
+            MyAssetBundleMgr.Instance.LoadMainfest();
+
             TableMgrLoader.StartLoad();
 
             TableMgrLoader.DownloadFinishCallabck = () =>

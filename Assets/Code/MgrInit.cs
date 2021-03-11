@@ -17,5 +17,7 @@ public class MgrInit : MonoBehaviour
         ServiceLocator.RegisterSingleton<DownloadMgr>();
         ServiceLocator.RegisterSingleton<FileVersionMgr>();
         ServiceLocator.RegisterSingleton<HotFix_ProjectMgr>();
+
+        gameObject.AddComponent<MyAssetBundleMgr>();
     }
 }

@@ -238,7 +238,7 @@ namespace AssetBundles
 
             if (status == objStatus.Loaded) // 已加载
             {
-                callFun?.Invoke(obj.Main);
+                callFun?.Invoke(obj.AssetBundle);
             }
             else
             {
@@ -374,7 +374,7 @@ namespace AssetBundles
         {
             if (obj.Request != null)
             {
-                obj.Main = obj.Request.assetBundle;
+                obj.AssetBundle = obj.Request.assetBundle;
 
                 obj.Request = null;
             }
@@ -396,7 +396,7 @@ namespace AssetBundles
             }
             else
             {
-                obj.Main = AssetBundle.LoadFromFile(dir);
+                obj.AssetBundle = AssetBundle.LoadFromFile(dir);
             }
         }
 
@@ -407,7 +407,7 @@ namespace AssetBundles
         private void DoUnLoad(AssetBundleObject obj)
         {
             // 这里用true，卸载Asset内存，实现指定卸载
-            if (obj.Main == null)
+            if (obj.AssetBundle == null)
             {
                 string errormsg = string.Format("LoadAssetbundle DoUnload error ! assetName:{0}", obj.HashName);
 
@@ -416,9 +416,9 @@ namespace AssetBundles
                 return;
             }
 
-            obj.Main.Unload(true);
+            obj.AssetBundle.Unload(true);
 
-            obj.Main = null;
+            obj.AssetBundle = null;
         }
 
         /// <summary>
@@ -428,23 +428,23 @@ namespace AssetBundles
         /// <param name="isAsync"></param>
         private void DoLoadedCallFun(AssetBundleObject obj, bool isAsync = true)
         {
-            if (obj.Main == null) // 如果还没加载到ab包, 网上下载，先同步下载
+            if (obj.AssetBundle == null) // 如果还没加载到ab包, 网上下载，先同步下载
             {
             }
 
-            if (obj.Main == null) // 未同步下载到，直接移除
+            if (obj.AssetBundle == null) // 未同步下载到，直接移除
             {
                 PutobjInQueue(objStatus.None, obj);
             }
 
-            if(obj.Main == null && isAsync) // 异步下载
+            if(obj.AssetBundle == null && isAsync) // 异步下载
             {
 
             }
 
             foreach(var callback in obj.CallFunList)
             {
-                callback?.Invoke(obj.Main);
+                callback?.Invoke(obj.AssetBundle);
             }
 
             Debug.Log(obj.HashName);
@@ -538,7 +538,7 @@ namespace AssetBundles
             {
                 if (obj.DependLoadingCount == 0 && obj.Request != null && obj.Request.isDone)
                 {
-                    obj.Main = obj.Request.assetBundle;
+                    obj.AssetBundle = obj.Request.assetBundle;
 
                     tempList.Add(obj);
                 }
@@ -591,7 +591,7 @@ namespace AssetBundles
 
             foreach (var obj in queue.Values)
             {
-                if(obj.RefCount == 0 && obj.Main != null)
+                if(obj.RefCount == 0 && obj.AssetBundle != null)
                 {
                     DoUnLoad(obj);
 
