@@ -19,7 +19,7 @@ public class GuiManager : MonoBehaviour
     /// 同步打开
     /// </summary>
     /// <param name="uiName"></param>
-    public void OpenSync<T>(string uiName = "")
+    public void OpenSync<T>(string uiName = "") where T : BaseGui
     {
         if (string.IsNullOrEmpty(uiName))
         {
@@ -32,7 +32,7 @@ public class GuiManager : MonoBehaviour
 
         if (uiObj != null)
         {
-            gui = uiObj.GetComponent<BaseGui>();
+            gui = uiObj.GetComponent<T>();
 
             uiObj.SetActive(true);
 
@@ -47,7 +47,7 @@ public class GuiManager : MonoBehaviour
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="uiName"></param>
-    public void OpenAsync<T>(string uiName = "")
+    public void OpenAsync<T>(string uiName = "") where T : BaseGui
     {
         if (string.IsNullOrEmpty(uiName))
         {
@@ -68,13 +68,17 @@ public class GuiManager : MonoBehaviour
 
                 var appdomain = ILRuntimeHelper.Appdomain;
 
-                gui = obj.GetComponent<BaseGui>();
+                gui = obj.GetComponent<T>();
+
+                if (gui == null) gui = obj.AddComponent<T>();
 
                 obj.SetActive(true);
 
                 if (appdomain.LoadedTypes.ContainsKey(typeName))
                 {
                     gui.LlRContent = appdomain.Instantiate<IlRuntimeBaseGui>(typeName);
+
+                    gui.LlRContent.SetGameObject(obj, UiRoot);
                 }
 
                 gui.Init();
@@ -87,7 +91,7 @@ public class GuiManager : MonoBehaviour
 
     public void Close(BaseGui gui)
     {
-        gui.OnClose();
+        gui.Close();
 
         prefabLoadMgr.Destroy(gui.gameObject);
     }

@@ -37,6 +37,9 @@ namespace AssetBundles
             unLoadList = new List<AssetBundleObject>();
 
             waittingList = new HashSet<string>();
+
+            assetToAssetBundleDic = new Dictionary<string, List<string>>();
+
         }
 
         /// <summary>

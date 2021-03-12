@@ -8,10 +8,39 @@ public class BaseGui : MonoBehaviour
     /// 热更内容
     public IlRuntimeBaseGui LlRContent;
 
+    protected bool NeedUpdate = true;
+
     private void Awake()
     {
     }
 
+    private void Update()
+    {
+        if (!NeedUpdate) return;
+
+        if (LlRContent != null)
+        {
+            LlRContent.OnUpdate();
+        }
+        else
+        {
+            OnUpdate();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (LlRContent != null)
+        {
+            LlRContent.Destroy();
+        }
+        else
+        {
+            Destroy();
+        }
+    }
+
+    // 外部调用
     public void Init()
     {
         if(LlRContent != null)
@@ -36,26 +65,37 @@ public class BaseGui : MonoBehaviour
         }
     }
 
-
-    public virtual void OnInit()
+    public void Close()
     {
-       
+        if (LlRContent != null)
+        {
+            LlRContent.OnClose();
+        }
+        else
+        {
+            OnClose();
+        }
     }
 
-    public virtual void OnOpen()
+    // 内部
+    protected virtual void OnInit()
+    {
+        // 外部调用
+    }
+
+    protected virtual void OnOpen()
     {
     }
 
-    public virtual void OnUpdate()
+    protected virtual void OnUpdate()
     {
     }
 
-    public virtual void OnClose()
+    protected virtual void OnClose()
     {
     }
 
-    public virtual void Destroy()
+    protected virtual void Destroy()
     {
     }
-
 }

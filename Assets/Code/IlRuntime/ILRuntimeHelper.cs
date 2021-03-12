@@ -16,7 +16,7 @@ public class ILRuntimeHelper
     {
         Appdomain = new ILRuntime.Runtime.Enviorment.AppDomain();
 
-        var webRequest = UnityWebRequest.Get(AssetBundles.Utility.GetAssetBundlePath("HotFix_Project.dll"));
+        var webRequest = UnityWebRequest.Get(Application.streamingAssetsPath + "/HotFix_Project.dll");
 
         yield return webRequest.SendWebRequest();
 
@@ -32,8 +32,8 @@ public class ILRuntimeHelper
         }
 
         webRequest.Dispose();
-
-        webRequest = UnityWebRequest.Get(AssetBundles.Utility.GetAssetBundlePath("HotFix_Project.pdb"));
+        
+        webRequest = UnityWebRequest.Get(Application.streamingAssetsPath + "/HotFix_Project.pdb");
 
         yield return webRequest.SendWebRequest();
 
@@ -72,7 +72,10 @@ public class ILRuntimeHelper
         if (Application.isEditor)
             Appdomain.DebugService.StartDebugService(56000);
 
-        //Appdomain.RegisterCrossBindingAdaptor(new GuiAdapter());
+        InitializeILRuntime();
+
+        //请在生成了绑定代码后解除下面这行的注释
+        ILRuntime.Runtime.Generated.CLRBindings.Initialize(Appdomain);
 
         callback?.Invoke();
     }
@@ -82,5 +85,36 @@ public class ILRuntimeHelper
         fs.Dispose();
 
         p.Dispose();
+    }
+
+    private static void InitializeILRuntime()
+    {
+        RegisterCrossBindingAdaptors();
+
+        RegisterDelegateConvertors();
+    }
+
+    private static void RegisterCrossBindingAdaptors()
+    {
+        Appdomain.RegisterCrossBindingAdaptor(new GuiAdapter());
+    }
+
+    private static void RegisterDelegateConvertors()
+    {
+        Appdomain.DelegateManager.RegisterDelegateConvertor<UnityEngine.Events.UnityAction>((action) =>
+        {
+            return new UnityEngine.Events.UnityAction(() =>
+            {
+                ((System.Action)action)();
+            });
+        });
+
+        Appdomain.DelegateManager.RegisterDelegateConvertor<UnityEngine.Events.UnityAction<GameObject>>((action) =>
+        {
+            return new UnityEngine.Events.UnityAction<GameObject>((obj) =>
+            {
+                ((System.Action<GameObject>)action)(obj);
+            });
+        });
     }
 }

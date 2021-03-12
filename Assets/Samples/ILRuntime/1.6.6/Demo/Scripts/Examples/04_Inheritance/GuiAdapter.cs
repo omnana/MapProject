@@ -9,7 +9,8 @@ using System;
 public class GuiAdapter : CrossBindingAdaptor
 {
     static CrossBindingMethodInfo mInit = new CrossBindingMethodInfo("OnInit");
-    static CrossBindingMethodInfo mOpen = new CrossBindingMethodInfo("Open");
+    static CrossBindingMethodInfo mOpen = new CrossBindingMethodInfo("OnOpen");
+    static CrossBindingMethodInfo mUpdate = new CrossBindingMethodInfo("OnUpdate");
     static CrossBindingMethodInfo mClose = new CrossBindingMethodInfo("OnClose");
     static CrossBindingMethodInfo mDestroy = new CrossBindingMethodInfo("Destroy");
 
@@ -58,6 +59,7 @@ public class GuiAdapter : CrossBindingAdaptor
 
         public ILTypeInstance ILInstance { get { return instance; } }
 
+
         public override void OnInit()
         {
             if (mInit.CheckShouldInvokeBase(this.instance))
@@ -66,12 +68,21 @@ public class GuiAdapter : CrossBindingAdaptor
                 mInit.Invoke(this.instance);
         }
 
+
         public override void OnOpen()
         {
             if (mOpen.CheckShouldInvokeBase(this.instance))
                 base.OnOpen();
             else
                 mOpen.Invoke(this.instance);
+        }
+
+        public override void OnUpdate()
+        {
+            if (mUpdate.CheckShouldInvokeBase(this.instance))
+                base.OnUpdate();
+            else
+                mUpdate.Invoke(this.instance);
         }
 
         public override void OnClose()

@@ -16,7 +16,7 @@ public class TestGui : BaseGui
 
     private Queue<GameObject> objQueue = new Queue<GameObject>();
 
-    public override void OnInit()
+    protected override void OnInit()
     {
         base.OnInit();
 
@@ -56,9 +56,9 @@ public class TestGui : BaseGui
         //tree.MiddleOrderTraversal();
     }
 
-    public override void OnOpen()
+    protected override void OnOpen()
     {
-        base.OnOpen();
+        base.Open();
 
         Debug.Log("123123");
 

@@ -100,15 +100,15 @@ public class DelegateDemo : MonoBehaviour
         //将Action或者Func转换成目标委托类型
 
         // 委托转换器
-        //appdomain.DelegateManager.RegisterDelegateConvertor<TestDelegateMethod>((action) =>
-        //{
-        //    //转换器的目的是把Action或者Func转换成正确的类型，这里则是把Action<int>转换成TestDelegateMethod
-        //    return new TestDelegateMethod((a) =>
-        //    {
-        //        //调用委托实例
-        //        ((System.Action<int>)action)(a);
-        //    });
-        //});
+        appdomain.DelegateManager.RegisterDelegateConvertor<TestDelegateMethod>((action) =>
+        {
+            //转换器的目的是把Action或者Func转换成正确的类型，这里则是把Action<int>转换成TestDelegateMethod
+            return new TestDelegateMethod((a) =>
+            {
+                //调用委托实例
+                ((System.Action<int>)action)(a);
+            });
+        });
         ////对于TestDelegateFunction同理，只是是将Func<int, string>转换成TestDelegateFunction
         //appdomain.DelegateManager.RegisterDelegateConvertor<TestDelegateFunction>((action) =>
         //{
