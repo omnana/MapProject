@@ -11,7 +11,6 @@ public class ResourceService : ServiceBase
 
     private PrefabLoadMgr prefabLoadMgr;
 
-
     public override void Loaded()
     {
         base.Loaded();

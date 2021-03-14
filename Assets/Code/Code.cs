@@ -39,6 +39,20 @@ public class Code : MonoBehaviour
 
         assetBundleMgr = ServiceLocator.Resolve<AssetBundleMgr>();
 
+
+        MyAssetBundleMgr.Instance.LoadMainfest();
+
+        TableMgrLoader.StartLoad();
+
+        TableMgrLoader.DownloadFinishCallabck = () =>
+        {
+            StartCoroutine(ILRuntimeHelper.LoadHotFix_ProjectAssembly(() => { }));
+
+            MessageAggregator<object>.Instance.Publish("DownloadFinish", this, null);
+        };
+        
+        return;
+
         // 热更完毕或者已下载
         HotFix_ProjectMgr.RegisterRequsetCallback((state, sgm, isComplete) =>
         {

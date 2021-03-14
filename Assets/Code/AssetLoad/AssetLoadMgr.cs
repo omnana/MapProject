@@ -135,7 +135,7 @@ public class AssetLoadMgr
             {
                 var ab = AssetBundleMgr.LoadSync(assetName);
 
-                assetObj.Asset = ab.Main;
+                assetObj.Asset = ab.AssetBundle;
 
                 // 异步转同步，需要卸载异步的引用计数
                 //AssetBundleMgr.Unload(assetName);
@@ -164,7 +164,7 @@ public class AssetLoadMgr
             {
                 assetObj.IsAbLoad = true;
                 var ab = AssetBundleMgr.LoadSync(assetName);
-                assetObj.Asset = ab.Main.LoadAsset(ab.Main.GetAllAssetNames()[0]);
+                assetObj.Asset = ab.AssetBundle.LoadAsset(ab.AssetBundle.GetAllAssetNames()[0]);
                 // 异步转同步，需要卸载异步的引用计数
                 //AssetBundleMgr.Unload(assetName);
             }

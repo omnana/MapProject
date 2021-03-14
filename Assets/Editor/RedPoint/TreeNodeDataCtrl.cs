@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Text;
 using System.IO;
 using System;
+using UnityEditor;
 
 public class TreeNodeDataCtrl
 {
@@ -29,7 +30,7 @@ public class TreeNodeDataCtrl
 
         nodeNameHashset.Clear();
 
-        var str = FileUtil.ReadTxt(RedPointSystem.RedPointConfigOutputPath);
+        var str = FileHelper.ReadTxt(RedPointSystem.RedPointConfigOutputPath);
 
         root = new TreeNode(RootName);
 
@@ -308,7 +309,7 @@ public class TreeNodeDataCtrl
 
         //var str = Util.StrEncryption(JsonConvert.SerializeObject(configData), EncryptionKey);
 
-        FileUtil.WriteTxt(RedPointSystem.RedPointConfigOutputPath, JsonConvert.SerializeObject(configData));
+        FileHelper.WriteTxt(RedPointSystem.RedPointConfigOutputPath, JsonConvert.SerializeObject(configData));
     }
 
     /// <summary>

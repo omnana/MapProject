@@ -1,49 +1,37 @@
 ManifestFileVersion: 0
-CRC: 1631337763
+CRC: 1688886516
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 186e887bdecde640b33c7d6efde2d11f
+    Hash: 8a860119c14520b76fc66da4676a5d65
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 93f9b539e6321996a229ab52e72c1038
+    Hash: 3d16748659d06cce32ce46b503349dd9
 HashAppended: 0
 ClassTypes:
 - Class: 1
   Script: {instanceID: 0}
-- Class: 21
-  Script: {instanceID: 0}
-- Class: 28
-  Script: {instanceID: 0}
-- Class: 48
-  Script: {instanceID: 0}
-- Class: 114
-  Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 7c7ea5d704c6f8e4d8529ebc0637894a, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 846c2cb9d48c9d64f8329fb2c31657f3, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 846c2cb9d48c9d64f8329fb2c31657f3, type: 3}
+  Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
 - Class: 115
-  Script: {instanceID: 0}
-- Class: 128
-  Script: {instanceID: 0}
-- Class: 213
   Script: {instanceID: 0}
 - Class: 222
   Script: {instanceID: 0}
 - Class: 224
-  Script: {instanceID: 0}
-- Class: 687078895
   Script: {instanceID: 0}
 Assets:
 - Assets/Art/UI/TestGui.prefab
