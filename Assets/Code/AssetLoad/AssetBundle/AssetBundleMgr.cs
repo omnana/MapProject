@@ -17,7 +17,7 @@ namespace AssetBundles
     /// <summary>
     /// 资源管理
     /// </summary>
-    public class AssetBundleMgr : BaseCtrl
+    public class AssetBundleMgr : Singleton<AssetBundleMgr>
     {
         private Dictionary<objStatus, Dictionary<string, AssetBundleObject>> queueDic;
 

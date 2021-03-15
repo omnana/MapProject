@@ -2,17 +2,8 @@
 
 public class GuiManager : MonoBehaviour
 {
-    public static GuiManager Instance { get; private set; }
-
-    public Transform UiRoot;
-
-    private PrefabLoadMgr prefabLoadMgr;
-
     public virtual void Awake()
     {
-        Instance = this;
-
-        prefabLoadMgr = ServiceLocator.Resolve<PrefabLoadMgr>();
     }
 
     /// <summary>
@@ -28,7 +19,7 @@ public class GuiManager : MonoBehaviour
 
         BaseGui gui = null;
 
-        var uiObj = prefabLoadMgr.LoadSync(uiName, UiRoot);
+        var uiObj = Singleton<PrefabLoadMgr>.GetInstance().LoadSync(uiName, UIHelper.UIRoot);
 
         if (uiObj != null)
         {
@@ -54,13 +45,13 @@ public class GuiManager : MonoBehaviour
             uiName = typeof(T).ToString();
         }
 
-        prefabLoadMgr.LoadAsync(uiName, (assetName, obj) =>
+        Singleton<PrefabLoadMgr>.GetInstance().LoadAsync(uiName, (assetName, obj) =>
         {
             BaseGui gui = null;
 
             if (obj != null)
             {
-                obj.transform.SetParent(UiRoot, false);
+                obj.transform.SetParent(UIHelper.UIRoot, false);
 
                 var typeName = string.Format("HotFix_Project.Gui.{0}", uiName);
 
@@ -78,7 +69,7 @@ public class GuiManager : MonoBehaviour
                 {
                     gui.LlRContent = appdomain.Instantiate<IlRuntimeBaseGui>(typeName);
 
-                    gui.LlRContent.SetGameObject(obj, UiRoot);
+                    gui.LlRContent.SetGameObject(obj, UIHelper.UIRoot);
                 }
 
                 gui.Init();
@@ -86,13 +77,13 @@ public class GuiManager : MonoBehaviour
 
             if (gui != null) gui.Open();
 
-        }, UiRoot);
+        }, UIHelper.UIRoot);
     }
 
     public void Close(BaseGui gui)
     {
         gui.Close();
 
-        prefabLoadMgr.Destroy(gui.gameObject);
+        Singleton<PrefabLoadMgr>.GetInstance().Destroy(gui.gameObject);
     }
 }

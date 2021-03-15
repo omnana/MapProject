@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 using System;
 
@@ -12,6 +13,21 @@ public class BaseGui : MonoBehaviour
 
     private void Awake()
     {
+        var canvas = gameObject.GetComponent<Canvas>();
+
+        if (canvas == null) canvas = gameObject.AddComponent<Canvas>();
+
+        //canvas.worldCamera = CameraHelper.UICamera;
+
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+        var raycaster = gameObject.GetComponent<GraphicRaycaster>();
+
+        if(raycaster == null) gameObject.AddComponent<GraphicRaycaster>();
+
+        var canvasScale = gameObject.GetComponent<CanvasScaler>();
+
+        if (canvasScale == null) gameObject.AddComponent<CanvasScaler>();
     }
 
     private void Update()

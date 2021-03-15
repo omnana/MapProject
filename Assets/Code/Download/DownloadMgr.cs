@@ -20,7 +20,7 @@ using System.Net.Security;
 （6）文件线程高效下载——多线程，异步回调文件
  */
 
-public class DownloadMgr
+public class DownloadMgr : MonoBehaviour
 {
     private const int MAX_THREAD_COUNT = 20;
 
@@ -34,7 +34,7 @@ public class DownloadMgr
 
     private List<DownloadFileMac> errorList;
 
-    public DownloadMgr()
+    private void Awake()
     {
         readyList = new Queue<DownloadFileMac>();
 

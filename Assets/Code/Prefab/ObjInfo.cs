@@ -22,6 +22,8 @@ public class ObjInfo : MonoBehaviour
     void OnDestroy()
     {
         //被动销毁，保证引用计数正确
-        ServiceLocator.Resolve<PrefabLoadMgr>().Destroy(gameObject);
+        if (Singleton<PrefabLoadMgr>.GetInstance() == null) return;
+
+        Singleton<PrefabLoadMgr>.GetInstance().Destroy(gameObject);
     }
 }

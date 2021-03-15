@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PrefabLoadMgr : BaseCtrl
+public class PrefabLoadMgr : MonoBehaviour
 {
     private AssetLoadMgr assetLoadMgr;
 
@@ -14,7 +14,7 @@ public class PrefabLoadMgr : BaseCtrl
 
     public PrefabLoadMgr()
     {
-        assetLoadMgr = ServiceLocator.Resolve<AssetLoadMgr>();
+        assetLoadMgr = Singleton<AssetLoadMgr>.GetInstance();
 
         loadedList = new Dictionary<string, PrefabObject>();
 
@@ -327,7 +327,7 @@ public class PrefabLoadMgr : BaseCtrl
         loadedAsyncList.RemoveRange(0, count);
     }
 
-    public void Update()
+    private void Update()
     {
         UpdateLoadedAsync();
     }

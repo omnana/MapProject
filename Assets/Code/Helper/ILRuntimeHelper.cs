@@ -75,7 +75,7 @@ public class ILRuntimeHelper
         InitializeILRuntime();
 
         //请在生成了绑定代码后解除下面这行的注释
-        ILRuntime.Runtime.Generated.CLRBindings.Initialize(Appdomain);
+        //ILRuntime.Runtime.Generated.CLRBindings.Initialize(Appdomain);
 
         callback?.Invoke();
     }

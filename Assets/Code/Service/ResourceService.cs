@@ -14,8 +14,10 @@ public class ResourceService : ServiceBase
     public override void Loaded()
     {
         base.Loaded();
-        assetLoadMgr = ServiceLocator.Resolve<AssetLoadMgr>();
-        prefabLoadMgr = ServiceLocator.Resolve<PrefabLoadMgr>();
+
+        assetLoadMgr = Singleton<AssetLoadMgr>.GetInstance();
+
+        prefabLoadMgr = Singleton<PrefabLoadMgr>.GetInstance();
     }
 
     /// <summary>

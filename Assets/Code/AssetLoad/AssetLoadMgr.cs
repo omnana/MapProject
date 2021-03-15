@@ -11,13 +11,14 @@ public enum AssetObjStatus
     Unload = 3, // 待卸载
 }
 
-public class AssetLoadMgr
+public class AssetLoadMgr : MonoBehaviour
 {
     public AssetBundleMgr AssetBundleMgr { get; set; }
 
 #if UNITY_EDITOR 
     public EditorAssetLoadMgr EditorAssetLoadMgr { get; set; }
 #endif
+
     public ResourcesLoadMgr ResourcesLoadMgr { get; set; }
 
     private Dictionary<AssetObjStatus, Dictionary<string, AssetObject>> assetObjDic = new Dictionary<AssetObjStatus, Dictionary<string, AssetObject>>();
@@ -36,15 +37,15 @@ public class AssetLoadMgr
 
     private const int LOADING_INTERVAL_MAX_COUNT = 15;
 
-    public AssetLoadMgr()
+    private void Awake()
     {
-        AssetBundleMgr = ServiceLocator.Resolve<AssetBundleMgr>();
+        AssetBundleMgr = Singleton<AssetBundleMgr>.GetInstance();
 
 #if UNITY_EDITOR 
-        EditorAssetLoadMgr = ServiceLocator.Resolve<EditorAssetLoadMgr>();
+        EditorAssetLoadMgr = Singleton<EditorAssetLoadMgr>.GetInstance();
 #endif
 
-        ResourcesLoadMgr = ServiceLocator.Resolve<ResourcesLoadMgr>();
+        ResourcesLoadMgr = Singleton<ResourcesLoadMgr>.GetInstance();
 
         assetObjDic = new Dictionary<AssetObjStatus, Dictionary<string, AssetObject>>()
         {

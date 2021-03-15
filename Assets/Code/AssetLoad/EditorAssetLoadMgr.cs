@@ -6,7 +6,7 @@ using System.IO;
 
 #if UNITY_EDITOR
 
-public class EditorAssetLoadMgr : BaseCtrl
+public class EditorAssetLoadMgr : MonoBehaviour
 {
     public Dictionary<string, string> resourceDic;
 

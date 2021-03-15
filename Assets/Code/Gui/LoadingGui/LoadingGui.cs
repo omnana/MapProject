@@ -7,13 +7,13 @@ public class LoadingGui : BaseGui
 {
     public Slider Slider;
 
-    private HotFix_ProjectMgr HotFix_ProjectMgr;
+    private HotFixMgr HotFix_ProjectMgr;
 
     private bool isFinish = false;
 
     private void Awake()
     {
-        HotFix_ProjectMgr = ServiceLocator.Resolve<HotFix_ProjectMgr>();
+        HotFix_ProjectMgr = Singleton<HotFixMgr>.GetInstance();
 
         MessageAggregator<object>.Instance.Subscribe("DownloadFinish", DownloadFinish);
     }
@@ -21,7 +21,9 @@ public class LoadingGui : BaseGui
     private void DownloadFinish(object sender, MessageArgs<object> args)
     {
         isFinish = true;
-        //GuiManager.Instance.OpenAsync<TestGui>();
+
+        //Singleton<GuiManager>.GetInstance().OpenAsync<TestGui>();
+
         //Destroy(gameObject);
     }
 
@@ -32,7 +34,7 @@ public class LoadingGui : BaseGui
 
         if (isFinish && Input.GetKeyDown(KeyCode.A))
         {
-            GuiManager.Instance.OpenAsync<TestGui>();
+            Singleton<GuiManager>.GetInstance().OpenAsync<TestGui>();
             Destroy(gameObject);
         }
     }

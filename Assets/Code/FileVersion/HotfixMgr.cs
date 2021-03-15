@@ -6,7 +6,7 @@ using System;
 /// <summary>
 /// 热更管理器
 /// </summary>
-public class HotFix_ProjectMgr
+public class HotFixMgr : MonoBehaviour
 {
     public enum HotFix_ProjectState
     {
@@ -88,11 +88,11 @@ public class HotFix_ProjectMgr
     }
 
     //启动前，请先调用RegisterRequsetCallback注册回调
-    public void Start()
+    public void StartCheck()
     {
-        downloadMgr = ServiceLocator.Resolve<DownloadMgr>();
+        downloadMgr = Singleton<DownloadMgr>.GetInstance();
 
-        fileVersionMgr = ServiceLocator.Resolve<FileVersionMgr>();
+        fileVersionMgr = Singleton<FileVersionMgr>.GetInstance();
 
         fileVersionMgr.Init();
 
@@ -416,7 +416,7 @@ public class HotFix_ProjectMgr
     {
         HotFixCallback(HotFix_ProjectState.RequestErrorRestart, msg, (run) =>
         {
-            if (run) Start();
+            if (run) StartCheck();
         });
     }
 }

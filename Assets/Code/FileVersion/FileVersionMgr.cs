@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using UnityEngine;
 
-public class FileVersionMgr
+public class FileVersionMgr : MonoBehaviour
 {
     public int DownloadSize
     {
