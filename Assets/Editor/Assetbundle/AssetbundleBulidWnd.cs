@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.IO;
-using AssetBundles;
+using Omnana;
 using System.Security.Cryptography;
 
 public class AssetbundleBulidWnd : EditorWindow

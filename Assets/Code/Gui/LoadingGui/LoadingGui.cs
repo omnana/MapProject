@@ -1,5 +1,5 @@
 ﻿using UnityEngine.UI;
-using AssetBundles;
+using Omnana;
 using UnityEngine.Events;
 using UnityEngine;
 
@@ -7,15 +7,15 @@ public class LoadingGui : BaseGui
 {
     public Slider Slider;
 
-    private HotFixMgr HotFix_ProjectMgr;
+    private HotFixMgr hotFixMgr;
 
     private bool isFinish = false;
 
     private void Awake()
     {
-        HotFix_ProjectMgr = Singleton<HotFixMgr>.GetInstance();
+        hotFixMgr = HotFixMgr.Instance;
 
-        MessageAggregator<object>.Instance.Subscribe("DownloadFinish", DownloadFinish);
+        MessageAggregator<object>.Instance.Subscribe(MessageType.DownloadFinish, DownloadFinish);
     }
 
     private void DownloadFinish(object sender, MessageArgs<object> args)
@@ -29,12 +29,13 @@ public class LoadingGui : BaseGui
 
     private void Update()
     {
-        if(HotFix_ProjectMgr != null)
-            Slider.value = HotFix_ProjectMgr.DownloadProgress;
+        if(hotFixMgr != null)
+            Slider.value = hotFixMgr.DownloadProgress;
 
         if (isFinish && Input.GetKeyDown(KeyCode.A))
         {
-            Singleton<GuiManager>.GetInstance().OpenAsync<TestGui>();
+            GuiManager.Instance.OpenAsync<TestGui>();
+             
             Destroy(gameObject);
         }
     }

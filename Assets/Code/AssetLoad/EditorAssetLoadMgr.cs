@@ -6,84 +6,88 @@ using System.IO;
 
 #if UNITY_EDITOR
 
-public class EditorAssetLoadMgr : MonoBehaviour
+namespace Omnana
 {
-    public Dictionary<string, string> resourceDic;
-
-    private const string AssetPath = "Assets/Art/{0}";
-
-    public void Init()
+    public class EditorAssetLoadMgr : Singleton<EditorAssetLoadMgr>
     {
-        resourceDic = new Dictionary<string, string>();
+        public Dictionary<string, string> resourceDic;
 
-        ReadConfig();
-    }
+        private const string AssetPath = "Assets/Art/{0}";
 
-    private void ReadConfig()
-    {
-        string path = Application.dataPath + "/Art/";
-
-        string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
-
-        string txt = "";
-        foreach (var file in files)
+        public void Init()
         {
-            if (file.EndsWith(".meta")) continue;
+            resourceDic = new Dictionary<string, string>();
 
-            string name = file.Replace(path, "");
-            //name = name.Substring(0, name.LastIndexOf("."));
-            name = name.ToLower();
-            name = name.Replace("\\", "/");
+            ReadConfig();
+        }
 
-            var startIndex = name.LastIndexOf("/")  + 1;
+        private void ReadConfig()
+        {
+            string path = Application.dataPath + "/Art/";
 
-            if(startIndex != -1 && name.Length > startIndex)
+            string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+
+            string txt = "";
+            foreach (var file in files)
             {
-                var cutName = name.Substring(0, name.LastIndexOf("."));
+                if (file.EndsWith(".meta")) continue;
 
-                var assetName = cutName.Substring(startIndex, cutName.Length - startIndex);
+                string name = file.Replace(path, "");
+                //name = name.Substring(0, name.LastIndexOf("."));
+                name = name.ToLower();
+                name = name.Replace("\\", "/");
 
-                if (!resourceDic.ContainsKey(assetName))
+                var startIndex = name.LastIndexOf("/") + 1;
+
+                if (startIndex != -1 && name.Length > startIndex)
                 {
-                    resourceDic.Add(assetName, name);
+                    var cutName = name.Substring(0, name.LastIndexOf("."));
+
+                    var assetName = cutName.Substring(startIndex, cutName.Length - startIndex);
+
+                    if (!resourceDic.ContainsKey(assetName))
+                    {
+                        resourceDic.Add(assetName, name);
+                    }
                 }
+
+                txt += name + "\n";
+            }
+        }
+
+        public bool IsFileExist(string assetName)
+        {
+            return resourceDic.ContainsKey(assetName);
+        }
+
+        private string GetAssetPath(string assetName)
+        {
+            return string.Format(AssetPath, assetName);
+        }
+
+        public Object LoadSync(string assetName)
+        {
+            if (resourceDic.ContainsKey(assetName))
+            {
+                var assetPath = GetAssetPath(resourceDic[assetName]);
+
+                return AssetDatabase.LoadAssetAtPath<Object>(assetPath);
             }
 
-            txt += name + "\n";
+            return null;
         }
-    }
 
-    public bool IsFileExist(string assetName)
-    {
-        return resourceDic.ContainsKey(assetName);
-    }
 
-    private string GetAssetPath(string assetName)
-    {
-        return string.Format(AssetPath, assetName);
-    }
-
-    public Object LoadSync(string assetName)
-    {
-        if (resourceDic.ContainsKey(assetName))
+        public void Unload(Object asset)
         {
-            var assetPath = GetAssetPath(resourceDic[assetName]);
+            if (asset is null)
+            {
+                return;
+            }
 
-            return AssetDatabase.LoadAssetAtPath<Object>(assetPath);
+            asset = null;
         }
-
-        return null;
     }
 
-
-    public void Unload(Object asset)
-    {
-        if (asset is null)
-        {
-            return;
-        }
-
-        asset = null;
-    }
 }
 #endif

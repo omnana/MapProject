@@ -2,33 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestArrayListDeom : MonoBehaviour
+namespace OmnanaTest
 {
-    // Start is called before the first frame update
-    void Start()
+
+    public class TestArrayListDeom : MonoBehaviour
     {
-        //ArrayList array = new ArrayList();
-
-        MyArrayList testList = new MyArrayList();
-
-        for (int i = 0; i < 10; i++)
+        // Start is called before the first frame update
+        void Start()
         {
-            testList.Add(Random.Range(0, 100));
+            //ArrayList array = new ArrayList();
+
+            MyArrayList testList = new MyArrayList();
+
+            for (int i = 0; i < 10; i++)
+            {
+                testList.Add(Random.Range(0, 100));
+            }
+
+            foreach (var t in testList)
+            {
+                Debug.Log((t));
+            }
+
+            Debug.Log("after sort :");
+
+            testList.Sort(new TestArrayListComparator());
+
+            foreach (var t in testList)
+            {
+                Debug.Log((t));
+            }
         }
 
-        foreach (var t in testList)
-        {
-            Debug.Log((t));
-        }
-
-        Debug.Log("after sort :");
-
-        testList.Sort(new TestArrayListComparator());
-
-        foreach (var t in testList)
-        {
-            Debug.Log((t));
-        }
     }
-
 }

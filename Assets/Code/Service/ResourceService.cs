@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using AssetBundles;
+using Omnana;
 using System;
 using Object = UnityEngine.Object;
 
@@ -15,9 +15,9 @@ public class ResourceService : ServiceBase
     {
         base.Loaded();
 
-        assetLoadMgr = Singleton<AssetLoadMgr>.GetInstance();
+        assetLoadMgr = AssetLoadMgr.Instance;
 
-        prefabLoadMgr = Singleton<PrefabLoadMgr>.GetInstance();
+        prefabLoadMgr = PrefabLoadMgr.Instance;
     }
 
     /// <summary>

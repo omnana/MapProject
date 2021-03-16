@@ -19,7 +19,7 @@ public class TableHelper
     {
         LoadNum = MgrTypeArr.Length;
 
-        MessageAggregator<object>.Instance.Subscribe("TableMgrLoadFinish", DownloadFinish);
+        MessageAggregator<object>.Instance.Subscribe(MessageType.TableMgrLoadFinish, DownloadFinish);
 
         foreach (var m in MgrTypeArr)
         {
@@ -33,7 +33,7 @@ public class TableHelper
         {
             DownloadFinishCallabck?.Invoke();
 
-            MessageAggregator<object>.Instance.Remove("TableMgrLoadFinish");
+            MessageAggregator<object>.Instance.Remove(MessageType.TableMgrLoadFinish);
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Text;
 using System.IO;
 using UnityEngine;
 
-public class FileVersionMgr : MonoBehaviour
+public class FileVersionMgr : Singleton<FileVersionMgr>
 {
     public int DownloadSize
     {

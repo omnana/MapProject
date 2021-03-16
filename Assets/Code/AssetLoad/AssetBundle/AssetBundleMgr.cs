@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-namespace AssetBundles
+namespace Omnana
 {
     public enum objStatus
     {

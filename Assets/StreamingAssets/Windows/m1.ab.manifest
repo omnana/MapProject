@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2008830340
+CRC: 1223382938
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 38330027eaeec2eca361acc6c0ad628c
+    Hash: d7e870eebc2be47f07644a53988788ec
   TypeTreeHash:
     serializedVersion: 2
-    Hash: fe397485c3cec1106b49e9ff95e8f8a2
+    Hash: 21c99c86a43ad817b2cb7f65458ae090
 HashAppended: 0
 ClassTypes:
 - Class: 21
@@ -18,4 +18,4 @@ ClassTypes:
 Assets:
 - Assets/Art/Materials/M1.mat
 Dependencies:
-- H:/MapProject/Assets/StreamingAssets/Windows/lu_qi_10.ab
+- E:/Project/MapProject/Assets/StreamingAssets/Windows/lu_qi_10.ab

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AssetBundles
+namespace Omnana
 {
     public class ABNode
     {

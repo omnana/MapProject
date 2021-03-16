@@ -6,7 +6,7 @@ using System;
 /// <summary>
 /// 热更管理器
 /// </summary>
-public class HotFixMgr : MonoBehaviour
+public class HotFixMgr : Singleton<HotFixMgr>
 {
     public enum HotFix_ProjectState
     {
@@ -25,6 +25,9 @@ public class HotFixMgr : MonoBehaviour
     }
 
     public delegate void HotFix_ProjectCallback(HotFix_ProjectState state, string msg, Action<bool> callback);
+
+
+    public Action<float> UpdateProgress;
 
     /// <summary>
     /// 下载进度
@@ -90,9 +93,9 @@ public class HotFixMgr : MonoBehaviour
     //启动前，请先调用RegisterRequsetCallback注册回调
     public void StartCheck()
     {
-        downloadMgr = Singleton<DownloadMgr>.GetInstance();
+        downloadMgr = DownloadMgr.Instance;
 
-        fileVersionMgr = Singleton<FileVersionMgr>.GetInstance();
+        fileVersionMgr = FileVersionMgr.Instance;
 
         fileVersionMgr.Init();
 
@@ -338,6 +341,9 @@ public class HotFixMgr : MonoBehaviour
                 {
                     Debug.LogError("downUnit 不存在 = " + downUnit.Name);
                 }
+
+                UpdateProgress?.Invoke(DownloadProgress);
+
                 //Debug.LogFormat("正在下载资源：{0}，已下载大小：{1}，总大小：{2}", downUnit.Name, curSize, allSize);
             };
 

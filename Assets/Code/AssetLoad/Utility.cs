@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace AssetBundles
+namespace Omnana
 {
     public class Utility
     {

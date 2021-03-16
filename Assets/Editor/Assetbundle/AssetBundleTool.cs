@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
-using AssetBundles;
+using Omnana;
 using System.Security.Cryptography;
 
 public class AssetBundleTool

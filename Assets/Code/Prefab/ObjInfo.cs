@@ -2,28 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjInfo : MonoBehaviour
+namespace Omnana
 {
-    public int InstanceId = -1;
-
-    public string AssetName = string.Empty;
-
-    public void Init()
+    public class ObjInfo : MonoBehaviour
     {
-        if (string.IsNullOrEmpty(AssetName)) return;
+        public int InstanceId = -1;
 
-        //非空，说明通过克隆实例化，添加引用计数
+        public string AssetName = string.Empty;
 
-        InstanceId = gameObject.GetInstanceID();
+        public void Init()
+        {
+            if (string.IsNullOrEmpty(AssetName)) return;
 
-        ServiceLocator.Resolve<PrefabLoadMgr>().AddAssetRef(AssetName, gameObject);
+            //非空，说明通过克隆实例化，添加引用计数
+
+            InstanceId = gameObject.GetInstanceID();
+
+            ServiceLocator.Resolve<PrefabLoadMgr>().AddAssetRef(AssetName, gameObject);
+        }
+
+        void OnDestroy()
+        {
+            //被动销毁，保证引用计数正确
+            if (PrefabLoadMgr.Instance == null) return;
+
+            PrefabLoadMgr.Instance.Destroy(gameObject);
+        }
     }
 
-    void OnDestroy()
-    {
-        //被动销毁，保证引用计数正确
-        if (Singleton<PrefabLoadMgr>.GetInstance() == null) return;
 
-        Singleton<PrefabLoadMgr>.GetInstance().Destroy(gameObject);
-    }
 }

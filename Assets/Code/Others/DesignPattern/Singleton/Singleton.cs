@@ -6,23 +6,26 @@ using UnityEngine;
 /// 单例
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class Singleton <T> : Component where T : Component
+public class Singleton <T> : MonoBehaviour where T : MonoBehaviour
 {
     private static T instance;
 
-    public static T GetInstance()
+    public static T Instance
     {
-        if (instance == null && UIHelper.MgrRoot != null)
+        get
         {
-            var objName = typeof(T).Name;
+            if (instance == null && UIHelper.MgrRoot != null)
+            {
+                var objName = typeof(T).Name;
 
-            var obj = new GameObject(objName);
+                var obj = new GameObject(objName);
 
-            obj.transform.SetParent(UIHelper.MgrRoot, false);
+                obj.transform.SetParent(UIHelper.MgrRoot, false);
 
-            instance = obj.AddComponent<T>();
+                instance = obj.AddComponent<T>();
+            }
+
+            return instance;
         }
-
-        return instance;
     }
 }

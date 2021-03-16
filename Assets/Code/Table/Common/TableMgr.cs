@@ -46,7 +46,7 @@ public abstract class TableManager<T> where T : ITableModel
                 }
             }
 
-            MessageAggregator<object>.Instance.Publish("TableMgrLoadFinish", this, null);
+            MessageAggregator<object>.Instance.Publish(MessageType.TableMgrLoadFinish, this, null);
         });
     }
 

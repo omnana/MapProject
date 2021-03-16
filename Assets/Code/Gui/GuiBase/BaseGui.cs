@@ -7,7 +7,7 @@ using System;
 public class BaseGui : MonoBehaviour
 {
     /// 热更内容
-    public IlRuntimeBaseGui LlRContent;
+    public HotFixBaseGui LlRContent;
 
     protected bool NeedUpdate = true;
 

@@ -4,117 +4,121 @@ using UnityEngine;
 using System.IO;
 using System;
 
-public class ILRuntimeHelper
+namespace Omnana
 {
-    public static ILRuntime.Runtime.Enviorment.AppDomain Appdomain { get; private set; }
-
-    static MemoryStream fs;
-
-    static MemoryStream p;
-
-    public static IEnumerator LoadHotFix_ProjectAssembly(Action callback)
+    public class ILRuntimeHelper
     {
-        Appdomain = new ILRuntime.Runtime.Enviorment.AppDomain();
+        public static ILRuntime.Runtime.Enviorment.AppDomain Appdomain { get; private set; }
 
-        var webRequest = UnityWebRequest.Get(Application.streamingAssetsPath + "/HotFix_Project.dll");
+        static MemoryStream fs;
 
-        yield return webRequest.SendWebRequest();
+        static MemoryStream p;
 
-        byte[] dll = null;
-
-        if (webRequest.isNetworkError)
+        public static IEnumerator LoadHotFix_ProjectAssembly(Action callback)
         {
-            Debug.Log("Download Error:" + webRequest.error);
-        }
-        else
-        {
-            dll = webRequest.downloadHandler.data;
-        }
+            Appdomain = new ILRuntime.Runtime.Enviorment.AppDomain();
 
-        webRequest.Dispose();
-        
-        webRequest = UnityWebRequest.Get(Application.streamingAssetsPath + "/HotFix_Project.pdb");
+            var webRequest = UnityWebRequest.Get(HotFixUtils.HotFixDllPath);
 
-        yield return webRequest.SendWebRequest();
+            yield return webRequest.SendWebRequest();
 
-        byte[] pdb = null;
+            byte[] dll = null;
 
-        if (webRequest.isNetworkError)
-        {
-            Debug.Log("Download Error:" + webRequest.error);
-        }
-        else
-        {
-            pdb = webRequest.downloadHandler.data;
-        }
+            if (webRequest.isNetworkError)
+            {
+                Debug.Log("Download Error:" + webRequest.error);
+            }
+            else
+            {
+                dll = webRequest.downloadHandler.data;
+            }
 
-        webRequest.Dispose();
+            webRequest.Dispose();
 
-        fs = new MemoryStream(dll);
+            // 正式版隐藏
+            webRequest = UnityWebRequest.Get(HotFixUtils.HotFixPdbPath);
 
-        p = new MemoryStream(pdb);
+            yield return webRequest.SendWebRequest();
 
-        try
-        {
-            Appdomain.LoadAssembly(fs, p, new ILRuntime.Mono.Cecil.Pdb.PdbReaderProvider());
-        }
-        catch
-        {
-            Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/1.6/Demo/HotFix_Project/HotFix_Project.sln编译过热更DLL");
-        }
+            byte[] pdb = null;
+
+            if (webRequest.isNetworkError)
+            {
+                Debug.Log("Download Error:" + webRequest.error);
+            }
+            else
+            {
+                pdb = webRequest.downloadHandler.data;
+            }
+
+            webRequest.Dispose();
+
+            fs = new MemoryStream(dll);
+
+            p = new MemoryStream(pdb);
+
+            try
+            {
+                Appdomain.LoadAssembly(fs, p, new ILRuntime.Mono.Cecil.Pdb.PdbReaderProvider());
+            }
+            catch
+            {
+                Debug.LogError("加载热更DLL失败，请确保已经通过VS打开Assets/Samples/ILRuntime/DHotFix/HotFix.sln编译过热更DLL");
+            }
 
 
 #if DEBUG && (UNITY_EDITOR || UNITY_ANDROID || UNITY_IPHONE)
-        //由于Unity的Profiler接口只允许在主线程使用，为了避免出异常，需要告诉ILRuntime主线程的线程ID才能正确将函数运行耗时报告给Profiler
-        Appdomain.UnityMainThreadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            //由于Unity的Profiler接口只允许在主线程使用，为了避免出异常，需要告诉ILRuntime主线程的线程ID才能正确将函数运行耗时报告给Profiler
+            Appdomain.UnityMainThreadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
 #endif
 
-        if (Application.isEditor)
-            Appdomain.DebugService.StartDebugService(56000);
+            if (Application.isEditor)
+                Appdomain.DebugService.StartDebugService(56000);
 
-        InitializeILRuntime();
+            InitializeILRuntime();
 
-        //请在生成了绑定代码后解除下面这行的注释
-        //ILRuntime.Runtime.Generated.CLRBindings.Initialize(Appdomain);
+            //请在生成了绑定代码后解除下面这行的注释
+            //ILRuntime.Runtime.Generated.CLRBindings.Initialize(Appdomain);
 
-        callback?.Invoke();
-    }
+            callback?.Invoke();
+        }
 
-    public static void Dispose()
-    {
-        fs.Dispose();
-
-        p.Dispose();
-    }
-
-    private static void InitializeILRuntime()
-    {
-        RegisterCrossBindingAdaptors();
-
-        RegisterDelegateConvertors();
-    }
-
-    private static void RegisterCrossBindingAdaptors()
-    {
-        Appdomain.RegisterCrossBindingAdaptor(new GuiAdapter());
-    }
-
-    private static void RegisterDelegateConvertors()
-    {
-        Appdomain.DelegateManager.RegisterDelegateConvertor<UnityEngine.Events.UnityAction>((action) =>
+        public static void Dispose()
         {
-            return new UnityEngine.Events.UnityAction(() =>
-            {
-                ((System.Action)action)();
-            });
-        });
+            fs.Dispose();
 
-        Appdomain.DelegateManager.RegisterDelegateConvertor<UnityEngine.Events.UnityAction<GameObject>>((action) =>
+            p.Dispose();
+        }
+
+        private static void InitializeILRuntime()
         {
-            return new UnityEngine.Events.UnityAction<GameObject>((obj) =>
+            RegisterCrossBindingAdaptors();
+
+            RegisterDelegateConvertors();
+        }
+
+        private static void RegisterCrossBindingAdaptors()
+        {
+            Appdomain.RegisterCrossBindingAdaptor(new GuiAdapter());
+        }
+
+        private static void RegisterDelegateConvertors()
+        {
+            Appdomain.DelegateManager.RegisterDelegateConvertor<UnityEngine.Events.UnityAction>((action) =>
             {
-                ((System.Action<GameObject>)action)(obj);
+                return new UnityEngine.Events.UnityAction(() =>
+                {
+                    ((System.Action)action)();
+                });
             });
-        });
+
+            Appdomain.DelegateManager.RegisterDelegateConvertor<UnityEngine.Events.UnityAction<GameObject>>((action) =>
+            {
+                return new UnityEngine.Events.UnityAction<GameObject>((obj) =>
+                {
+                    ((System.Action<GameObject>)action)(obj);
+                });
+            });
+        }
     }
 }

@@ -1,59 +1,96 @@
 ﻿using UnityEngine;
-using AssetBundles;
+using System.Collections.Generic;
+using System.Collections;
 
-public class Code : MonoBehaviour
+namespace Omnana
 {
-    public ControllerInit ControllerInit;
-
-    public ServiceContainerInit ServiceContainerInit;
-
-    private HotFixMgr hotFixMgr;
-
-    private AssetBundleMgr assetBundleMgr;
-
-    private void Awake()
+    public class Code : MonoBehaviour
     {
-        DontDestroyOnLoad(this);
+        public ControllerInit ControllerInit;
 
-        ControllerInit.Load();
+        public ServiceContainerInit ServiceContainerInit;
 
-        ServiceContainerInit.Load();
+        private HotFixMgr hotFixMgr;
 
-        //hotFixMgr = Singleton<HotFixMgr>.GetInstance();
+        private AssetBundleMgr assetBundleMgr;
 
-        Singleton<MyAssetBundleMgr>.GetInstance().LoadMainfest();
-
-        TableHelper.DownloadFinishCallabck = () =>
+        private void Awake()
         {
-            StartCoroutine(ILRuntimeHelper.LoadHotFix_ProjectAssembly(() => { }));
+            DontDestroyOnLoad(this);
 
-            MessageAggregator<object>.Instance.Publish("DownloadFinish", this, null);
-        };
+            ControllerInit.Load();
 
-        TableHelper.StartLoad();
+            ServiceContainerInit.Load();
 
-        //// 热更完毕或者已下载
-        //hotFixMgr.RegisterRequsetCallback((state, sgm, isComplete) =>
-        //{
-        //    assetBundleMgr.LoadMainfest();
+            //hotFixMgr = Singleton<HotFixMgr>.GetInstance();
 
-        //    Singleton<MyAssetBundleMgr>.GetInstance().LoadMainfest();
+            //MessageAggregator<object>.Instance.Publish(MessageType.DownloadFinish, this, null);
 
-        //    TableMgrLoader.StartLoad();
+        }
 
-        //    TableMgrLoader.DownloadFinishCallabck = () =>
-        //    {
-        //        StartCoroutine(ILRuntimeHelper.LoadHotFix_ProjectAssembly(() => { }));
+        private IEnumerator Start()
+        {
+            MyAssetBundleMgr.Instance.LoadMainfest();
 
-        //        MessageAggregator<object>.Instance.Publish("DownloadFinish", this, null);
-        //    };
-        //});
-    }
+            Debug.Log("加载资源Manifest。。。");
 
-    private void Start()
-    {
-        //hotFixMgr.Start();
+            var loadTableEnd = false;
 
-        //hotFixMgr.CheckCDNVersion();
+            TableHelper.DownloadFinishCallabck = () => { loadTableEnd = true; };
+
+            TableHelper.StartLoad();
+
+            Debug.Log("加载配置表。。。");
+
+            while (!loadTableEnd) yield return null;
+
+            var loadHotFixEnd = false;
+
+            StartCoroutine(ILRuntimeHelper.LoadHotFix_ProjectAssembly(() =>
+            {
+                loadHotFixEnd = true;
+            }));
+
+            Debug.Log("加载热更DLL。。。");
+
+            while (!loadHotFixEnd) yield return null;
+
+            //// 热更完毕或者已下载
+            //hotFixMgr.RegisterRequsetCallback((state, sgm, isComplete) =>
+            //{
+            //    assetBundleMgr.LoadMainfest();
+
+            //    Singleton<MyAssetBundleMgr>.GetInstance().LoadMainfest();
+
+            //    TableMgrLoader.StartLoad();
+
+            //    TableMgrLoader.DownloadFinishCallabck = () =>
+            //    {
+            //        StartCoroutine(ILRuntimeHelper.LoadHotFix_ProjectAssembly(() => { }));
+
+            //        MessageAggregator<object>.Instance.Publish("DownloadFinish", this, null);
+            //    };
+            //});
+
+            //hotFixMgr.Start();
+
+            //hotFixMgr.CheckCDNVersion();
+
+            Debug.Log("加载完毕！！");
+
+            loadEnd = true;
+
+            //GuiManager.Instance.OpenAsync<TestGui>();
+        }
+
+        private bool loadEnd = false;
+
+        private void Update()
+        {
+            if (loadEnd && Input.GetKeyDown(KeyCode.A))
+            {
+                GuiManager.Instance.OpenAsync<TestGui>();
+            }
+        }
     }
 }

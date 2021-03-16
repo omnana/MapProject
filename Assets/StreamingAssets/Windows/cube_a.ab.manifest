@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1141791965
+CRC: 1954686412
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d4c8e2ba684629b9bf94d87219294b0b
+    Hash: 3b88661230d7a2ff284c2356756943a7
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 43917c7e82ed3ae0a408b3ea37ec80f7
+    Hash: 7652f69dff3dcd0741269161f69220a7
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -26,4 +26,4 @@ ClassTypes:
 Assets:
 - Assets/Art/Model/Cube_A.prefab
 Dependencies:
-- H:/MapProject/Assets/StreamingAssets/Windows/m1.ab
+- E:/Project/MapProject/Assets/StreamingAssets/Windows/m1.ab

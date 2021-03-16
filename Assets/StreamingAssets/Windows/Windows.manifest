@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 4104495416
+CRC: 1521940165
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -39,5 +39,8 @@ AssetBundleManifest:
       Name: redpointconfig.txt.ab
       Dependencies: {}
     Info_11:
+      Name: helloworldgui.ab
+      Dependencies: {}
+    Info_12:
       Name: testgui.ab
       Dependencies: {}

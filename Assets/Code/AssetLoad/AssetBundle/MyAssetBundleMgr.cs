@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-namespace AssetBundles
+namespace Omnana
 {
     /// <summary>
     /// 资源管理
     /// </summary>
-    public class MyAssetBundleMgr : MonoBehaviour
+    public class MyAssetBundleMgr : Singleton<MyAssetBundleMgr>
     {
-        public static MyAssetBundleMgr Instance { get; private set; }
-
         private List<AssetBundleObject> waitList;
 
         private Dictionary<string, AssetBundleObject> completeDic;

@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEditor;
 
-namespace AssetBundles
+namespace Omnana
 {
     public class AssetBundleBuildMgr
     {

@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EditorAssetRequest : AsyncOperation
+namespace Omnana
 {
-    public EditorAssetRequest()
+    public class EditorAssetRequest : AsyncOperation
     {
+        public EditorAssetRequest()
+        {
 
+        }
+
+        public Object asset;
     }
 
-    public Object asset;
 }

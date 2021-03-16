@@ -6,6 +6,6 @@ public class SingletonDemo : MonoBehaviour
 {
     void Start()
     {
-        Singleton<TestMgr>.GetInstance().Init();
+        //TestMgr.Init();
     }
 }

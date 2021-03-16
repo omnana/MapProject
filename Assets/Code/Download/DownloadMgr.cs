@@ -20,7 +20,7 @@ using System.Net.Security;
 （6）文件线程高效下载——多线程，异步回调文件
  */
 
-public class DownloadMgr : MonoBehaviour
+public class DownloadMgr : Singleton<DownloadMgr>
 {
     private const int MAX_THREAD_COUNT = 20;
 

@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 236401543492337535}
-  - component: {fileID: 2349829484718468924}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -31,18 +30,6 @@ Transform:
   m_Father: {fileID: 1805997735954695581}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2349829484718468924
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 966161597497013160}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2dbd51bad6952342a262d2a9989cbca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1805997735954695579
 GameObject:
   m_ObjectHideFlags: 0
@@ -54,7 +41,7 @@ GameObject:
   - component: {fileID: 1805997735954695581}
   - component: {fileID: 3678650203023642480}
   m_Layer: 0
-  m_Name: Container
+  m_Name: Code
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89,7 +76,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4051cfb7f53b5e4abcf0d2f9ce60d4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MgrInit: {fileID: 2349829484718468924}
   ControllerInit: {fileID: 4194540200316799629}
   ServiceContainerInit: {fileID: 735028820953364982}
 --- !u!1 &5109014975519426250
