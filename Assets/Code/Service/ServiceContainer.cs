@@ -1,54 +1,58 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿//using System;
+//using System.Collections;
+//using System.Collections.Generic;
+//using UnityEngine;
 
-public class ServiceContainer
-{
-    private static Dictionary<Type, ServiceBase> serviceContainer = new Dictionary<Type, ServiceBase>();
+//namespace Omnana
+//{
+//    public class ServiceContainer
+//    {
+//        private static Dictionary<Type, ServiceBase> serviceContainer = new Dictionary<Type, ServiceBase>();
 
-    /// <summary>
-    /// 清空容器
-    /// </summary>
-    public static void Clear()
-    {
-        serviceContainer.Clear();
-    }
+//        /// <summary>
+//        /// 清空容器
+//        /// </summary>
+//        public static void Clear()
+//        {
+//            serviceContainer.Clear();
+//        }
 
-    /// <summary>
-    /// 添加服务
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public static void AddService<T>(GameObject parent) where T : ServiceBase
-    {
-        var type = typeof(T);
+//        /// <summary>
+//        /// 添加服务
+//        /// </summary>
+//        /// <typeparam name="T"></typeparam>
+//        public static void AddService<T>(GameObject parent) where T : ServiceBase
+//        {
+//            var type = typeof(T);
 
-        if (serviceContainer.ContainsKey(type))
-        {
-            return;
-        }
+//            if (serviceContainer.ContainsKey(type))
+//            {
+//                return;
+//            }
 
-        var service = parent.AddComponent<T>();
+//            var service = parent.AddComponent<T>();
 
-        service.Loaded();
+//            service.Loaded();
 
-        serviceContainer.Add(type, service);
-    }
+//            serviceContainer.Add(type, service);
+//        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public static T Resolve<T>() where T : ServiceBase
-    {
-        var type = typeof(T);
+//        /// <summary>
+//        /// 
+//        /// </summary>
+//        /// <typeparam name="T"></typeparam>
+//        /// <returns></returns>
+//        public static T Resolve<T>() where T : ServiceBase
+//        {
+//            var type = typeof(T);
 
-        if (serviceContainer.ContainsKey(type))
-        {
-            return serviceContainer[type] as T;
-        }
+//            if (serviceContainer.ContainsKey(type))
+//            {
+//                return serviceContainer[type] as T;
+//            }
 
-        return null;
-    }
-}
+//            return null;
+//        }
+//    }
+
+//}

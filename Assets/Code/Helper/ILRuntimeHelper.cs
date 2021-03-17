@@ -78,7 +78,7 @@ namespace Omnana
             InitializeILRuntime();
 
             //请在生成了绑定代码后解除下面这行的注释
-            //ILRuntime.Runtime.Generated.CLRBindings.Initialize(Appdomain);
+            ILRuntime.Runtime.Generated.CLRBindings.Initialize(Appdomain);
 
             callback?.Invoke();
         }
@@ -99,7 +99,13 @@ namespace Omnana
 
         private static void RegisterCrossBindingAdaptors()
         {
-            Appdomain.RegisterCrossBindingAdaptor(new GuiAdapter());
+            Appdomain.RegisterValueTypeBinder(typeof(Vector3), new Vector3Binder());
+            Appdomain.RegisterCrossBindingAdaptor(new MonoBehaviourAdapter());
+            Appdomain.RegisterCrossBindingAdaptor(new CoroutineAdapter());
+            Appdomain.RegisterCrossBindingAdaptor(new IGuiAdapter());
+            Appdomain.RegisterCrossBindingAdaptor(new ServiceBaseAdaptor());
+            Appdomain.RegisterCrossBindingAdaptor(new BaseCtrlAdaptor());
+            Appdomain.RegisterCrossBindingAdaptor(new ViewModelBaseAdaptor());
         }
 
         private static void RegisterDelegateConvertors()

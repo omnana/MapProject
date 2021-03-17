@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ServiceContainerInit : MonoBehaviour
+namespace Omnana
 {
-    public void Load()
+    public class ServiceHelper
     {
-        // 基础服务
-        ServiceContainer.AddService<RestService>(gameObject);
-        ServiceContainer.AddService<ResourceService>(gameObject);
+        public static void Load()
+        {
+            // 基础服务
+            ServiceLocator.RegisterSingleton<ResourceService>();
 
-        // 业务服务
-        ServiceContainer.AddService<TestServicer>(gameObject);
+            // 业务服务
+            ServiceLocator.RegisterSingleton<TestServicer>();
+        }
     }
 }

@@ -1,27 +1,28 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-public class TestServicer : ServiceBase
+namespace Omnana
 {
-    public RestService RestService;
-
-    public override void Loaded()
+    public class TestServicer : ServiceBase
     {
-        base.Loaded();
+        public RestMgr RestService;
 
-        RestService = ServiceContainer.Resolve<RestService>();
-    }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    public async Task<string> Test()
-    {
-        var data = await RestService.HttpGet<object>("www.baidu.com");
+        public override void Loaded()
+        {
+            base.Loaded();
 
-        return "Test";
+            RestService = RestMgr.Instance;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> Test()
+        {
+            var data = await RestService.HttpGet<object>("www.baidu.com");
+
+            return "Test";
+        }
     }
 }

@@ -4,17 +4,19 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 
-public class CreateTableEditor : Editor
+namespace Omnana
 {
-    private static string ScriptFoldPath = Application.dataPath + "/Code/ModelData/";
+    public class CreateTableEditor : Editor
+    {
+        private static string ScriptFoldPath = Application.dataPath + "/Code/ModelData/";
 
-    private static string ConfigFoldPath = Application.dataPath + "/Art/Csv";
+        private static string ConfigFoldPath = Application.dataPath + "/Art/Csv";
 
-    private static string _modeTemplateContent;
+        private static string _modeTemplateContent;
 
-    private static List<string> ScripteNameList = new List<string>();
+        private static List<string> ScripteNameList = new List<string>();
 
-    private static Dictionary<string, string> FieldTypeDic = new Dictionary<string, string>()
+        private static Dictionary<string, string> FieldTypeDic = new Dictionary<string, string>()
     {
         {"string", "            model.{0} = cellMap[\"{1}\"];" },
         {"int", "            model.{0} = FieldParser.IntParser(cellMap[\"{1}\"]);" },
@@ -31,100 +33,102 @@ public class CreateTableEditor : Editor
         {"double[][]", "            model.{0} = FieldParser.DoubleArraysParser(cellMap[\"{1}\"]);" },
     };
 
-    [@MenuItem("Tools/Csv/解析所有配置,会覆盖已存在脚本")]
-    public static void Parse()
-    {
-        var fullPath = ConfigFoldPath;
-
-        ScripteNameList.Clear();
-
-        Debug.Log("开始解析ModelData");
-
-        if (Directory.Exists(fullPath))
+        [@MenuItem("Tools/Csv/解析所有配置,会覆盖已存在脚本")]
+        public static void Parse()
         {
-            var direction = new DirectoryInfo(fullPath);
+            var fullPath = ConfigFoldPath;
 
-            var files = direction.GetFiles("*", SearchOption.AllDirectories);
+            ScripteNameList.Clear();
 
-            for (var i = 0; i < files.Length; ++i)
+            Debug.Log("开始解析ModelData");
+
+            if (Directory.Exists(fullPath))
             {
-                var fileName = files[i].Name;
+                var direction = new DirectoryInfo(fullPath);
 
-                if (fileName.EndsWith(".csv"))
+                var files = direction.GetFiles("*", SearchOption.AllDirectories);
+
+                for (var i = 0; i < files.Length; ++i)
                 {
-                    EditorUtility.DisplayProgressBar("解析Json", "解析中...", i / (float)files.Length);
+                    var fileName = files[i].Name;
 
-                    GenerateModelFile(files[i].Name);
+                    if (fileName.EndsWith(".csv"))
+                    {
+                        EditorUtility.DisplayProgressBar("解析Json", "解析中...", i / (float)files.Length);
+
+                        GenerateModelFile(files[i].Name);
+                    }
                 }
             }
+
+            EditorUtility.ClearProgressBar();
         }
 
-        EditorUtility.ClearProgressBar();
+        private static void GenerateModelFile(string tableName)
+        {
+            tableName = tableName.Substring(0, tableName.Length - 4); // 去掉".csv"
+
+            if (string.IsNullOrEmpty(tableName))
+            {
+                Debug.LogError("脚本名不能为空");
+                return;
+            }
+
+            var scriptFoldPath = ScriptFoldPath + tableName;
+
+            if (!Directory.Exists(scriptFoldPath)) Directory.CreateDirectory(scriptFoldPath);
+
+            string codeFullName = scriptFoldPath + "/" + tableName + ".cs";
+
+            using (FileStream fs = new FileStream(codeFullName, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
+
+            using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
+            {
+                var headers = TableParser.GetTableHeaders(ConfigFoldPath + "/" + tableName);
+                var sb = new StringBuilder();
+                sb.AppendLine("using System.Collections.Generic;");
+                sb.AppendLine("");
+                sb.AppendLine(string.Format("public class {0}Model : ITableModel", tableName));
+                sb.AppendLine("{");
+                for (var i = 0; i < headers[0].Count; i++)
+                {
+                    sb.AppendLine(string.Format("    /// {0}", headers[2][i]));
+                    sb.AppendLine(string.Format("    public {0} {1} ", headers[1][i], headers[0][i]) + " { get; set; }");
+                }
+                sb.AppendLine("");
+                sb.AppendLine("    public object Key()");
+                sb.AppendLine("    {");
+                sb.AppendLine("        return Id;");
+                sb.AppendLine("    }");
+                sb.AppendLine("}");
+                sb.AppendLine("");
+                sb.AppendLine(string.Format("public class {0}ModelMgr : TableManager<{1}Model>", tableName, tableName, tableName));
+                sb.AppendLine("{");
+                sb.AppendLine("    public override string TableName()");
+                sb.AppendLine("    {");
+                sb.AppendLine(string.Format("        return \"{0}.csv\";", tableName));
+                sb.AppendLine("    }");
+                sb.AppendLine(string.Format("    public override void InitModel({0}Model model, Dictionary<string, string> cellMap)", tableName));
+                sb.AppendLine("    {");
+                for (var i = 0; i < headers[0].Count; i++)
+                {
+                    sb.AppendLine(string.Format("        /// {0};", headers[2][i]));
+                    sb.AppendLine(string.Format("        if (cellMap[\"{0}\"] != null)", headers[0][i]));
+                    sb.AppendLine(string.Format(FieldTypeDic[headers[1][i]], headers[0][i], headers[0][i]));
+                }
+                sb.AppendLine("    }");
+                sb.AppendLine("}");
+
+                sw.Write(sb);
+                sw.Close();
+                fs.Close();
+            }
+            object arr = new int[3];
+
+            var d = (int[])arr;
+
+            Debug.Log("生成数据模型代码成功:" + tableName);
+        }
     }
 
-    private static void GenerateModelFile(string tableName)
-    {
-        tableName = tableName.Substring(0, tableName.Length - 4); // 去掉".csv"
-
-        if (string.IsNullOrEmpty(tableName))
-        {
-            Debug.LogError("脚本名不能为空");
-            return;
-        }
-
-        var scriptFoldPath = ScriptFoldPath + tableName;
-
-        if (!Directory.Exists(scriptFoldPath)) Directory.CreateDirectory(scriptFoldPath);
-
-        string codeFullName = scriptFoldPath + "/" + tableName + ".cs";
-
-        using (FileStream fs = new FileStream(codeFullName, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
-
-        using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
-        {
-            var headers = TableParser.GetTableHeaders(ConfigFoldPath + "/" + tableName);
-            var sb = new StringBuilder();
-            sb.AppendLine("using System.Collections.Generic;");
-            sb.AppendLine("");
-            sb.AppendLine(string.Format("public class {0}Model : ITableModel", tableName));
-            sb.AppendLine("{");
-            for (var i = 0; i < headers[0].Count; i++)
-            {
-                sb.AppendLine(string.Format("    /// {0}", headers[2][i]));
-                sb.AppendLine(string.Format("    public {0} {1} ", headers[1][i], headers[0][i]) + " { get; set; }");
-            }
-            sb.AppendLine("");
-            sb.AppendLine("    public object Key()");
-            sb.AppendLine("    {");
-            sb.AppendLine("        return Id;");
-            sb.AppendLine("    }");
-            sb.AppendLine("}");
-            sb.AppendLine("");
-            sb.AppendLine(string.Format("public class {0}ModelMgr : TableManager<{1}Model>", tableName, tableName, tableName));
-            sb.AppendLine("{");
-            sb.AppendLine("    public override string TableName()");
-            sb.AppendLine("    {");
-            sb.AppendLine(string.Format("        return \"{0}.csv\";", tableName));
-            sb.AppendLine("    }");
-            sb.AppendLine(string.Format("    public override void InitModel({0}Model model, Dictionary<string, string> cellMap)", tableName));
-            sb.AppendLine("    {");
-            for (var i = 0; i < headers[0].Count; i++)
-            {
-                sb.AppendLine(string.Format("        /// {0};", headers[2][i]));
-                sb.AppendLine(string.Format("        if (cellMap[\"{0}\"] != null)", headers[0][i]));
-                sb.AppendLine(string.Format(FieldTypeDic[headers[1][i]], headers[0][i], headers[0][i]));
-            }
-            sb.AppendLine("    }");
-            sb.AppendLine("}");
-
-            sw.Write(sb);
-            sw.Close();
-            fs.Close();
-        }
-        object arr = new int[3];
-
-        var d = (int[])arr;
-
-        Debug.Log("生成数据模型代码成功:" + tableName);
-    }
 }

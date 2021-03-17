@@ -18,9 +18,9 @@ namespace Omnana
 
         private Queue<GameObject> objQueue = new Queue<GameObject>();
 
-        protected override void OnInit()
+        public override void DoInit()
         {
-            base.OnInit();
+            base.DoInit();
 
             TestView.BindingContext = new TestViewModel();
 
@@ -58,9 +58,9 @@ namespace Omnana
             //tree.MiddleOrderTraversal();
         }
 
-        protected override void OnOpen()
+        public override void DoOpen()
         {
-            base.Open();
+            base.DoOpen();
 
             Debug.Log("123123");
 
@@ -68,7 +68,7 @@ namespace Omnana
 
             //Debug.Log(data.Test1);
 
-            image.sprite = ServiceContainer.Resolve<ResourceService>().LoadSpriteFromAtlasSync("RedPoint1");
+            image.sprite = ServiceLocator.Resolve<ResourceService>().LoadSpriteFromAtlasSync("RedPoint1");
 
             image.SetNativeSize();
         }

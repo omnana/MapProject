@@ -2,34 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestCtrl : BaseCtrl
+namespace Omnana
 {
-    public TestServicer TestServicer;
-
-    private TestViewModel TestViewModel
+    public class TestCtrl : BaseCtrl
     {
-        get
+        public TestServicer TestServicer;
+
+        private TestViewModel TestViewModel
         {
-            return viewModel as TestViewModel;
+            get
+            {
+                return viewModel as TestViewModel;
+            }
         }
-    }
 
-    public override void Loaded(ViewModelBase vm)
-    {
-        base.Loaded(vm);
+        public override void Loaded(ViewModelBase vm)
+        {
+            base.Loaded(vm);
 
-        TestServicer = ServiceContainer.Resolve<TestServicer>();
-    }
+            TestServicer = ServiceLocator.Resolve<TestServicer>();
+        }
 
-    public async void GetData()
-    {
-        await TestServicer.Test();
-    }
+        public async void GetData()
+        {
+            await TestServicer.Test();
+        }
 
-    public void SetInput(string input)
-    {
-        TestViewModel.TestName.Value = input;
+        public void SetInput(string input)
+        {
+            TestViewModel.TestName.Value = input;
 
-        TestViewModel.TestInput.Value = input;
+            TestViewModel.TestInput.Value = input;
+        }
     }
 }

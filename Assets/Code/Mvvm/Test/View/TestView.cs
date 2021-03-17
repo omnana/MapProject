@@ -1,56 +1,57 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine;
+﻿using UnityEngine.UI;
 
-public class TestView : ViewBase<TestViewModel>
+namespace Omnana
 {
-
-    public string TestName
+    public class TestView : ViewBase<TestViewModel>
     {
-        get
+
+        public string TestName
         {
-            return TestText.text;
+            get
+            {
+                return TestText.text;
+            }
+            set
+            {
+                TestText.text = value;
+            }
         }
-        set
+
+
+        public Text TestText;
+
+        public InputField TestInput;
+
+        public TestViewModel TestViewModel { get { return BindingContext; } }
+
+        protected override void OnInitialize()
         {
-            TestText.text = value;
+            base.OnInitialize();
+
+            Binder.Add<string>("TestName", OnTestNameValueChanged);
+
+            Binder.Add<string>("TestInput", OnTestInputValueChanged);
+        }
+
+        public void OnTestNameValueChanged(string oldValue, string newValue)
+        {
+            TestText.text = newValue;
+        }
+
+        public void OnTestInputValueChanged(string oldValue, string newValue)
+        {
+            TestInput.text = newValue;
+        }
+
+        public void ExcuteGetData()
+        {
+            MessageAggregator<object>.Instance.Publish("GetData", this, new MessageArgs<object>(0));
+        }
+
+        public void ExcuteSetInput(string input)
+        {
+            MessageAggregator<string>.Instance.Publish("SetInput", this, new MessageArgs<string>(input));
         }
     }
 
-
-    public Text TestText;
-
-    public InputField TestInput;
-
-    public TestViewModel TestViewModel { get { return BindingContext; } }
-
-    protected override void OnInitialize()
-    {
-        base.OnInitialize();
-
-        Binder.Add<string>("TestName", OnTestNameValueChanged);
-
-        Binder.Add<string>("TestInput", OnTestInputValueChanged);
-    }
-
-    public void OnTestNameValueChanged(string oldValue, string newValue)
-    {
-        TestText.text = newValue;
-    }
-
-    public void OnTestInputValueChanged(string oldValue, string newValue)
-    {
-        TestInput.text = newValue;
-    }
-
-    public void ExcuteGetData()
-    {
-        MessageAggregator<object>.Instance.Publish("GetData", this, new MessageArgs<object>(0));
-    }
-
-    public void ExcuteSetInput(string input)
-    {
-        MessageAggregator<string>.Instance.Publish("SetInput", this, new MessageArgs<string>(input));
-    }
 }

@@ -1,46 +1,47 @@
 ﻿using UnityEngine;
+using Omnana;
 
 /// <summary>
 /// 给Gui做热更适配器
 /// </summary>
-public abstract class HotFixBaseGui
+public class HotFixBaseGui : IGui
 {
-    public GameObject gameObject { get; private set; }
+    public GameObject GameObject { get; private set; }
 
-    public Transform transform { get; private set; }
+    public Transform Transform { get; private set; }
 
-    public Transform parent { get; private set; }
+    public Transform Parent { get; private set; }
 
-    public RectTransform rectTransform { get; private set; }
+    public RectTransform RectTransform { get; private set; }
 
     public void SetGameObject(GameObject gameObject, Transform parent)
     {
-        this.gameObject = gameObject;
+        GameObject = gameObject;
 
-        transform = gameObject.transform;
+        Transform = gameObject.transform;
 
-        this.parent = parent;
+        Parent = parent;
 
-        if (parent != null) transform.SetParent(parent, false);
+        if (parent != null) Transform.SetParent(parent, false);
     }
 
-    public virtual void OnInit()
+    public virtual void DoInit()
     {
     }
 
-    public virtual void OnOpen()
+    public virtual void DoOpen()
     {
     }
 
-    public virtual void OnUpdate()
+    public virtual void DoUpdate()
     {
     }
 
-    public virtual void OnClose()
+    public virtual void DoClose()
     {
     }
 
-    public virtual void Destroy()
+    public virtual void DoDestroy()
     {
     }
 }

@@ -43,7 +43,7 @@ namespace Omnana
         {
             AssetBundleMgr = AssetBundleMgr.Instance;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && ! AB_TEST
             EditorAssetLoadMgr = EditorAssetLoadMgr.Instance;
 #endif
 
@@ -64,13 +64,18 @@ namespace Omnana
 
 
             preloadedAsyncList = new Queue<PreloadAssetObject>();
+        }
 
-#if UNITY_EDITOR
+        public void Init()
+        {
+#if UNITY_EDITOR && !AB_TEST
             EditorAssetLoadMgr.Init();
+#else
+            AssetBundleMgr.Init();
+
+            AssetBundleMgr.LoadMainfest();
 #endif
             ResourcesLoadMgr.Init();
-
-            AssetBundleMgr.Init();
         }
 
         /// <summary>
@@ -80,10 +85,10 @@ namespace Omnana
         /// <returns></returns>
         public bool IsAssetExist(string assetName)
         {
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !AB_TEST
             return EditorAssetLoadMgr.IsFileExist(assetName);
 #else
-        if (ResourcesLoadMgr.IsFileExist(assetName)) return true;
+            if (ResourcesLoadMgr.IsFileExist(assetName)) return true;
         return AssetBundleMgr.IsFileExist(assetName);
 #endif
         }
@@ -131,10 +136,10 @@ namespace Omnana
                 }
                 else
                 {
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !AB_TEST
                     assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
 #else
-                if (assetObj.IsAbLoad)
+                    if (assetObj.IsAbLoad)
             {
                 var ab = AssetBundleMgr.LoadSync(assetName);
 
@@ -160,7 +165,7 @@ namespace Omnana
                     RefCount = 1
                 };
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && ! AB_TEST
                 assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
 #else
                 if (AssetBundleMgr.IsFileExist(assetName))
@@ -218,27 +223,27 @@ namespace Omnana
 
                 PutAssetObInDic(AssetObjStatus.Loading, assetObj);
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && ! AB_TEST
                 assetObj.Asset = EditorAssetLoadMgr.LoadSync(assetName);
 #else
                 if (AssetBundleMgr.IsFileExist(assetName))
-            {
-                assetObj.IsAbLoad = true;
-
-                AssetBundleMgr.LoadAsync(assetName, (ab) =>
                 {
-                    if (GetAssetObjStatus(assetName) == AssetObjStatus.Loading && assetObj.Request == null && assetObj.Asset == null)
-                    {
-                        assetObj.Request = ab.LoadAssetAsync(ab.GetAllAssetNames()[0]);
-                    }
-                });
-            }
-            else if (ResourcesLoadMgr.IsFileExist(assetName))
-            {
-                assetObj.IsAbLoad = false;
+                    assetObj.IsAbLoad = true;
 
-                assetObj.Request = ResourcesLoadMgr.LoadAsync(assetName);
-            }
+                    AssetBundleMgr.LoadAsync(assetName, (ab) =>
+                    {
+                        if (GetAssetObjStatus(assetName) == AssetObjStatus.Loading && assetObj.Request == null && assetObj.Asset == null)
+                        {
+                            assetObj.Request = ab.LoadAssetAsync(ab.GetAllAssetNames()[0]);
+                        }
+                    });
+                }
+                else if (ResourcesLoadMgr.IsFileExist(assetName))
+                {
+                    assetObj.IsAbLoad = false;
+
+                    assetObj.Request = ResourcesLoadMgr.LoadAsync(assetName);
+                }
 #endif
             }
 
@@ -300,7 +305,7 @@ namespace Omnana
                 {
                     Object.Destroy(obj);
                 }
-#if UNITY_EDITOR
+#if UNITY_EDITOR && ! AB_TEST
                 else if (UnityEditor.EditorApplication.isPlaying)
                 {
 
@@ -420,7 +425,7 @@ namespace Omnana
 
             foreach (var assetObj in loadingList.Values)
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR && ! AB_TEST
                 if (assetObj.Asset != null)
                 {
                     assetObj.InstanceID = assetObj.Asset.GetInstanceID();
@@ -515,10 +520,10 @@ namespace Omnana
             UpdateLoading();
             UpdateUnload();
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !AB_TEST
 
 #else
-        AssetBundleMgr.Update();
+            AssetBundleMgr.Update();
 #endif
         }
 
@@ -528,7 +533,7 @@ namespace Omnana
         /// <param name="assetObject"></param>
         private void DoUnLoad(AssetObject assetObject)
         {
-#if UNITY_EDITOR
+#if UNITY_EDITOR && ! AB_TEST
             EditorAssetLoadMgr.Unload(assetObject.Asset);
 #else
             if (assetObject.IsAbLoad)

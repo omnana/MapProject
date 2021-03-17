@@ -1,9 +1,15 @@
 ﻿using UnityEngine;
 
-public class ControllerInit : MonoBehaviour
+namespace Omnana
 {
-    public void Load()
+    public class ControllerHelper
     {
-        ServiceLocator.RegisterSingleton<TestCtrl>();
+        /// <summary>
+        /// 主工程的Ctrl
+        /// </summary>
+        public static void Load()
+        {
+            ServiceLocator.RegisterSingleton<TestCtrl>();
+        }
     }
 }

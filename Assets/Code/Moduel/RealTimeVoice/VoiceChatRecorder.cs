@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace VoiceChat.Behaviour
 {
-    public class VoiceChatRecorder : BaseCtrl
+    public class VoiceChatRecorder : MonoBehaviour
     {
         public AudioClip audioClip
         {

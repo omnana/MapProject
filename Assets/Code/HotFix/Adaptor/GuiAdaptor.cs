@@ -1,30 +1,23 @@
-﻿using ILRuntime.CLR.Method;
+using System;
+using ILRuntime.CLR.Method;
 using ILRuntime.Runtime.Enviorment;
 using ILRuntime.Runtime.Intepreter;
-using System;
 
 namespace Omnana
-{
-    /// <summary>
-    /// 主UI适配器
-    /// </summary>
-    public class GuiAdapter : CrossBindingAdaptor
+{   
+    public class IGuiAdapter : CrossBindingAdaptor
     {
-        static CrossBindingMethodInfo mInit = new CrossBindingMethodInfo("OnInit");
-        static CrossBindingMethodInfo mOpen = new CrossBindingMethodInfo("OnOpen");
-        static CrossBindingMethodInfo mUpdate = new CrossBindingMethodInfo("OnUpdate");
-        static CrossBindingMethodInfo mClose = new CrossBindingMethodInfo("OnClose");
-        static CrossBindingMethodInfo mDestroy = new CrossBindingMethodInfo("Destroy");
-
-        public GuiAdapter()
-        {
-        }
+        static CrossBindingMethodInfo mDoInit_0 = new CrossBindingMethodInfo("DoInit");
+        static CrossBindingMethodInfo mDoOpen_1 = new CrossBindingMethodInfo("DoOpen");
+        static CrossBindingMethodInfo mDoUpdate_2 = new CrossBindingMethodInfo("DoUpdate");
+        static CrossBindingMethodInfo mDoDestroy_3 = new CrossBindingMethodInfo("DoDestroy");
+        static CrossBindingMethodInfo mDoClose_4 = new CrossBindingMethodInfo("DoClose");
 
         public override Type BaseCLRType
         {
             get
             {
-                return typeof(global::HotFixBaseGui);
+                return typeof(IGui);
             }
         }
 
@@ -39,13 +32,11 @@ namespace Omnana
         public override object CreateCLRInstance(ILRuntime.Runtime.Enviorment.AppDomain appdomain, ILTypeInstance instance)
         {
             return new Adapter(appdomain, instance);
-
         }
 
-        public class Adapter : global::HotFixBaseGui, CrossBindingAdaptorType
+        public class Adapter : IGui, CrossBindingAdaptorType
         {
             ILTypeInstance instance;
-
             ILRuntime.Runtime.Enviorment.AppDomain appdomain;
 
             public Adapter()
@@ -61,46 +52,29 @@ namespace Omnana
 
             public ILTypeInstance ILInstance { get { return instance; } }
 
-
-            public override void OnInit()
+            public void DoInit()
             {
-                if (mInit.CheckShouldInvokeBase(this.instance))
-                    base.OnInit();
-                else
-                    mInit.Invoke(this.instance);
+                mDoInit_0.Invoke(this.instance);
             }
 
-
-            public override void OnOpen()
+            public void DoOpen()
             {
-                if (mOpen.CheckShouldInvokeBase(this.instance))
-                    base.OnOpen();
-                else
-                    mOpen.Invoke(this.instance);
+                mDoOpen_1.Invoke(this.instance);
             }
 
-            public override void OnUpdate()
+            public void DoUpdate()
             {
-                if (mUpdate.CheckShouldInvokeBase(this.instance))
-                    base.OnUpdate();
-                else
-                    mUpdate.Invoke(this.instance);
+                mDoUpdate_2.Invoke(this.instance);
             }
 
-            public override void OnClose()
+            public void DoDestroy()
             {
-                if (mClose.CheckShouldInvokeBase(this.instance))
-                    base.OnClose();
-                else
-                    mClose.Invoke(this.instance);
+                mDoDestroy_3.Invoke(this.instance);
             }
 
-            public override void Destroy()
+            public void DoClose()
             {
-                if (mDestroy.CheckShouldInvokeBase(this.instance))
-                    base.Destroy();
-                else
-                    mDestroy.Invoke(this.instance);
+                mDoClose_4.Invoke(this.instance);
             }
 
             public override string ToString()
@@ -114,6 +88,9 @@ namespace Omnana
                 else
                     return instance.Type.FullName;
             }
+
         }
     }
 }
+
+

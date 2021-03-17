@@ -8,7 +8,7 @@ namespace Omnana
     {
         public static readonly string HotFixProjectName = "HotFix";
 
-        public static readonly string HotFixGuiNameFormat = "HotFix.Gui.{0}";
+        public static readonly string HotFixGuiNameFormat = "HotFix.{0}";
 
         public static readonly string HotFixDllPath = Application.streamingAssetsPath + "/HotFix.dll";
 

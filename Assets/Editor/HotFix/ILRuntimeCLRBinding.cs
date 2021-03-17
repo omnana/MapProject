@@ -1,6 +1,8 @@
 ﻿#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
+using Omnana;
+
 using System;
 using System.Text;
 using System.Collections.Generic;
@@ -13,13 +15,14 @@ public class ILRuntimeCLRBinding
     {
         //用新的分析热更dll调用引用来生成绑定代码
         ILRuntime.Runtime.Enviorment.AppDomain domain = new ILRuntime.Runtime.Enviorment.AppDomain();
-        using (System.IO.FileStream fs = new System.IO.FileStream("Assets/StreamingAssets/HotFix_Project.dll", System.IO.FileMode.Open, System.IO.FileAccess.Read))
+        using (System.IO.FileStream fs = new System.IO.FileStream("Assets/StreamingAssets/HotFix.dll", System.IO.FileMode.Open, System.IO.FileAccess.Read))
         {
             domain.LoadAssembly(fs);
 
             //Crossbind Adapter is needed to generate the correct binding code
             InitILRuntime(domain);
-            ILRuntime.Runtime.CLRBinding.BindingCodeGenerator.GenerateBindingCode(domain, "Assets/Samples/ILRuntime/Generated");
+
+            ILRuntime.Runtime.CLRBinding.BindingCodeGenerator.GenerateBindingCode(domain, "Assets/Code/HotFix/Generated");
         }
 
         AssetDatabase.Refresh();
@@ -29,9 +32,12 @@ public class ILRuntimeCLRBinding
     {
         //这里需要注册所有热更DLL中用到的跨域继承Adapter，否则无法正确抓取引用
         domain.RegisterCrossBindingAdaptor(new MonoBehaviourAdapter());
-        domain.RegisterCrossBindingAdaptor(new CoroutineAdapter());
-        domain.RegisterCrossBindingAdaptor(new TestClassBaseAdapter());
         domain.RegisterValueTypeBinder(typeof(Vector3), new Vector3Binder());
+        domain.RegisterCrossBindingAdaptor(new CoroutineAdapter());
+        domain.RegisterCrossBindingAdaptor(new IGuiAdapter());
+        domain.RegisterCrossBindingAdaptor(new ServiceBaseAdaptor());
+        domain.RegisterCrossBindingAdaptor(new BaseCtrlAdaptor());
+        domain.RegisterCrossBindingAdaptor(new ViewModelBaseAdaptor());
     }
 }
 #endif

@@ -6,10 +6,6 @@ namespace Omnana
 {
     public class Code : MonoBehaviour
     {
-        public ControllerInit ControllerInit;
-
-        public ServiceContainerInit ServiceContainerInit;
-
         private HotFixMgr hotFixMgr;
 
         private AssetBundleMgr assetBundleMgr;
@@ -18,9 +14,9 @@ namespace Omnana
         {
             DontDestroyOnLoad(this);
 
-            ControllerInit.Load();
+            ControllerHelper.Load();
 
-            ServiceContainerInit.Load();
+            ServiceHelper.Load();
 
             //hotFixMgr = Singleton<HotFixMgr>.GetInstance();
 
@@ -30,7 +26,9 @@ namespace Omnana
 
         private IEnumerator Start()
         {
-            MyAssetBundleMgr.Instance.LoadMainfest();
+            //MyAssetBundleMgr.Instance.LoadMainfest();
+
+            AssetLoadMgr.Instance.Init();
 
             Debug.Log("加载资源Manifest。。。");
 
